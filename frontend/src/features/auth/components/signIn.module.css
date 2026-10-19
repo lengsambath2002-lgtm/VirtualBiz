@@ -1,0 +1,849 @@
+/*
+ * Sign-in (VirtualBiz Sign-in prototype). Shared tokens come from globals.css; this file holds
+ * the sign-in layout and controls. Values reproduce the prototype's *effective* rendering: its
+ * base sheet as overridden by the Liquid Glass layer (capsule buttons, glass card radius 28,
+ * inputs with a fixed hairline border and radius 12, etc.).
+ */
+
+/* ---------- Page scope: sign-in-only tokens ---------- */
+.shell {
+  --danger: #c93636;
+  --danger-soft: #fdecec;
+  --panel: #1c2438;
+  --panel-ink: #eef0f6;
+  --panel-muted: #a3abc2;
+  --panel-card: #ffffff;
+  --panel-card-ink: #141a2b;
+  /* Showcase width: half the screen on laptops, capped so wide monitors don't get a huge empty panel. */
+  --show-w: clamp(420px, 42vw, 720px);
+  min-height: 100dvh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--show-w);
+  gap: 0;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+}
+@media (prefers-color-scheme: dark) {
+  :global(:root:not([data-theme='light'])) .shell {
+    --danger: #ff7070;
+    --danger-soft: #3a1717;
+    --panel: #070a12;
+    --panel-muted: #8e96ad;
+    --panel-card: #151a27;
+    --panel-card-ink: #e9ecf3;
+  }
+}
+:global(:root[data-theme='dark']) .shell {
+  --danger: #ff7070;
+  --danger-soft: #3a1717;
+  --panel: #070a12;
+  --panel-muted: #8e96ad;
+  --panel-card: #151a27;
+  --panel-card-ink: #e9ecf3;
+}
+@media (max-width: 960px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+  .show {
+    display: none !important;
+  }
+}
+.shell h1,
+.shell h2 {
+  margin: 0;
+  text-wrap: balance;
+  letter-spacing: -0.015em;
+}
+.shell p {
+  margin: 0;
+}
+.shell button {
+  cursor: pointer;
+}
+.shell :focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+
+/* ---------- Form column ---------- */
+.col {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: 28px clamp(16px, 5vw, 64px);
+  min-width: 0;
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-weight: 700;
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+.logoMark {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--accent);
+  color: #141a2b;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+}
+.logo b {
+  color: var(--accent-ink);
+}
+.mid {
+  display: grid;
+  align-items: start;
+  justify-items: center;
+  /* Anchored, not vertically centred: the card keeps its top edge when steps change height. */
+  padding: clamp(32px, 14vh, 150px) 0 40px;
+}
+.card {
+  width: 100%;
+  max-width: 400px;
+  display: grid;
+  gap: 22px;
+  background: var(--g-fill);
+  -webkit-backdrop-filter: var(--g-blur);
+  backdrop-filter: var(--g-blur);
+  border: 1px solid var(--g-brd);
+  box-shadow: var(--g-hi), var(--g-shadow);
+  border-radius: 28px;
+  padding: 32px;
+}
+@media (max-width: 640px) {
+  .card {
+    padding: 22px;
+  }
+}
+.shell .card h1 {
+  font-size: clamp(26px, 3vw, 34px);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+}
+.shell .sub {
+  color: var(--muted);
+  margin-top: 6px;
+}
+.sub b {
+  color: var(--ink);
+  font-weight: 500;
+  word-break: break-all;
+}
+.foot {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--muted);
+}
+.foot nav {
+  display: flex;
+  gap: 16px;
+}
+.foot a {
+  color: var(--muted);
+  text-decoration: none;
+}
+.foot a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+}
+
+/* ---------- Forms ---------- */
+.form {
+  display: grid;
+  gap: 16px;
+}
+.field {
+  display: grid;
+  gap: 6px;
+}
+.field label {
+  font-size: 13px;
+  font-weight: 500;
+}
+.labelNote {
+  color: var(--muted);
+  font-weight: 400;
+}
+.rowL {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+.ctl {
+  position: relative;
+  display: flex;
+}
+/* Glass layer: inputs keep a hairline --line border (also on hover, focus and error) and radius 12. */
+.input {
+  width: 100%;
+  height: 48px;
+  border: 1px solid var(--line);
+  background: var(--g-fill-strong);
+  border-radius: var(--r-sm);
+  padding: 0 14px;
+  color: var(--ink);
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.input::placeholder {
+  color: var(--muted);
+  opacity: 0.75;
+}
+.input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 20%, transparent);
+}
+.ctlPw .input {
+  padding-right: 48px;
+}
+.eye {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  width: 38px;
+  height: 38px;
+  border: 0;
+  background: none;
+  border-radius: 6px;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+}
+.eye:hover {
+  color: var(--ink);
+  background: var(--sunk);
+}
+.cc {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 48px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-right: 0;
+  border-radius: var(--r-sm) 0 0 var(--r-sm);
+  background: var(--sunk);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.err {
+  color: var(--danger);
+  font-size: 12.5px;
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+}
+.err:empty {
+  display: none;
+}
+.err svg {
+  flex: none;
+  margin-top: 2px;
+}
+.hint {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* ---------- Buttons (glass capsules) ---------- */
+.btn {
+  height: 48px;
+  border-radius: 999px;
+  border: 0;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  transition:
+    transform 0.15s,
+    background 0.15s,
+    box-shadow 0.15s;
+}
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed !important;
+}
+.btnPrimary {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0)), var(--primary);
+  color: var(--on-primary);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 4px 14px rgba(20, 26, 43, 0.18);
+}
+.btnGhost {
+  background: var(--g-fill);
+  -webkit-backdrop-filter: var(--g-blur);
+  backdrop-filter: var(--g-blur);
+  border: 1px solid var(--g-brd);
+  box-shadow:
+    var(--g-hi),
+    0 1px 3px rgba(0, 0, 0, 0.05);
+  color: var(--ink);
+}
+.btnGhost:hover:not(:disabled) {
+  background: var(--g-fill-strong);
+}
+.btnDanger {
+  background: var(--danger);
+  color: #fff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 4px 14px rgba(20, 26, 43, 0.18);
+}
+.spin {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  animation: spin 0.7s linear infinite;
+  flex: none;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.stack {
+  display: grid;
+  gap: 10px;
+}
+.link {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--ink);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+}
+.quiet {
+  text-decoration-color: var(--line);
+}
+.link:disabled {
+  color: var(--muted);
+  text-decoration: none;
+  font-weight: 400;
+  cursor: default !important;
+}
+.backLink {
+  justify-self: start;
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  text-decoration: none;
+  color: var(--muted);
+}
+.centerLink {
+  justify-self: center;
+  color: var(--muted);
+}
+.or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.or::before,
+.or::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+.small {
+  font-size: 12.5px;
+  color: var(--muted);
+  text-align: center;
+}
+.small a {
+  color: var(--muted);
+  text-decoration: underline;
+}
+.labelLink {
+  font-size: 13px;
+}
+/* "New to VirtualBiz? Create an account" under the card's content. */
+.alt {
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+  text-align: center;
+  color: var(--muted);
+}
+.alt a {
+  color: var(--ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--accent);
+  text-decoration-thickness: 2px;
+}
+
+/* ---------- Alerts ---------- */
+.alert {
+  border-radius: var(--r-sm);
+  padding: 10px 12px;
+  font-size: 13px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.alert svg {
+  flex: none;
+  margin-top: 1px;
+}
+.aBad {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+.aOk {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+.inheritLink {
+  color: inherit;
+}
+
+/* ---------- Password rules ---------- */
+.rules {
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.rules li {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.rules li::before {
+  content: '';
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  box-sizing: content-box;
+  flex: none;
+  transition: all 0.15s;
+}
+.rules li.ruleOk {
+  color: var(--ok);
+}
+.rules li.ruleOk::before {
+  background: var(--ok);
+  border-color: var(--ok);
+  box-shadow: inset 0 0 0 2.5px var(--surface);
+}
+
+/* ---------- OTP ---------- */
+.otp {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr) 12px repeat(3, 1fr);
+  gap: 8px;
+  align-items: center;
+}
+.otp i {
+  height: 2px;
+  background: var(--line);
+  border-radius: 1px;
+}
+.otp input {
+  width: 100%;
+  min-width: 0;
+  height: 56px;
+  text-align: center;
+  font-family: var(--font-jbmono), var(--f-mono);
+  font-weight: 500;
+  font-size: 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--g-fill-strong);
+  color: var(--ink);
+  caret-color: var(--focus);
+  padding: 0;
+}
+.otp input:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 20%, transparent);
+}
+.shake {
+  animation: shake 0.3s;
+}
+@keyframes shake {
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+.mailers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.mailers a {
+  height: 40px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 500;
+}
+.mailers a:hover {
+  background: var(--sunk);
+}
+
+/* ---------- Showcase (right, navy) ---------- */
+.show {
+  background: var(--panel);
+  color: var(--panel-ink);
+  padding: 48px clamp(24px, 4vw, 64px);
+  display: grid;
+  align-content: center;
+  justify-content: center;
+  gap: 32px;
+  position: relative;
+  overflow: hidden;
+  margin: 12px;
+  border-radius: 32px;
+}
+.show::before {
+  content: '';
+  position: absolute;
+  right: -120px;
+  top: -120px;
+  width: 360px;
+  height: 360px;
+  border-radius: 50%;
+  border: 56px solid rgba(245, 184, 0, 0.08);
+  /* The prototype's `*{box-sizing:border-box}` doesn't reach pseudo-elements. */
+  box-sizing: content-box;
+}
+.shell .show h2 {
+  font-size: clamp(26px, 2.4vw, 34px);
+  font-weight: 600;
+  line-height: 1.2;
+  max-width: 15ch;
+  position: relative;
+}
+.show h2 em {
+  font-style: normal;
+  color: var(--accent);
+}
+.shell .show p {
+  color: var(--panel-muted);
+  max-width: 42ch;
+  margin-top: 10px;
+}
+.mock {
+  display: grid;
+  gap: 12px;
+  max-width: 380px;
+  position: relative;
+}
+.mcard {
+  background: var(--panel-card);
+  color: var(--panel-card-ink);
+  border-radius: 14px;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.25);
+}
+.mcard:nth-child(2) {
+  margin-left: 36px;
+}
+.mcard:nth-child(3) {
+  margin-left: 12px;
+}
+.mic {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+}
+.mcard strong {
+  display: block;
+  font-weight: 500;
+  font-size: 13.5px;
+}
+.mcard small {
+  font-size: 12px;
+  opacity: 0.65;
+}
+.pill {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.trust {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  color: var(--panel-muted);
+  font-size: 12.5px;
+  position: relative;
+}
+.trust span {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* ---------- Sheet (Google account chooser) ---------- */
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.28);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  z-index: 50;
+}
+.modal {
+  position: relative;
+  background: var(--g-fill-strong);
+  -webkit-backdrop-filter: saturate(180%) blur(30px);
+  backdrop-filter: saturate(180%) blur(30px);
+  border: 1px solid var(--g-brd);
+  box-shadow: var(--g-hi), var(--g-shadow-float);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+  display: grid;
+  gap: 14px;
+  color: var(--ink);
+  animation: pop 0.28s cubic-bezier(0.2, 0.9, 0.25, 1.15);
+}
+.modal:focus {
+  outline: none;
+}
+.shell .modal h2,
+.modal h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.modal p {
+  margin: 0;
+  color: var(--muted);
+}
+@keyframes pop {
+  from {
+    transform: scale(0.96);
+    opacity: 0;
+  }
+}
+@keyframes up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+.modalBtns {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+@media (max-width: 640px) {
+  .scrim {
+    place-items: end center;
+    padding: 0;
+  }
+  .modal {
+    border-radius: 28px 28px 0 0;
+    max-height: 92dvh;
+    padding-top: 28px;
+    animation: up 0.32s cubic-bezier(0.2, 0.9, 0.25, 1);
+  }
+  .modal::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    width: 38px;
+    height: 5px;
+    margin-left: -19px;
+    border-radius: 3px;
+    background: var(--line-h);
+  }
+}
+
+/* Account chooser */
+.gHead {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  text-align: center;
+  padding-bottom: 4px;
+}
+.gHead svg {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 6px;
+}
+.shell .gHead h2,
+.gHead h2 {
+  font-size: 20px;
+}
+.gList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+}
+.gList li {
+  border-bottom: 1px solid var(--line);
+}
+.gRow {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 6px;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  text-align: left;
+  border-radius: 12px;
+  cursor: pointer;
+}
+.gRow:hover:not(:disabled) {
+  background: var(--sunk);
+}
+.gRow:disabled {
+  cursor: default;
+}
+.gAv {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #141a2b;
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  font-size: 13px;
+  flex: none;
+}
+.gAvOther {
+  background: var(--sunk);
+  color: var(--muted);
+}
+.gTxt {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+}
+.gTxt strong {
+  font-weight: 500;
+}
+.gTxt small {
+  color: var(--muted);
+  font-size: 12.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Demo code delivery toast ---------- */
+.codeToast {
+  position: fixed;
+  /* Below the logo/language row, so it never covers the header. */
+  top: calc(84px + env(safe-area-inset-top, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  background: var(--ink);
+  color: var(--bg);
+  padding: 12px 16px;
+  border-radius: 22px;
+  z-index: 60;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  box-shadow: 0 12px 32px rgba(10, 14, 25, 0.25);
+  max-width: calc(100vw - 32px);
+  animation: drop 0.25s;
+}
+@keyframes drop {
+  from {
+    transform: translate(-50%, -12px);
+    opacity: 0;
+  }
+}
+@media (min-width: 961px) {
+  .codeToast {
+    top: 84px;
+    left: calc((100vw - var(--show-w)) / 2);
+  }
+}
+.codeToast small {
+  display: block;
+  opacity: 0.7;
+  font-size: 11px;
+}
+.codeToast b {
+  font-family: var(--font-jbmono), var(--f-mono);
+  font-size: 18px;
+  letter-spacing: 0.12em;
+}
+.codeToast button {
+  white-space: nowrap;
+  flex: none;
+  border: 0;
+  background: var(--accent);
+  color: #141a2b;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-weight: 600;
+  font-size: 12px;
+}

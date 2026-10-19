@@ -1,0 +1,540 @@
+{
+  "items": [
+    {
+      "type": "PRODUCT",
+      "id": "aaaaaaaa-0000-4000-8000-000000000001",
+      "slug": "latte",
+      "businessId": "22222222-2222-4222-8222-000000000011",
+      "shopSlug": "happy-coffee",
+      "title": "Iced Mondulkiri Latte",
+      "description": "Double shot of Mondulkiri arabica over ice with fresh Cambodian milk.",
+      "categoryId": "cafe",
+      "options": [
+        {
+          "name": "Size",
+          "values": ["12 oz", "16 oz", "22 oz"]
+        },
+        {
+          "name": "Sweetness",
+          "values": ["No sugar", "50%", "Normal"]
+        }
+      ],
+      "variants": [
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000001000000",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000001",
+          "options": {
+            "Size": "12 oz",
+            "Sweetness": "No sugar"
+          },
+          "price": 2.0,
+          "compareAt": 2.5,
+          "sku": "LATTE-01",
+          "stock": 8
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000001000001",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000001",
+          "options": {
+            "Size": "12 oz",
+            "Sweetness": "50%"
+          },
+          "price": 2.0,
+          "compareAt": 2.5,
+          "sku": "LATTE-02",
+          "stock": 4
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000001000002",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000001",
+          "options": {
+            "Size": "12 oz",
+            "Sweetness": "Normal"
+          },
+          "price": 2.0,
+          "compareAt": 2.5,
+          "sku": "LATTE-03",
+          "stock": 4
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000001000003",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000001",
+          "options": {
+            "Size": "16 oz",
+            "Sweetness": "No sugar"
+          },
+          "price": 2.4,
+          "compareAt": 3.0,
+          "sku": "LATTE-04",
+          "stock": 4
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000001000004",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000001",
+          "options": {
+            "Size": "16 oz",
+            "Sweetness": "50%"
+          },
+          "price": 2.4,
+          "compareAt": 3.0,
+          "sku": "LATTE-05",
+          "stock": 4
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000001000005",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000001",
+          "options": {
+            "Size": "16 oz",
+            "Sweetness": "Normal"
+          },
+          "price": 2.4,
+          "compareAt": 3.0,
+          "sku": "LATTE-06",
+          "stock": 4
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000001000006",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000001",
+          "options": {
+            "Size": "22 oz",
+            "Sweetness": "No sugar"
+          },
+          "price": 2.8,
+          "compareAt": 3.5,
+          "sku": "LATTE-07",
+          "stock": 4
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000001000007",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000001",
+          "options": {
+            "Size": "22 oz",
+            "Sweetness": "50%"
+          },
+          "price": 2.8,
+          "compareAt": 3.5,
+          "sku": "LATTE-08",
+          "stock": 4
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000001000008",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000001",
+          "options": {
+            "Size": "22 oz",
+            "Sweetness": "Normal"
+          },
+          "price": 2.8,
+          "compareAt": 3.5,
+          "sku": "LATTE-09",
+          "stock": 4
+        }
+      ],
+      "photos": [],
+      "specs": {
+        "Caffeine": "~150 mg (16 oz)",
+        "Allergens": "Milk",
+        "Ready": "In 5 minutes"
+      },
+      "sold": 2812,
+      "rating": 4.8
+    },
+    {
+      "type": "PRODUCT",
+      "id": "aaaaaaaa-0000-4000-8000-000000000003",
+      "slug": "croissant",
+      "businessId": "22222222-2222-4222-8222-000000000011",
+      "shopSlug": "happy-coffee",
+      "title": "Butter Croissant",
+      "description": "Baked every morning at 6:30 with French butter. Best before noon.",
+      "categoryId": "cafe",
+      "options": [],
+      "variants": [
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000003000000",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000003",
+          "options": {},
+          "price": 1.8,
+          "sku": "CROISSANT-01",
+          "stock": 3
+        }
+      ],
+      "photos": [],
+      "specs": {
+        "Allergens": "Wheat, milk, egg"
+      },
+      "sold": 990,
+      "rating": 4.6
+    },
+    {
+      "type": "PRODUCT",
+      "id": "aaaaaaaa-0000-4000-8000-000000000004",
+      "slug": "iphone",
+      "businessId": "22222222-2222-4222-8222-000000000012",
+      "shopSlug": "king-techno",
+      "title": "iPhone 15",
+      "description": "6.1-inch display, A16 Bionic chip, 48 MP camera, USB-C. 12-month official warranty in Cambodia.",
+      "categoryId": "electronics",
+      "options": [
+        {
+          "name": "Colour",
+          "values": ["Black", "Blue", "Pink", "Yellow"]
+        },
+        {
+          "name": "Storage",
+          "values": ["128 GB", "256 GB", "512 GB"]
+        }
+      ],
+      "variants": [
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000004000000",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000004",
+          "options": {
+            "Colour": "Black",
+            "Storage": "128 GB"
+          },
+          "price": 787.55,
+          "compareAt": 829.0,
+          "sku": "IPHONE-01",
+          "stock": 9,
+          "swatch": "#2B2B2E"
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000004000001",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000004",
+          "options": {
+            "Colour": "Black",
+            "Storage": "256 GB"
+          },
+          "price": 882.55,
+          "compareAt": 929.0,
+          "sku": "IPHONE-02",
+          "stock": 0,
+          "swatch": "#2B2B2E"
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000004000002",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000004",
+          "options": {
+            "Colour": "Black",
+            "Storage": "512 GB"
+          },
+          "price": 1072.55,
+          "compareAt": 1129.0,
+          "sku": "IPHONE-03",
+          "stock": 0,
+          "swatch": "#2B2B2E"
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000004000003",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000004",
+          "options": {
+            "Colour": "Blue",
+            "Storage": "128 GB"
+          },
+          "price": 787.55,
+          "compareAt": 829.0,
+          "sku": "IPHONE-04",
+          "stock": 0,
+          "swatch": "#C9DCE9"
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000004000004",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000004",
+          "options": {
+            "Colour": "Blue",
+            "Storage": "256 GB"
+          },
+          "price": 882.55,
+          "compareAt": 929.0,
+          "sku": "IPHONE-05",
+          "stock": 0,
+          "swatch": "#C9DCE9"
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000004000005",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000004",
+          "options": {
+            "Colour": "Blue",
+            "Storage": "512 GB"
+          },
+          "price": 1072.55,
+          "compareAt": 1129.0,
+          "sku": "IPHONE-06",
+          "stock": 0,
+          "swatch": "#C9DCE9"
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000004000006",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000004",
+          "options": {
+            "Colour": "Pink",
+            "Storage": "128 GB"
+          },
+          "price": 787.55,
+          "compareAt": 829.0,
+          "sku": "IPHONE-07",
+          "stock": 0,
+          "swatch": "#F2D3D9"
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000004000007",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000004",
+          "options": {
+            "Colour": "Pink",
+            "Storage": "256 GB"
+          },
+          "price": 882.55,
+          "compareAt": 929.0,
+          "sku": "IPHONE-08",
+          "stock": 0,
+          "swatch": "#F2D3D9"
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000004000008",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000004",
+          "options": {
+            "Colour": "Pink",
+            "Storage": "512 GB"
+          },
+          "price": 1072.55,
+          "compareAt": 1129.0,
+          "sku": "IPHONE-09",
+          "stock": 0,
+          "swatch": "#F2D3D9"
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000004000009",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000004",
+          "options": {
+            "Colour": "Yellow",
+            "Storage": "128 GB"
+          },
+          "price": 787.55,
+          "compareAt": 829.0,
+          "sku": "IPHONE-10",
+          "stock": 0,
+          "swatch": "#F3EBBF"
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000004000010",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000004",
+          "options": {
+            "Colour": "Yellow",
+            "Storage": "256 GB"
+          },
+          "price": 882.55,
+          "compareAt": 929.0,
+          "sku": "IPHONE-11",
+          "stock": 0,
+          "swatch": "#F3EBBF"
+        },
+        {
+          "id": "bbbbbbbb-0000-4000-8000-000004000011",
+          "productId": "aaaaaaaa-0000-4000-8000-000000000004",
+          "options": {
+            "Colour": "Yellow",
+            "Storage": "512 GB"
+          },
+          "price": 1072.55,
+          "compareAt": 1129.0,
+          "sku": "IPHONE-12",
+          "stock": 0,
+          "swatch": "#F3EBBF"
+        }
+      ],
+      "photos": [],
+      "specs": {
+        "Warranty": "12 months, official",
+        "Display": "6.1\" Super Retina XDR",
+        "In the box": "Phone, USB-C cable"
+      },
+      "sold": 623,
+      "rating": 4.9
+    },
+    {
+      "type": "SERVICE",
+      "id": "cccccccc-0000-4000-8000-000000000001",
+      "slug": "massage",
+      "businessId": "22222222-2222-4222-8222-000000000015",
+      "shopSlug": "jasmine-spa",
+      "name": "Aromatherapy Massage",
+      "category": "Spa",
+      "description": "Full-body massage with lemongrass or jasmine oil. Includes herbal tea and hot towel.",
+      "durationMin": 60,
+      "price": 25.0,
+      "discountPct": 20,
+      "staffIds": [
+        "33333333-3333-4333-8333-000000000103",
+        "33333333-3333-4333-8333-000000000104",
+        "33333333-3333-4333-8333-000000000105"
+      ],
+      "sold": 1530,
+      "rating": 4.9
+    }
+  ],
+  "shops": [
+    {
+      "id": "22222222-2222-4222-8222-000000000011",
+      "slug": "happy-coffee",
+      "type": "PRODUCT",
+      "name": "Happy Coffee",
+      "categoryId": "cafe",
+      "icon": "cup",
+      "tint": 1,
+      "about": "Single-origin Mondulkiri coffee, fresh pastries and cold brew. Roasted in-house every Monday.",
+      "phone": "0969090234",
+      "district": "Toul Kork",
+      "street": "#22, St. 315, Boeng Kak 1",
+      "lat": 11.577,
+      "lng": 104.9,
+      "hours": [
+        [420, 1260],
+        [420, 1260],
+        [420, 1260],
+        [420, 1260],
+        [420, 1260],
+        [420, 1260],
+        [420, 1260]
+      ],
+      "closures": [],
+      "rating": 4.7,
+      "reviewCount": 12,
+      "since": "2019-01-01T00:00:00Z",
+      "replyMinutes": 10,
+      "etaMinutes": [20, 35],
+      "staff": [],
+      "productSettings": {
+        "autoAccept": true,
+        "prepMinutes": 20,
+        "lowStockDefault": 5,
+        "pickup": true,
+        "cod": true,
+        "freeDeliveryOver": 25,
+        "zones": [
+          {
+            "label": "BKK1 · Chamkar Mon · Daun Penh",
+            "districts": ["BKK1", "Chamkar Mon", "Daun Penh"],
+            "fee": 0.75
+          },
+          {
+            "label": "Toul Kork · Sen Sok · Russey Keo",
+            "districts": ["Toul Kork", "Sen Sok", "Russey Keo"],
+            "fee": 1.5
+          },
+          {
+            "label": "Chbar Ampov · Mean Chey · further",
+            "districts": ["Chbar Ampov", "Mean Chey", "Por Senchey", "Prampi Makara"],
+            "fee": 2.5
+          }
+        ]
+      }
+    },
+    {
+      "id": "22222222-2222-4222-8222-000000000012",
+      "slug": "king-techno",
+      "type": "PRODUCT",
+      "name": "King Techno",
+      "categoryId": "electronics",
+      "icon": "phone",
+      "tint": 2,
+      "about": "Authorised reseller. Official warranty on every device, free setup and data transfer in store.",
+      "phone": "012555818",
+      "district": "BKK1",
+      "street": "#45, St. 278",
+      "lat": 11.5525,
+      "lng": 104.9255,
+      "hours": [
+        [540, 1200],
+        [540, 1200],
+        [540, 1200],
+        [540, 1200],
+        [540, 1200],
+        [540, 1200],
+        [540, 1200]
+      ],
+      "closures": [],
+      "rating": 4.8,
+      "reviewCount": 12,
+      "since": "2015-01-01T00:00:00Z",
+      "replyMinutes": 60,
+      "etaMinutes": [45, 90],
+      "staff": [],
+      "productSettings": {
+        "autoAccept": true,
+        "prepMinutes": 45,
+        "lowStockDefault": 5,
+        "pickup": true,
+        "cod": true,
+        "freeDeliveryOver": 25,
+        "zones": [
+          {
+            "label": "BKK1 · Chamkar Mon · Daun Penh",
+            "districts": ["BKK1", "Chamkar Mon", "Daun Penh"],
+            "fee": 0.75
+          },
+          {
+            "label": "Toul Kork · Sen Sok · Russey Keo",
+            "districts": ["Toul Kork", "Sen Sok", "Russey Keo"],
+            "fee": 1.5
+          },
+          {
+            "label": "Chbar Ampov · Mean Chey · further",
+            "districts": ["Chbar Ampov", "Mean Chey", "Por Senchey", "Prampi Makara"],
+            "fee": 2.5
+          }
+        ]
+      }
+    },
+    {
+      "id": "22222222-2222-4222-8222-000000000015",
+      "slug": "jasmine-spa",
+      "type": "SERVICE",
+      "name": "Jasmine Spa",
+      "categoryId": "spa",
+      "icon": "leaf",
+      "tint": 3,
+      "about": "Khmer traditional and aromatherapy massage in a quiet garden house. Free parking.",
+      "phone": "0969090234",
+      "district": "Toul Kork",
+      "street": "#18A, St. 450, Boeng Kak 2",
+      "lat": 11.5735,
+      "lng": 104.893,
+      "hours": [
+        [540, 1260],
+        [540, 1260],
+        [540, 1260],
+        [540, 1260],
+        [540, 1260],
+        [540, 1260],
+        [540, 1260]
+      ],
+      "closures": [],
+      "rating": 4.8,
+      "reviewCount": 12,
+      "since": "2017-01-01T00:00:00Z",
+      "replyMinutes": 20,
+      "staff": [
+        {
+          "id": "33333333-3333-4333-8333-000000000103",
+          "name": "Sophea"
+        },
+        {
+          "id": "33333333-3333-4333-8333-000000000104",
+          "name": "Lina"
+        },
+        {
+          "id": "33333333-3333-4333-8333-000000000105",
+          "name": "Mony"
+        }
+      ],
+      "bookingSettings": {
+        "onlineBooking": true,
+        "autoConfirm": true,
+        "reminderHours": 24,
+        "minNoticeHours": 1,
+        "freeCancelHours": 2,
+        "bufferMinutes": 0
+      }
+    }
+  ]
+}

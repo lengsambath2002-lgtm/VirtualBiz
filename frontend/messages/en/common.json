@@ -1,0 +1,147 @@
+{
+  "appName": "VirtualBiz",
+  "close": "Close",
+  "language": "Language",
+  "rateNote": "Prices in USD · 1 USD ≈ 4,100 KHR",
+  "payments": {
+    "khqr": "KHQR",
+    "abaPay": "ABA PAY",
+    "acleda": "ACLEDA",
+    "wing": "Wing",
+    "visa": "VISA",
+    "mastercard": "Mastercard",
+    "cash": "Cash"
+  },
+  "districts": {
+    "toul-kork": "Toul Kork",
+    "bkk1": "BKK1",
+    "daun-penh": "Daun Penh",
+    "chamkar-mon": "Chamkar Mon",
+    "sen-sok": "Sen Sok",
+    "russey-keo": "Russey Keo",
+    "chbar-ampov": "Chbar Ampov",
+    "mean-chey": "Mean Chey",
+    "por-senchey": "Por Senchey",
+    "prampi-makara": "Prampi Makara"
+  },
+  "categories": {
+    "cafe": "Café",
+    "electronics": "Electronics",
+    "fashion": "Fashion",
+    "grocery": "Grocery",
+    "spa": "Spa",
+    "beauty": "Beauty",
+    "salon": "Salon",
+    "repair": "Repair"
+  },
+  "switcher": {
+    "title": "Switch profile",
+    "personal": "Personal account",
+    "current": "Current",
+    "productShop": "Product shop",
+    "serviceProvider": "Service provider",
+    "roles": {
+      "OWNER": "Owner",
+      "MANAGER": "Manager",
+      "STAFF": "Staff"
+    },
+    "create": "Create a new business",
+    "switching": "Switching to {name}…",
+    "yourShops": "Your businesses",
+    "noShops": "You have no businesses yet.",
+    "open": "Switch profile",
+    "admin": "Admin console",
+    "superAdmin": "Super-admin",
+    "staff": "VirtualBiz staff"
+  },
+  "location": {
+    "useMine": "Use my current location",
+    "locating": "Finding you…",
+    "search": "Search a place or street",
+    "searchLabel": "Search location",
+    "noResults": "No places found in Phnom Penh.",
+    "hint": "Move the map so the pin is on the door.",
+    "pinned": "Pinned: {place}",
+    "looking": "Reading the address…",
+    "denied": "Location is blocked. Allow it in your browser, or move the map.",
+    "unavailable": "Couldn't find your location. Move the map or type the address.",
+    "mapLabel": "Map. Drag to move the pin.",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "outside": "Outside our delivery districts. Pick a district below."
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Can’t reach VirtualBiz. Check your connection and try again.",
+    "imageType": "Use a JPEG, PNG or WebP image.",
+    "imageSize": "That image is too large (8 MB at most).",
+    "suspended": "This account is suspended. Contact VirtualBiz support for help."
+  },
+  "image": {
+    "change": "Change photo",
+    "add": "Add photo",
+    "remove": "Remove photo",
+    "uploading": "Uploading…",
+    "changeCover": "Change cover",
+    "addCover": "Add cover photo",
+    "shopPhotos": "Logo and cover",
+    "shopHint": "Shown on your shop page, in search and on your receipts.",
+    "changeLogo": "Change logo",
+    "addLogo": "Add logo",
+    "removeLogo": "Remove logo",
+    "removeCover": "Remove cover",
+    "saved": "Photo saved",
+    "removed": "Photo removed"
+  },
+  "businessStatus": {
+    "suspendedTitle": "VirtualBiz has suspended this shop",
+    "suspendedBody": "It is hidden from the marketplace and takes no new orders or bookings. Reason: {reason}. Contact VirtualBiz support to sort it out.",
+    "rejectedTitle": "Your ID check did not pass",
+    "rejectedBody": "Reason: {reason}. The shop is hidden until you send a new ID photo.",
+    "fix": "Send a new photo",
+    "title": "Verification",
+    "state": {
+      "PENDING": "Checking",
+      "VERIFIED": "Verified",
+      "REJECTED": "Not accepted"
+    },
+    "pendingBody": "We are checking your ID, usually within a few hours. You can sell meanwhile; payouts start after the check.",
+    "verifiedBody": "Your ID is checked. Payouts go to {bakong}.",
+    "verifiedNoBakong": "Your ID is checked. Add a Bakong ID below to receive payouts.",
+    "sendId": "Send a new ID photo",
+    "sending": "Sending…",
+    "idSent": "ID photo sent. We will check it soon.",
+    "idType": "Use a JPEG, PNG or WebP photo.",
+    "idSize": "The photo must be under 5 MB.",
+    "idFailed": "Could not send the photo. Try again.",
+    "payouts": {
+      "title": "Payouts",
+      "payable": "Ready to pay out",
+      "onHold": "On hold",
+      "how": "Customers pay online through VirtualBiz. Each payment is sent to your Bakong account {days, plural, one {the day} other {# days}} after delivery, less the {pct}% commission. A later return comes off the next payout.",
+      "none": "No payouts yet."
+    },
+    "notif": {
+      "verified": "Your ID is verified. Payouts can start.",
+      "rejected": "Your ID check did not pass: {reason}",
+      "suspended": "VirtualBiz suspended your shop: {reason}",
+      "reinstated": "Your shop is back on the marketplace.",
+      "payout": "Payout of {amount} sent to {bakong}."
+    }
+  },
+  "feedback": {
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "The link may be broken, or the page was moved or removed.",
+    "home": "Go to home",
+    "back": "Go back",
+    "dashboard": "Go to dashboard",
+    "console": "Back to the console",
+    "errorTitle": "Something went wrong",
+    "errorBody": "This page ran into a problem. Try again; if it keeps happening, contact VirtualBiz support.",
+    "offlineTitle": "You are offline",
+    "offlineBody": "Check your internet connection, then try again.",
+    "retry": "Try again",
+    "reference": "Reference: {ref}",
+    "loading": "Loading…"
+  }
+}

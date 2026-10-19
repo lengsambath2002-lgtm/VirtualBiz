@@ -1,0 +1,13 @@
+{
+  "customerStatus": {
+    "orderPlaced": "បានដាក់ការបញ្ជាទិញ",
+    "preparing": "កំពុងរៀបចំ",
+    "readyForPickup": "រួចរាល់សម្រាប់មកយក",
+    "ready": "រួចរាល់",
+    "onTheWay": "កំពុងដឹកមក",
+    "delivered": "បានដឹកដល់",
+    "pickedUp": "បានមកយករួច",
+    "cancelled": "បានបោះបង់",
+    "returned": "បានប្រគល់ត្រឡប់"
+  }
+}

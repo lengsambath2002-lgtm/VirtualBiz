@@ -1,0 +1,110 @@
+# Shared settings for every profile. application-<profile>.yml only adds or overrides.
+spring:
+  application:
+    name: vbiz-api
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:local}
+  config:
+    # backend/.env (git-ignored) when running from the backend directory; real env vars win.
+    import: "optional:file:.env[.properties]"
+  jackson:
+    default-property-inclusion: non_null
+    time-zone: UTC
+    serialization:
+      write-dates-as-timestamps: false
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    hikari:
+      maximum-pool-size: ${DATABASE_POOL_SIZE:20}
+      connection-timeout: 20000
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+          batch_size: 50
+        default_batch_fetch_size: 100
+  servlet:
+    multipart:
+      # Image uploads (POST /api/files): vbiz.storage.max-bytes is the real limit.
+      max-file-size: 9MB
+      max-request-size: 10MB
+  flyway:
+    # Off by default; only the local profile migrates on start-up (ARCHITECTURE.md §8).
+    enabled: false
+    locations: classpath:db/migration
+
+server:
+  port: ${SERVER_PORT:8180}
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+springdoc:
+  api-docs:
+    path: /api/docs/openapi.json
+  swagger-ui:
+    path: /api/docs
+  paths-to-match: /api/**
+
+vbiz:
+  version: ${VBIZ_VERSION:dev}
+  jwt:
+    # Required outside local/test: at least 32 bytes.
+    secret: ${VBIZ_JWT_SECRET:}
+    access-ttl: 15m
+    issuer: vbiz
+  auth:
+    refresh-ttl: 30d
+    cookie-secure: true
+    google-dev-enabled: false
+  otp:
+    expose-dev-code: false
+  google:
+    client-id: ${VBIZ_GOOGLE_CLIENT_ID:}
+  # docs/api/phase3-orders-checkout.md
+  orders:
+    auto-cancel-after: PT1H
+    customer-cancel-window: PT5M
+    undo-accept-window: PT30S
+    return-window: P7D
+    jobs:
+      enabled: true
+      interval: ${VBIZ_ORDER_JOBS_INTERVAL:PT1M}
+    dev-endpoints: false
+  bookings:
+    # how long the provider's "Undo" toast can put a change back
+    undo-window: PT30S
+    # GET /api/appointments and /api/blocks without from / to
+    past-days: 60
+    future-days: 90
+  storage:
+    # Where uploaded images are kept (local disk; an S3 / MinIO backend can replace it).
+    dir: ${VBIZ_STORAGE_DIR:./data/uploads}
+    max-bytes: 8388608
+  payouts:
+    # A paid online payment goes to the shop this long after delivery (the landing page promises
+    # next business day); later returns are taken back from the next payout.
+    release-after: P1D
+  payment:
+    commission-pct: 5
+    khqr:
+      # VirtualBiz's merchant Bakong account (collects online payments, pays shops out).
+      bakong-id: ${VBIZ_KHQR_BAKONG_ID:virtualbiz@aclb}
+      merchant-name: VirtualBiz
+      merchant-city: Phnom Penh
+      ttl: PT3M
+    simulator:
+      enabled: false

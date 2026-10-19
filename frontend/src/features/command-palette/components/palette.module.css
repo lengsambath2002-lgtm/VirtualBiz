@@ -1,0 +1,132 @@
+/* Command palette (Seller / Provider prototypes' Ctrl+K search), at its glass-layer rendering. */
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.28);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  animation: fade 0.15s;
+}
+.panel {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  align-self: start;
+  margin-top: 10vh;
+  display: grid;
+  align-content: start;
+  background: var(--g-fill-strong);
+  -webkit-backdrop-filter: saturate(180%) blur(30px);
+  backdrop-filter: saturate(180%) blur(30px);
+  border: 1px solid var(--g-brd);
+  box-shadow: var(--g-hi), var(--g-shadow-float);
+  border-radius: var(--r-lg);
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+  animation: pop 0.28s cubic-bezier(0.2, 0.9, 0.25, 1.15);
+}
+.input {
+  width: 100%;
+  height: 56px;
+  padding: 0 18px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--g-fill-strong);
+  font-size: 16px;
+  outline: none;
+}
+.res {
+  max-height: 50vh;
+  overflow: auto;
+  padding: 6px;
+}
+.grp {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  padding: 8px 12px 2px;
+}
+.item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+.item.on {
+  background: var(--sunk);
+}
+.label {
+  flex: 1;
+}
+.sub {
+  font-size: 11.5px;
+  color: var(--muted);
+}
+.none {
+  padding: 12px;
+  font-size: 12.5px;
+  color: var(--muted);
+  margin: 0;
+}
+@media (max-width: 640px) {
+  .scrim {
+    place-items: end center;
+    padding: 0;
+  }
+  .panel {
+    margin-top: 0;
+    border-radius: 28px 28px 0 0;
+    max-height: 92dvh;
+    padding-top: 28px;
+    animation: up 0.32s cubic-bezier(0.2, 0.9, 0.25, 1);
+  }
+  .panel::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    width: 38px;
+    height: 5px;
+    margin-left: -19px;
+    border-radius: 3px;
+    background: var(--line-h);
+  }
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes pop {
+  from {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+}
+@keyframes up {
+  from {
+    transform: translateY(40px);
+    opacity: 0.4;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scrim,
+  .panel {
+    animation: none;
+  }
+}

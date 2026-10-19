@@ -1,0 +1,58 @@
+[
+ {
+  "id": "cafe",
+  "name": "Café",
+  "icon": "cup",
+  "tint": 1,
+  "businessType": "PRODUCT"
+ },
+ {
+  "id": "electronics",
+  "name": "Electronics",
+  "icon": "phone",
+  "tint": 2,
+  "businessType": "PRODUCT"
+ },
+ {
+  "id": "fashion",
+  "name": "Fashion",
+  "icon": "shirt",
+  "tint": 4,
+  "businessType": "PRODUCT"
+ },
+ {
+  "id": "grocery",
+  "name": "Grocery",
+  "icon": "basket",
+  "tint": 3,
+  "businessType": "PRODUCT"
+ },
+ {
+  "id": "spa",
+  "name": "Spa",
+  "icon": "leaf",
+  "tint": 3,
+  "businessType": "SERVICE"
+ },
+ {
+  "id": "beauty",
+  "name": "Beauty",
+  "icon": "brush",
+  "tint": 5,
+  "businessType": "SERVICE"
+ },
+ {
+  "id": "salon",
+  "name": "Salon",
+  "icon": "scissors",
+  "tint": 6,
+  "businessType": "SERVICE"
+ },
+ {
+  "id": "repair",
+  "name": "Repair",
+  "icon": "wrench",
+  "tint": 2,
+  "businessType": "SERVICE"
+ }
+]

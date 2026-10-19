@@ -1,0 +1,1990 @@
+{
+ "businesses": [
+  {
+   "id": "happy-coffee",
+   "ownerId": "u-owner-happy-coffee",
+   "type": "PRODUCT",
+   "name": "Happy Coffee",
+   "slug": "happy-coffee",
+   "categoryId": "cafe",
+   "about": "Single-origin Mondulkiri coffee, fresh pastries and cold brew. Roasted in-house every Monday.",
+   "phone": "0969090234",
+   "district": "toul-kork",
+   "street": "#22, St. 315, Boeng Kak 1",
+   "hours": [
+    [
+     420,
+     1260
+    ],
+    [
+     420,
+     1260
+    ],
+    [
+     420,
+     1260
+    ],
+    [
+     420,
+     1260
+    ],
+    [
+     420,
+     1260
+    ],
+    [
+     420,
+     1260
+    ],
+    [
+     420,
+     1260
+    ]
+   ],
+   "closures": [],
+   "online": true,
+   "bakongId": "happycoffee@aba",
+   "verification": "VERIFIED",
+   "rating": 4.7,
+   "reviewCount": 12,
+   "since": 2019,
+   "productSettings": {
+    "autoAccept": true,
+    "prepMinutes": 10,
+    "lowStockDefault": 5,
+    "pickup": true,
+    "cod": true,
+    "freeDeliveryOver": 25.0,
+    "zones": [
+     {
+      "label": "BKK1 · Chamkar Mon · Daun Penh",
+      "districts": [
+       "bkk1",
+       "chamkar-mon",
+       "daun-penh",
+       "prampi-makara"
+      ],
+      "fee": 0.75
+     },
+     {
+      "label": "Toul Kork · Sen Sok · Russey Keo",
+      "districts": [
+       "toul-kork",
+       "sen-sok",
+       "russey-keo"
+      ],
+      "fee": 1.5
+     },
+     {
+      "label": "Chbar Ampov · Mean Chey · further",
+      "districts": [
+       "chbar-ampov",
+       "mean-chey",
+       "por-senchey"
+      ],
+      "fee": 2.5
+     }
+    ]
+   }
+  },
+  {
+   "id": "king-techno",
+   "ownerId": "u-owner-king-techno",
+   "type": "PRODUCT",
+   "name": "King Techno",
+   "slug": "king-techno",
+   "categoryId": "electronics",
+   "about": "Authorised reseller. Official warranty on every device, free setup and data transfer in store.",
+   "phone": "012555818",
+   "district": "bkk1",
+   "street": "#45, St. 278, BKK1",
+   "hours": [
+    [
+     540,
+     1200
+    ],
+    [
+     540,
+     1200
+    ],
+    [
+     540,
+     1200
+    ],
+    [
+     540,
+     1200
+    ],
+    [
+     540,
+     1200
+    ],
+    [
+     540,
+     1200
+    ],
+    [
+     540,
+     1200
+    ]
+   ],
+   "closures": [],
+   "online": true,
+   "bakongId": "kingtechno@aba",
+   "verification": "VERIFIED",
+   "rating": 4.8,
+   "reviewCount": 13,
+   "since": 2015,
+   "productSettings": {
+    "autoAccept": true,
+    "prepMinutes": 45,
+    "lowStockDefault": 5,
+    "pickup": true,
+    "cod": true,
+    "freeDeliveryOver": 25.0,
+    "zones": [
+     {
+      "label": "BKK1 · Chamkar Mon · Daun Penh",
+      "districts": [
+       "bkk1",
+       "chamkar-mon",
+       "daun-penh",
+       "prampi-makara"
+      ],
+      "fee": 0.75
+     },
+     {
+      "label": "Toul Kork · Sen Sok · Russey Keo",
+      "districts": [
+       "toul-kork",
+       "sen-sok",
+       "russey-keo"
+      ],
+      "fee": 1.5
+     },
+     {
+      "label": "Chbar Ampov · Mean Chey · further",
+      "districts": [
+       "chbar-ampov",
+       "mean-chey",
+       "por-senchey"
+      ],
+      "fee": 2.5
+     }
+    ]
+   }
+  },
+  {
+   "id": "sk-fashion",
+   "ownerId": "u-owner-sk-fashion",
+   "type": "PRODUCT",
+   "name": "SK Fashion",
+   "slug": "sk-fashion",
+   "categoryId": "fashion",
+   "about": "Local cotton and Takeo silk, cut and sewn in Phnom Penh. Free alterations within 48 hours.",
+   "phone": "077330441",
+   "district": "daun-penh",
+   "street": "#9, St. 13, Phsar Kandal",
+   "hours": [
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ]
+   ],
+   "closures": [],
+   "online": true,
+   "bakongId": "skfashion@aba",
+   "verification": "VERIFIED",
+   "rating": 4.7,
+   "reviewCount": 14,
+   "since": 2020,
+   "productSettings": {
+    "autoAccept": true,
+    "prepMinutes": 60,
+    "lowStockDefault": 5,
+    "pickup": true,
+    "cod": true,
+    "freeDeliveryOver": 25.0,
+    "zones": [
+     {
+      "label": "BKK1 · Chamkar Mon · Daun Penh",
+      "districts": [
+       "bkk1",
+       "chamkar-mon",
+       "daun-penh",
+       "prampi-makara"
+      ],
+      "fee": 0.75
+     },
+     {
+      "label": "Toul Kork · Sen Sok · Russey Keo",
+      "districts": [
+       "toul-kork",
+       "sen-sok",
+       "russey-keo"
+      ],
+      "fee": 1.5
+     },
+     {
+      "label": "Chbar Ampov · Mean Chey · further",
+      "districts": [
+       "chbar-ampov",
+       "mean-chey",
+       "por-senchey"
+      ],
+      "fee": 2.5
+     }
+    ]
+   }
+  },
+  {
+   "id": "fresh-mart",
+   "ownerId": "u-owner-fresh-mart",
+   "type": "PRODUCT",
+   "name": "Fresh Mart",
+   "slug": "fresh-mart",
+   "categoryId": "grocery",
+   "about": "Fresh produce from Kandal farms delivered daily. Rice, fruit, pantry staples.",
+   "phone": "023218900",
+   "district": "chamkar-mon",
+   "street": "#101, Norodom Blvd",
+   "hours": [
+    [
+     360,
+     1320
+    ],
+    [
+     360,
+     1320
+    ],
+    [
+     360,
+     1320
+    ],
+    [
+     360,
+     1320
+    ],
+    [
+     360,
+     1320
+    ],
+    [
+     360,
+     1320
+    ],
+    [
+     360,
+     1320
+    ]
+   ],
+   "closures": [],
+   "online": true,
+   "bakongId": "freshmart@aba",
+   "verification": "VERIFIED",
+   "rating": 4.8,
+   "reviewCount": 15,
+   "since": 2018,
+   "productSettings": {
+    "autoAccept": true,
+    "prepMinutes": 30,
+    "lowStockDefault": 5,
+    "pickup": true,
+    "cod": true,
+    "freeDeliveryOver": 25.0,
+    "zones": [
+     {
+      "label": "BKK1 · Chamkar Mon · Daun Penh",
+      "districts": [
+       "bkk1",
+       "chamkar-mon",
+       "daun-penh",
+       "prampi-makara"
+      ],
+      "fee": 0.75
+     },
+     {
+      "label": "Toul Kork · Sen Sok · Russey Keo",
+      "districts": [
+       "toul-kork",
+       "sen-sok",
+       "russey-keo"
+      ],
+      "fee": 1.5
+     },
+     {
+      "label": "Chbar Ampov · Mean Chey · further",
+      "districts": [
+       "chbar-ampov",
+       "mean-chey",
+       "por-senchey"
+      ],
+      "fee": 2.5
+     }
+    ]
+   }
+  },
+  {
+   "id": "jasmine-spa",
+   "ownerId": "u-owner-jasmine-spa",
+   "type": "SERVICE",
+   "name": "Jasmine Spa",
+   "slug": "jasmine-spa",
+   "categoryId": "spa",
+   "about": "Khmer traditional and aromatherapy massage in a quiet garden house. Free parking.",
+   "phone": "0969090234",
+   "district": "toul-kork",
+   "street": "#18A, St. 450, Boeng Kak 2",
+   "hours": [
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ]
+   ],
+   "closures": [],
+   "online": true,
+   "bakongId": "jasminespa@aba",
+   "verification": "VERIFIED",
+   "rating": 4.8,
+   "reviewCount": 12,
+   "since": 2017,
+   "bookingSettings": {
+    "onlineBooking": true,
+    "autoConfirm": true,
+    "reminderHours": 24,
+    "minNoticeHours": 2,
+    "freeCancelHours": 2,
+    "bufferMinutes": 0
+   }
+  },
+  {
+   "id": "glow-beauty",
+   "ownerId": "u-dana",
+   "type": "SERVICE",
+   "name": "Glow Beauty Salon",
+   "slug": "glow-beauty",
+   "categoryId": "beauty",
+   "about": "Hair, nails and make-up by a team of five stylists. Sterilised tools for every client.",
+   "phone": "093828130",
+   "district": "toul-kork",
+   "street": "#18A, St. 450, Toul Kork",
+   "hours": [
+    [
+     480,
+     1080
+    ],
+    [
+     480,
+     1080
+    ],
+    [
+     480,
+     1080
+    ],
+    [
+     480,
+     1080
+    ],
+    [
+     480,
+     1140
+    ],
+    [
+     480,
+     1140
+    ],
+    null
+   ],
+   "closures": [
+    {
+     "date": "2026-10-18",
+     "reason": "Staff training"
+    },
+    {
+     "date": "2026-11-01",
+     "reason": "Water Festival"
+    }
+   ],
+   "online": true,
+   "bakongId": "glowbeauty@aba",
+   "verification": "VERIFIED",
+   "rating": 4.7,
+   "reviewCount": 13,
+   "since": 2021,
+   "email": "hello@glowbeauty.com.kh",
+   "bookingSettings": {
+    "onlineBooking": true,
+    "autoConfirm": false,
+    "reminderHours": 24,
+    "minNoticeHours": 2,
+    "freeCancelHours": 2,
+    "bufferMinutes": 0
+   }
+  },
+  {
+   "id": "sambath-barber",
+   "ownerId": "u-owner-sambath-barber",
+   "type": "SERVICE",
+   "name": "Sambath Barber",
+   "slug": "sambath-barber",
+   "categoryId": "salon",
+   "about": "Classic cuts, fades and hot-towel shaves. Walk-ins welcome before 11:00.",
+   "phone": "089616202",
+   "district": "sen-sok",
+   "street": "#3, St. 1986, Phnom Penh Thmei",
+   "hours": [
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ]
+   ],
+   "closures": [],
+   "online": true,
+   "bakongId": "sambathbarber@aba",
+   "verification": "VERIFIED",
+   "rating": 4.8,
+   "reviewCount": 11,
+   "since": 2016,
+   "bookingSettings": {
+    "onlineBooking": true,
+    "autoConfirm": true,
+    "reminderHours": 24,
+    "minNoticeHours": 2,
+    "freeCancelHours": 2,
+    "bufferMinutes": 0
+   }
+  },
+  {
+   "id": "fixit-pp",
+   "ownerId": "u-owner-fixit-pp",
+   "type": "SERVICE",
+   "name": "FixIt Phnom Penh",
+   "slug": "fixit-pp",
+   "categoryId": "repair",
+   "about": "Phone screen and battery repair while you wait. 90-day warranty on parts.",
+   "phone": "010404707",
+   "district": "bkk1",
+   "street": "#7, St. 294, BKK1",
+   "hours": [
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ]
+   ],
+   "closures": [],
+   "online": true,
+   "bakongId": "fixitpp@aba",
+   "verification": "VERIFIED",
+   "rating": 4.7,
+   "reviewCount": 7,
+   "since": 2019,
+   "bookingSettings": {
+    "onlineBooking": true,
+    "autoConfirm": true,
+    "reminderHours": 24,
+    "minNoticeHours": 2,
+    "freeCancelHours": 2,
+    "bufferMinutes": 0
+   }
+  }
+ ],
+ "members": [
+  {
+   "id": "jasmine-spa-sophea",
+   "businessId": "jasmine-spa",
+   "name": "Sophea",
+   "role": "STAFF",
+   "shifts": [
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ]
+   ],
+   "active": true
+  },
+  {
+   "id": "jasmine-spa-lina",
+   "businessId": "jasmine-spa",
+   "name": "Lina",
+   "role": "STAFF",
+   "shifts": [
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ]
+   ],
+   "active": true
+  },
+  {
+   "id": "jasmine-spa-mony",
+   "businessId": "jasmine-spa",
+   "name": "Mony",
+   "role": "STAFF",
+   "shifts": [
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ],
+    [
+     540,
+     1260
+    ]
+   ],
+   "active": true
+  },
+  {
+   "id": "sambath-barber-sambath",
+   "businessId": "sambath-barber",
+   "name": "Sambath",
+   "role": "OWNER",
+   "shifts": [
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ]
+   ],
+   "active": true
+  },
+  {
+   "id": "sambath-barber-rith",
+   "businessId": "sambath-barber",
+   "name": "Rith",
+   "role": "STAFF",
+   "shifts": [
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ],
+    [
+     480,
+     1200
+    ]
+   ],
+   "active": true
+  },
+  {
+   "id": "fixit-pp-vibol",
+   "businessId": "fixit-pp",
+   "name": "Vibol",
+   "role": "STAFF",
+   "shifts": [
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ]
+   ],
+   "active": true
+  },
+  {
+   "id": "fixit-pp-kosal",
+   "businessId": "fixit-pp",
+   "name": "Kosal",
+   "role": "STAFF",
+   "shifts": [
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ],
+    [
+     540,
+     1140
+    ]
+   ],
+   "active": true
+  },
+  {
+   "id": "glow-dana",
+   "businessId": "glow-beauty",
+   "name": "Try Dana",
+   "role": "OWNER",
+   "title": "Senior stylist",
+   "color": "#7C5CFA",
+   "shifts": [
+    [
+     480,
+     1020
+    ],
+    [
+     480,
+     1020
+    ],
+    [
+     480,
+     1020
+    ],
+    [
+     480,
+     1020
+    ],
+    [
+     480,
+     1140
+    ],
+    [
+     540,
+     1140
+    ],
+    null
+   ],
+   "active": true,
+   "userId": "u-dana"
+  },
+  {
+   "id": "glow-leak",
+   "businessId": "glow-beauty",
+   "name": "Srey Leak",
+   "role": "STAFF",
+   "title": "Nail technician",
+   "color": "#D9558F",
+   "shifts": [
+    [
+     540,
+     1080
+    ],
+    [
+     540,
+     1080
+    ],
+    null,
+    [
+     540,
+     1080
+    ],
+    [
+     540,
+     1080
+    ],
+    [
+     480,
+     1080
+    ],
+    null
+   ],
+   "active": true
+  },
+  {
+   "id": "glow-vicheka",
+   "businessId": "glow-beauty",
+   "name": "Vicheka Sok",
+   "role": "STAFF",
+   "title": "Stylist · Colour",
+   "color": "#1F9C8B",
+   "shifts": [
+    [
+     600,
+     1080
+    ],
+    [
+     600,
+     1080
+    ],
+    [
+     600,
+     1080
+    ],
+    null,
+    [
+     600,
+     1140
+    ],
+    [
+     480,
+     1140
+    ],
+    null
+   ],
+   "active": true
+  }
+ ],
+ "products": [
+  {
+   "id": "latte",
+   "businessId": "happy-coffee",
+   "title": "Iced Mondulkiri Latte",
+   "description": "Double shot of Mondulkiri arabica over ice with fresh Cambodian milk.",
+   "categoryId": "cafe",
+   "status": "ACTIVE",
+   "options": [
+    {
+     "name": "Size",
+     "values": [
+      "12 oz",
+      "16 oz",
+      "22 oz"
+     ]
+    },
+    {
+     "name": "Sweetness",
+     "values": [
+      "No sugar",
+      "50%",
+      "Normal"
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "id": "latte-v1",
+     "productId": "latte",
+     "options": {
+      "Size": "12 oz",
+      "Sweetness": "No sugar"
+     },
+     "price": 2.0,
+     "sku": "LATTE-01",
+     "barcode": "885000000001",
+     "stock": 8,
+     "compareAt": 2.5
+    },
+    {
+     "id": "latte-v2",
+     "productId": "latte",
+     "options": {
+      "Size": "12 oz",
+      "Sweetness": "50%"
+     },
+     "price": 2.0,
+     "sku": "LATTE-02",
+     "barcode": "885000000002",
+     "stock": 4,
+     "compareAt": 2.5
+    },
+    {
+     "id": "latte-v3",
+     "productId": "latte",
+     "options": {
+      "Size": "12 oz",
+      "Sweetness": "Normal"
+     },
+     "price": 2.0,
+     "sku": "LATTE-03",
+     "barcode": "885000000003",
+     "stock": 4,
+     "compareAt": 2.5
+    },
+    {
+     "id": "latte-v4",
+     "productId": "latte",
+     "options": {
+      "Size": "16 oz",
+      "Sweetness": "No sugar"
+     },
+     "price": 2.4,
+     "sku": "LATTE-04",
+     "barcode": "885000000004",
+     "stock": 4,
+     "compareAt": 3.0
+    },
+    {
+     "id": "latte-v5",
+     "productId": "latte",
+     "options": {
+      "Size": "16 oz",
+      "Sweetness": "50%"
+     },
+     "price": 2.4,
+     "sku": "LATTE-05",
+     "barcode": "885000000005",
+     "stock": 4,
+     "compareAt": 3.0
+    },
+    {
+     "id": "latte-v6",
+     "productId": "latte",
+     "options": {
+      "Size": "16 oz",
+      "Sweetness": "Normal"
+     },
+     "price": 2.4,
+     "sku": "LATTE-06",
+     "barcode": "885000000006",
+     "stock": 4,
+     "compareAt": 3.0
+    },
+    {
+     "id": "latte-v7",
+     "productId": "latte",
+     "options": {
+      "Size": "22 oz",
+      "Sweetness": "No sugar"
+     },
+     "price": 2.8,
+     "sku": "LATTE-07",
+     "barcode": "885000000007",
+     "stock": 4,
+     "compareAt": 3.5
+    },
+    {
+     "id": "latte-v8",
+     "productId": "latte",
+     "options": {
+      "Size": "22 oz",
+      "Sweetness": "50%"
+     },
+     "price": 2.8,
+     "sku": "LATTE-08",
+     "barcode": "885000000008",
+     "stock": 4,
+     "compareAt": 3.5
+    },
+    {
+     "id": "latte-v9",
+     "productId": "latte",
+     "options": {
+      "Size": "22 oz",
+      "Sweetness": "Normal"
+     },
+     "price": 2.8,
+     "sku": "LATTE-09",
+     "barcode": "885000000009",
+     "stock": 4,
+     "compareAt": 3.5
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 5,
+   "sold": 2812,
+   "rating": 4.8
+  },
+  {
+   "id": "coldbrew",
+   "businessId": "happy-coffee",
+   "title": "Cold Brew Bottle 500 ml",
+   "description": "Steeped 18 hours. Keeps 5 days refrigerated.",
+   "categoryId": "cafe",
+   "status": "ACTIVE",
+   "options": [],
+   "variants": [
+    {
+     "id": "coldbrew-v1",
+     "productId": "coldbrew",
+     "options": {},
+     "price": 3.5,
+     "sku": "COLDBR-01",
+     "barcode": "885000000010",
+     "stock": 12
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 5,
+   "sold": 640,
+   "rating": 4.7
+  },
+  {
+   "id": "croissant",
+   "businessId": "happy-coffee",
+   "title": "Butter Croissant",
+   "description": "Baked every morning at 6:30 with French butter. Best before noon.",
+   "categoryId": "cafe",
+   "status": "ACTIVE",
+   "options": [],
+   "variants": [
+    {
+     "id": "croissant-v1",
+     "productId": "croissant",
+     "options": {},
+     "price": 1.8,
+     "sku": "CROISS-01",
+     "barcode": "885000000011",
+     "stock": 3
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 5,
+   "sold": 990,
+   "rating": 4.6
+  },
+  {
+   "id": "iphone",
+   "businessId": "king-techno",
+   "title": "iPhone 15",
+   "description": "6.1-inch display, A16 Bionic chip, 48 MP camera, USB-C. 12-month official warranty in Cambodia.",
+   "categoryId": "electronics",
+   "status": "ACTIVE",
+   "options": [
+    {
+     "name": "Colour",
+     "values": [
+      "Black",
+      "Blue",
+      "Pink",
+      "Yellow"
+     ]
+    },
+    {
+     "name": "Storage",
+     "values": [
+      "128 GB",
+      "256 GB",
+      "512 GB"
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "id": "iphone-v1",
+     "productId": "iphone",
+     "options": {
+      "Colour": "Black",
+      "Storage": "128 GB"
+     },
+     "price": 787.55,
+     "sku": "IPHONE-01",
+     "barcode": "885000000012",
+     "stock": 9,
+     "compareAt": 829.0,
+     "swatch": "#2B2B2E"
+    },
+    {
+     "id": "iphone-v2",
+     "productId": "iphone",
+     "options": {
+      "Colour": "Black",
+      "Storage": "256 GB"
+     },
+     "price": 882.55,
+     "sku": "IPHONE-02",
+     "barcode": "885000000013",
+     "stock": 0,
+     "compareAt": 929.0,
+     "swatch": "#2B2B2E"
+    },
+    {
+     "id": "iphone-v3",
+     "productId": "iphone",
+     "options": {
+      "Colour": "Black",
+      "Storage": "512 GB"
+     },
+     "price": 1072.55,
+     "sku": "IPHONE-03",
+     "barcode": "885000000014",
+     "stock": 0,
+     "compareAt": 1129.0,
+     "swatch": "#2B2B2E"
+    },
+    {
+     "id": "iphone-v4",
+     "productId": "iphone",
+     "options": {
+      "Colour": "Blue",
+      "Storage": "128 GB"
+     },
+     "price": 787.55,
+     "sku": "IPHONE-04",
+     "barcode": "885000000015",
+     "stock": 0,
+     "compareAt": 829.0,
+     "swatch": "#C9DCE9"
+    },
+    {
+     "id": "iphone-v5",
+     "productId": "iphone",
+     "options": {
+      "Colour": "Blue",
+      "Storage": "256 GB"
+     },
+     "price": 882.55,
+     "sku": "IPHONE-05",
+     "barcode": "885000000016",
+     "stock": 0,
+     "compareAt": 929.0,
+     "swatch": "#C9DCE9"
+    },
+    {
+     "id": "iphone-v6",
+     "productId": "iphone",
+     "options": {
+      "Colour": "Blue",
+      "Storage": "512 GB"
+     },
+     "price": 1072.55,
+     "sku": "IPHONE-06",
+     "barcode": "885000000017",
+     "stock": 0,
+     "compareAt": 1129.0,
+     "swatch": "#C9DCE9"
+    },
+    {
+     "id": "iphone-v7",
+     "productId": "iphone",
+     "options": {
+      "Colour": "Pink",
+      "Storage": "128 GB"
+     },
+     "price": 787.55,
+     "sku": "IPHONE-07",
+     "barcode": "885000000018",
+     "stock": 0,
+     "compareAt": 829.0,
+     "swatch": "#F2D3D9"
+    },
+    {
+     "id": "iphone-v8",
+     "productId": "iphone",
+     "options": {
+      "Colour": "Pink",
+      "Storage": "256 GB"
+     },
+     "price": 882.55,
+     "sku": "IPHONE-08",
+     "barcode": "885000000019",
+     "stock": 0,
+     "compareAt": 929.0,
+     "swatch": "#F2D3D9"
+    },
+    {
+     "id": "iphone-v9",
+     "productId": "iphone",
+     "options": {
+      "Colour": "Pink",
+      "Storage": "512 GB"
+     },
+     "price": 1072.55,
+     "sku": "IPHONE-09",
+     "barcode": "885000000020",
+     "stock": 0,
+     "compareAt": 1129.0,
+     "swatch": "#F2D3D9"
+    },
+    {
+     "id": "iphone-v10",
+     "productId": "iphone",
+     "options": {
+      "Colour": "Yellow",
+      "Storage": "128 GB"
+     },
+     "price": 787.55,
+     "sku": "IPHONE-10",
+     "barcode": "885000000021",
+     "stock": 0,
+     "compareAt": 829.0,
+     "swatch": "#F3EBBF"
+    },
+    {
+     "id": "iphone-v11",
+     "productId": "iphone",
+     "options": {
+      "Colour": "Yellow",
+      "Storage": "256 GB"
+     },
+     "price": 882.55,
+     "sku": "IPHONE-11",
+     "barcode": "885000000022",
+     "stock": 0,
+     "compareAt": 929.0,
+     "swatch": "#F3EBBF"
+    },
+    {
+     "id": "iphone-v12",
+     "productId": "iphone",
+     "options": {
+      "Colour": "Yellow",
+      "Storage": "512 GB"
+     },
+     "price": 1072.55,
+     "sku": "IPHONE-12",
+     "barcode": "885000000023",
+     "stock": 0,
+     "compareAt": 1129.0,
+     "swatch": "#F3EBBF"
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 5,
+   "sold": 623,
+   "rating": 4.9
+  },
+  {
+   "id": "airpods",
+   "businessId": "king-techno",
+   "title": "AirPods Pro (2nd gen) USB-C",
+   "description": "Active noise cancellation, adaptive audio, MagSafe case.",
+   "categoryId": "electronics",
+   "status": "ACTIVE",
+   "options": [],
+   "variants": [
+    {
+     "id": "airpods-v1",
+     "productId": "airpods",
+     "options": {},
+     "price": 224.1,
+     "sku": "AIRPOD-01",
+     "barcode": "885000000024",
+     "stock": 5,
+     "compareAt": 249.0
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 5,
+   "sold": 320,
+   "rating": 4.8
+  },
+  {
+   "id": "watch",
+   "businessId": "king-techno",
+   "title": "Apple Watch Series 9 45 mm",
+   "description": "Always-on display, GPS, health sensors. Midnight sport band.",
+   "categoryId": "electronics",
+   "status": "ACTIVE",
+   "options": [
+    {
+     "name": "Band size",
+     "values": [
+      "S/M",
+      "M/L"
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "id": "watch-v1",
+     "productId": "watch",
+     "options": {
+      "Band size": "S/M"
+     },
+     "price": 429.0,
+     "sku": "WATCH-01",
+     "barcode": "885000000025",
+     "stock": 7
+    },
+    {
+     "id": "watch-v2",
+     "productId": "watch",
+     "options": {
+      "Band size": "M/L"
+     },
+     "price": 429.0,
+     "sku": "WATCH-02",
+     "barcode": "885000000026",
+     "stock": 7
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 5,
+   "sold": 205,
+   "rating": 4.7
+  },
+  {
+   "id": "shirt",
+   "businessId": "sk-fashion",
+   "title": "Linen Short-Sleeve Shirt",
+   "description": "Breathable linen-cotton blend, relaxed fit. Machine wash cold.",
+   "categoryId": "fashion",
+   "status": "ACTIVE",
+   "options": [
+    {
+     "name": "Colour",
+     "values": [
+      "Sand",
+      "White",
+      "Navy"
+     ]
+    },
+    {
+     "name": "Size",
+     "values": [
+      "S",
+      "M",
+      "L",
+      "XL"
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "id": "shirt-v1",
+     "productId": "shirt",
+     "options": {
+      "Colour": "Sand",
+      "Size": "S"
+     },
+     "price": 15.3,
+     "sku": "SHIRT-01",
+     "barcode": "885000000027",
+     "stock": 11,
+     "compareAt": 18.0,
+     "swatch": "#E6D7B9"
+    },
+    {
+     "id": "shirt-v2",
+     "productId": "shirt",
+     "options": {
+      "Colour": "Sand",
+      "Size": "M"
+     },
+     "price": 15.3,
+     "sku": "SHIRT-02",
+     "barcode": "885000000028",
+     "stock": 1,
+     "compareAt": 18.0,
+     "swatch": "#E6D7B9"
+    },
+    {
+     "id": "shirt-v3",
+     "productId": "shirt",
+     "options": {
+      "Colour": "Sand",
+      "Size": "L"
+     },
+     "price": 15.3,
+     "sku": "SHIRT-03",
+     "barcode": "885000000029",
+     "stock": 1,
+     "compareAt": 18.0,
+     "swatch": "#E6D7B9"
+    },
+    {
+     "id": "shirt-v4",
+     "productId": "shirt",
+     "options": {
+      "Colour": "Sand",
+      "Size": "XL"
+     },
+     "price": 15.3,
+     "sku": "SHIRT-04",
+     "barcode": "885000000030",
+     "stock": 1,
+     "compareAt": 18.0,
+     "swatch": "#E6D7B9"
+    },
+    {
+     "id": "shirt-v5",
+     "productId": "shirt",
+     "options": {
+      "Colour": "White",
+      "Size": "S"
+     },
+     "price": 15.3,
+     "sku": "SHIRT-05",
+     "barcode": "885000000031",
+     "stock": 1,
+     "compareAt": 18.0,
+     "swatch": "#F4F4F2"
+    },
+    {
+     "id": "shirt-v6",
+     "productId": "shirt",
+     "options": {
+      "Colour": "White",
+      "Size": "M"
+     },
+     "price": 15.3,
+     "sku": "SHIRT-06",
+     "barcode": "885000000032",
+     "stock": 1,
+     "compareAt": 18.0,
+     "swatch": "#F4F4F2"
+    },
+    {
+     "id": "shirt-v7",
+     "productId": "shirt",
+     "options": {
+      "Colour": "White",
+      "Size": "L"
+     },
+     "price": 15.3,
+     "sku": "SHIRT-07",
+     "barcode": "885000000033",
+     "stock": 1,
+     "compareAt": 18.0,
+     "swatch": "#F4F4F2"
+    },
+    {
+     "id": "shirt-v8",
+     "productId": "shirt",
+     "options": {
+      "Colour": "White",
+      "Size": "XL"
+     },
+     "price": 15.3,
+     "sku": "SHIRT-08",
+     "barcode": "885000000034",
+     "stock": 1,
+     "compareAt": 18.0,
+     "swatch": "#F4F4F2"
+    },
+    {
+     "id": "shirt-v9",
+     "productId": "shirt",
+     "options": {
+      "Colour": "Navy",
+      "Size": "S"
+     },
+     "price": 15.3,
+     "sku": "SHIRT-09",
+     "barcode": "885000000035",
+     "stock": 1,
+     "compareAt": 18.0,
+     "swatch": "#2B3654"
+    },
+    {
+     "id": "shirt-v10",
+     "productId": "shirt",
+     "options": {
+      "Colour": "Navy",
+      "Size": "M"
+     },
+     "price": 15.3,
+     "sku": "SHIRT-10",
+     "barcode": "885000000036",
+     "stock": 1,
+     "compareAt": 18.0,
+     "swatch": "#2B3654"
+    },
+    {
+     "id": "shirt-v11",
+     "productId": "shirt",
+     "options": {
+      "Colour": "Navy",
+      "Size": "L"
+     },
+     "price": 15.3,
+     "sku": "SHIRT-11",
+     "barcode": "885000000037",
+     "stock": 1,
+     "compareAt": 18.0,
+     "swatch": "#2B3654"
+    },
+    {
+     "id": "shirt-v12",
+     "productId": "shirt",
+     "options": {
+      "Colour": "Navy",
+      "Size": "XL"
+     },
+     "price": 15.3,
+     "sku": "SHIRT-12",
+     "barcode": "885000000038",
+     "stock": 1,
+     "compareAt": 18.0,
+     "swatch": "#2B3654"
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 5,
+   "sold": 450,
+   "rating": 4.5
+  },
+  {
+   "id": "krama",
+   "businessId": "sk-fashion",
+   "title": "Hand-woven Silk Krama",
+   "description": "Traditional Takeo silk krama in the classic check. 160 × 45 cm.",
+   "categoryId": "fashion",
+   "status": "ACTIVE",
+   "options": [
+    {
+     "name": "Colour",
+     "values": [
+      "Red check",
+      "Blue check",
+      "Green check"
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "id": "krama-v1",
+     "productId": "krama",
+     "options": {
+      "Colour": "Red check"
+     },
+     "price": 9.0,
+     "sku": "KRAMA-01",
+     "barcode": "885000000039",
+     "stock": 10,
+     "swatch": "#B84A4A"
+    },
+    {
+     "id": "krama-v2",
+     "productId": "krama",
+     "options": {
+      "Colour": "Blue check"
+     },
+     "price": 9.0,
+     "sku": "KRAMA-02",
+     "barcode": "885000000040",
+     "stock": 10,
+     "swatch": "#4A6AB8"
+    },
+    {
+     "id": "krama-v3",
+     "productId": "krama",
+     "options": {
+      "Colour": "Green check"
+     },
+     "price": 9.0,
+     "sku": "KRAMA-03",
+     "barcode": "885000000041",
+     "stock": 10,
+     "swatch": "#4A9A6A"
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 5,
+   "sold": 1410,
+   "rating": 4.9
+  },
+  {
+   "id": "dress",
+   "businessId": "sk-fashion",
+   "title": "Silk Wrap Dress",
+   "description": "Midi length, natural dye. Made to order in 5 days.",
+   "categoryId": "fashion",
+   "status": "ACTIVE",
+   "options": [],
+   "variants": [
+    {
+     "id": "dress-v1",
+     "productId": "dress",
+     "options": {},
+     "price": 45.0,
+     "sku": "DRESS-01",
+     "barcode": "885000000042",
+     "stock": 0
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 5,
+   "sold": 64,
+   "rating": 4.6
+  },
+  {
+   "id": "rice",
+   "businessId": "fresh-mart",
+   "title": "Phka Rumduol Jasmine Rice 5 kg",
+   "description": "Award-winning Cambodian fragrant rice, this season’s harvest.",
+   "categoryId": "grocery",
+   "status": "ACTIVE",
+   "options": [],
+   "variants": [
+    {
+     "id": "rice-v1",
+     "productId": "rice",
+     "options": {},
+     "price": 6.75,
+     "sku": "RICE-01",
+     "barcode": "885000000043",
+     "stock": 60,
+     "compareAt": 7.5
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 5,
+   "sold": 3200,
+   "rating": 4.8
+  },
+  {
+   "id": "mango",
+   "businessId": "fresh-mart",
+   "title": "Keo Romeat Mango 1 kg",
+   "description": "Sweet green-skinned mangoes from Kampong Speu. Eat green or ripe.",
+   "categoryId": "grocery",
+   "status": "ACTIVE",
+   "options": [],
+   "variants": [
+    {
+     "id": "mango-v1",
+     "productId": "mango",
+     "options": {},
+     "price": 2.2,
+     "sku": "MANGO-01",
+     "barcode": "885000000044",
+     "stock": 25
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 5,
+   "sold": 870,
+   "rating": 4.6
+  },
+  {
+   "id": "pepper",
+   "businessId": "fresh-mart",
+   "title": "Kampot Black Pepper 100 g",
+   "description": "PGI Kampot pepper, sun-dried. Grind fresh for best flavour.",
+   "categoryId": "grocery",
+   "status": "ACTIVE",
+   "options": [],
+   "variants": [
+    {
+     "id": "pepper-v1",
+     "productId": "pepper",
+     "options": {},
+     "price": 6.0,
+     "sku": "PEPPER-01",
+     "barcode": "885000000045",
+     "stock": 40
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 5,
+   "sold": 520,
+   "rating": 4.9
+  }
+ ],
+ "services": [
+  {
+   "id": "massage",
+   "businessId": "jasmine-spa",
+   "name": "Aromatherapy Massage",
+   "category": "Massage",
+   "durationMin": 60,
+   "price": 25.0,
+   "staffIds": [
+    "jasmine-spa-sophea",
+    "jasmine-spa-lina",
+    "jasmine-spa-mony"
+   ],
+   "bookableOnline": true,
+   "discountPct": 20
+  },
+  {
+   "id": "khmer",
+   "businessId": "jasmine-spa",
+   "name": "Traditional Khmer Massage",
+   "category": "Massage",
+   "durationMin": 60,
+   "price": 18.0,
+   "staffIds": [
+    "jasmine-spa-sophea",
+    "jasmine-spa-lina",
+    "jasmine-spa-mony"
+   ],
+   "bookableOnline": true
+  },
+  {
+   "id": "footspa",
+   "businessId": "jasmine-spa",
+   "name": "Foot Spa & Reflexology",
+   "category": "Foot care",
+   "durationMin": 45,
+   "price": 15.0,
+   "staffIds": [
+    "jasmine-spa-lina",
+    "jasmine-spa-mony"
+   ],
+   "bookableOnline": true
+  },
+  {
+   "id": "glow-nails",
+   "businessId": "glow-beauty",
+   "name": "Nail Colouring",
+   "category": "Nails",
+   "durationMin": 45,
+   "price": 12.0,
+   "staffIds": [
+    "glow-leak"
+   ],
+   "bookableOnline": true
+  },
+  {
+   "id": "glow-gel",
+   "businessId": "glow-beauty",
+   "name": "Gel Manicure",
+   "category": "Nails",
+   "durationMin": 60,
+   "price": 18.0,
+   "staffIds": [
+    "glow-leak"
+   ],
+   "bookableOnline": true,
+   "discountPct": 10
+  },
+  {
+   "id": "glow-cut",
+   "businessId": "glow-beauty",
+   "name": "Haircut & Style",
+   "category": "Hair",
+   "durationMin": 45,
+   "price": 8.0,
+   "staffIds": [
+    "glow-dana",
+    "glow-vicheka"
+   ],
+   "bookableOnline": true
+  },
+  {
+   "id": "haircut",
+   "businessId": "sambath-barber",
+   "name": "Men’s Haircut & Wash",
+   "category": "Hair",
+   "durationMin": 30,
+   "price": 6.0,
+   "staffIds": [
+    "sambath-barber-sambath",
+    "sambath-barber-rith"
+   ],
+   "bookableOnline": true
+  },
+  {
+   "id": "shave",
+   "businessId": "sambath-barber",
+   "name": "Hot-Towel Shave",
+   "category": "Shave",
+   "durationMin": 30,
+   "price": 4.0,
+   "staffIds": [
+    "sambath-barber-sambath",
+    "sambath-barber-rith"
+   ],
+   "bookableOnline": true
+  },
+  {
+   "id": "screen",
+   "businessId": "fixit-pp",
+   "name": "iPhone Screen Replacement",
+   "category": "Screen",
+   "durationMin": 60,
+   "price": 65.0,
+   "staffIds": [
+    "fixit-pp-vibol",
+    "fixit-pp-kosal"
+   ],
+   "bookableOnline": true
+  },
+  {
+   "id": "battery",
+   "businessId": "fixit-pp",
+   "name": "Phone Battery Replacement",
+   "category": "Battery",
+   "durationMin": 30,
+   "price": 25.0,
+   "staffIds": [
+    "fixit-pp-vibol",
+    "fixit-pp-kosal"
+   ],
+   "bookableOnline": true,
+   "discountPct": 15
+  }
+ ],
+ "deals": [
+  {
+   "id": "deal-water",
+   "businessId": "happy-coffee",
+   "title": "Water Festival week: 20% off all drinks",
+   "body": "Celebrate Bon Om Touk with us. Every drink is 20% off for delivery and pickup.",
+   "discountPct": 20,
+   "serviceIds": [],
+   "startsAt": "2026-10-06T17:00:00Z",
+   "endsAt": "2026-10-20T17:00:00Z",
+   "views": 1840
+  },
+  {
+   "id": "deal-relax",
+   "businessId": "jasmine-spa",
+   "title": "Weekday relax: massage from $20",
+   "body": "60-minute aromatherapy massage Monday to Thursday, herbal tea included.",
+   "serviceIds": [
+    "massage"
+   ],
+   "startsAt": "2026-10-03T17:00:00Z",
+   "endsAt": "2026-10-28T17:00:00Z",
+   "views": 960
+  },
+  {
+   "id": "deal-trade",
+   "businessId": "king-techno",
+   "title": "Trade in your old phone",
+   "body": "Get up to $250 credit toward a new iPhone. Valuation takes 10 minutes in store.",
+   "serviceIds": [],
+   "startsAt": "2026-10-07T17:00:00Z",
+   "endsAt": "2026-11-07T17:00:00Z",
+   "views": 2210
+  },
+  {
+   "id": "deal-battery",
+   "businessId": "fixit-pp",
+   "title": "15% off battery replacement",
+   "body": "Phone dying by lunch? New battery in 30 minutes, this month only.",
+   "discountPct": 15,
+   "serviceIds": [
+    "battery"
+   ],
+   "startsAt": "2026-09-30T17:00:00Z",
+   "endsAt": "2026-10-17T17:00:00Z",
+   "views": 530
+  }
+ ],
+ "promotions": [
+  {
+   "id": "promo-waterfest",
+   "name": "10% off, up to $5",
+   "type": "PERCENT",
+   "value": 10,
+   "code": "WATERFEST",
+   "scope": "ALL",
+   "targetIds": [],
+   "maxDiscount": 5.0,
+   "startsAt": "2026-09-30T17:00:00Z",
+   "endsAt": "2026-11-29T17:00:00Z",
+   "uses": 0
+  },
+  {
+   "id": "promo-new5",
+   "name": "$5 off orders over $20",
+   "type": "FIXED",
+   "value": 5,
+   "code": "NEW5",
+   "scope": "ALL",
+   "targetIds": [],
+   "minSpend": 20.0,
+   "startsAt": "2026-09-30T17:00:00Z",
+   "endsAt": "2026-12-30T17:00:00Z",
+   "uses": 0
+  }
+ ]
+}

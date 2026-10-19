@@ -1,0 +1,17 @@
+/* Workspace frame bits that differ from the shared glass rail. */
+.rail {
+  /* Prototype rail fills its 96px column minus the 10px left margin. */
+  width: 86px;
+}
+.logo {
+  margin-bottom: 12px;
+  flex: none;
+}
+@media (max-width: 860px) {
+  .rail {
+    width: auto;
+  }
+}
+.loading {
+  min-height: 100dvh;
+}

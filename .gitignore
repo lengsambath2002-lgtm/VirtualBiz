@@ -1,0 +1,94 @@
+# --- 공통 ---
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+.idea/
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.recommended.json
+
+# --- 비밀 ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+secrets.*
+
+# --- Node / Next.js ---
+node_modules/
+.next/
+out/
+.pnpm-store/
+.turbo/
+.cache/
+.parcel-cache/
+coverage/
+
+# --- Java / Gradle ---
+.gradle/
+build/
+!**/src/**/build/
+out/
+bin/
+*.class
+hs_err_pid*
+.idea_modules/
+
+# --- Python (스크립트용) ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# --- Terraform ---
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!example.tfvars
+
+# --- Docker ---
+docker-compose.override.yml
+
+# --- 산출물 ---
+dist/
+*.zip
+*.tar.gz
+
+# --- Claude Code (shared rules are committed, personal settings are not) ---
+.claude/*
+!.claude/rules/
+!.claude/skills/
+!.claude/agents/
+!.claude/hooks/
+!.claude/settings.json
+.claude/settings.local.json
+
+# --- Local run artifacts ---
+logs/*.pid
+logs/*.log
+TODO.md
+.worktrees/
+
+# --- E2E (Playwright) output ---
+test-results/
+**/test-results/
+playwright-report/
+tests/e2e/.report/
+
+# --- DB dumps (never commit PII) ---
+db/backups/*.sql.gz
+db/backups/*.dump
+
+# No lockfile at the repo root — frontend/ owns its own (a root lockfile breaks Next standalone output)
+/package-lock.json
+
+# Uploaded images from local runs (VBIZ_STORAGE_DIR)
+**/data/uploads/
+
+# Playwright HTML report and run output
+frontend/tests/e2e/.report/
+frontend/test-results/

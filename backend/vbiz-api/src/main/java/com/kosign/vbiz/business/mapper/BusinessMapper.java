@@ -1,0 +1,44 @@
+package com.kosign.vbiz.business.mapper;
+
+import java.math.BigDecimal;
+
+import com.kosign.vbiz.business.domain.Business;
+import com.kosign.vbiz.business.domain.BusinessMember;
+import com.kosign.vbiz.business.domain.VerificationStatus;
+import com.kosign.vbiz.business.payload.BusinessResponse;
+import com.kosign.vbiz.business.payload.MemberResponse;
+import com.kosign.vbiz.business.payload.MyBusinessResponse;
+
+/** Entity → payload for the business domain. */
+public final class BusinessMapper {
+
+    private BusinessMapper() {
+    }
+
+    public static BusinessResponse toResponse(Business b) {
+        return new BusinessResponse(
+                b.getId().toString(), b.getOwnerId().toString(), b.getType(), b.getName(), b.getSlug(),
+                b.getCategoryId(), b.getAbout(), b.getPhone(), b.getEmail(), b.getDistrict(), b.getStreet(),
+                toDouble(b.getLat()), toDouble(b.getLng()), b.getHours(), b.getClosures(), b.isOnline(),
+                b.getLogoUrl(), b.getCoverUrl(), b.getBakongId(), b.getVerification(),
+                b.getVerification() == VerificationStatus.REJECTED ? b.getVerificationNote() : null,
+                b.getSuspendedAt(), b.getSuspendedReason(),
+                b.getRating() == null ? 0 : b.getRating().doubleValue(), b.getReviewCount(), b.getSince(),
+                b.getProductSettings(), b.getBookingSettings());
+    }
+
+    public static MyBusinessResponse toMine(BusinessMember m, Business b) {
+        return new MyBusinessResponse(b.getId().toString(), b.getName(), b.getType(), m.getRole(), b.getVerification(),
+                b.getLogoUrl());
+    }
+
+    public static MemberResponse toMember(BusinessMember m) {
+        return new MemberResponse(m.getId().toString(), m.getBusinessId().toString(),
+                m.getUserId() == null ? null : m.getUserId().toString(), m.getName(), m.getRole(),
+                m.getTitle(), m.getColor(), m.getShifts(), m.isActive());
+    }
+
+    private static Double toDouble(BigDecimal v) {
+        return v == null ? null : v.doubleValue();
+    }
+}

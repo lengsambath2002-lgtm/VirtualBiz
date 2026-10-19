@@ -1,0 +1,387 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * VirtualBiz design tokens — ported from the prototypes' base :root and the shared
+ * "Liquid Glass" layer (<style id="glass">), which overrides bg/sunk/line/muted/font/radii.
+ * Light is the default; dark applies via prefers-color-scheme unless [data-theme="light"],
+ * or explicitly via [data-theme="dark"].
+ */
+:root {
+  /* Base palette */
+  --surface: #ffffff;
+  --ink: #141a2b;
+  --ink-2: #2b3245;
+  --primary: #1c2438;
+  --on-primary: #ffffff;
+  --primary-hover: #2a3552;
+  --accent: #f5b800;
+  --accent-soft: #fff4cc;
+  --accent-ink: #7a5b00;
+  --sale: #d93b3b;
+  --sale-soft: #fdecec;
+  --ok: #1c8556;
+  --ok-soft: #e5f5ec;
+  --info: #2f5bd3;
+  --info-soft: #eaf0fe;
+  --focus: #3b6ef5;
+  /* Category tints: a = fill, b = stronger fill, i = ink */
+  --t1a: #ffe7cf;
+  --t1b: #fbd1a9;
+  --t1i: #9a4b12;
+  --t2a: #dceafd;
+  --t2b: #bdd5f8;
+  --t2i: #1f4f95;
+  --t3a: #e3f3df;
+  --t3b: #c7e6bf;
+  --t3i: #2d6b2a;
+  --t4a: #fbe3f0;
+  --t4b: #f3c6de;
+  --t4i: #8c2f66;
+  --t5a: #ece5fb;
+  --t5b: #d6c9f6;
+  --t5i: #5634a0;
+  --t6a: #fff2c6;
+  --t6b: #fbe29a;
+  --t6i: #7a5b00;
+  --f-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --shadow: 0 16px 40px rgba(10, 14, 25, 0.14);
+
+  /* Liquid Glass layer */
+  --f-body:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', var(--font-inter, 'Inter'), system-ui,
+    'Segoe UI', var(--font-khmer, 'Noto Sans Khmer'), sans-serif;
+  --bg: #f2f2f7;
+  --sunk: rgba(118, 118, 128, 0.12);
+  --line: rgba(60, 60, 67, 0.14);
+  --line-h: rgba(60, 60, 67, 0.28);
+  --muted: #6c6c78;
+  --g-fill: rgba(255, 255, 255, 0.62);
+  --g-fill-strong: rgba(255, 255, 255, 0.82);
+  --g-brd: rgba(255, 255, 255, 0.75);
+  --g-edge: rgba(0, 0, 0, 0.06);
+  --g-hi: inset 0 1px 0 rgba(255, 255, 255, 0.9), inset 0 -1px 0 rgba(255, 255, 255, 0.25);
+  --g-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 28px rgba(20, 26, 43, 0.08);
+  --g-shadow-float: 0 2px 6px rgba(0, 0, 0, 0.06), 0 18px 48px rgba(20, 26, 43, 0.18);
+  --g-blur: saturate(180%) blur(22px);
+  --g-blur-strong: saturate(180%) blur(30px);
+  --r-sm: 12px;
+  --r-md: 20px;
+  --r-lg: 28px;
+  --wall:
+    radial-gradient(1100px 620px at 8% -12%, rgba(245, 184, 0, 0.2), transparent 62%),
+    radial-gradient(900px 640px at 105% 0%, rgba(59, 110, 245, 0.16), transparent 60%),
+    radial-gradient(900px 760px at 40% 115%, rgba(124, 92, 250, 0.12), transparent 62%);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --surface: #1c1c1e;
+    --ink: #e9ecf3;
+    --ink-2: #cdd2de;
+    --primary: #f5b800;
+    --on-primary: #141a2b;
+    --primary-hover: #ffc933;
+    --accent: #f5b800;
+    --accent-soft: #3a3010;
+    --accent-ink: #ffd45c;
+    --sale: #ff6b6b;
+    --sale-soft: #3a1717;
+    --ok: #4cc98a;
+    --ok-soft: #12301f;
+    --info: #86a6ff;
+    --info-soft: #18233f;
+    --focus: #7fa2ff;
+    --t1a: #3a2618;
+    --t1b: #4a2f1b;
+    --t1i: #f2b17e;
+    --t2a: #172a44;
+    --t2b: #1d3557;
+    --t2i: #8db8f2;
+    --t3a: #1a2e1c;
+    --t3b: #213b23;
+    --t3i: #93d08e;
+    --t4a: #3a1a2d;
+    --t4b: #4a2139;
+    --t4i: #ee9ccb;
+    --t5a: #251c3d;
+    --t5b: #2f244e;
+    --t5i: #bfa8f5;
+    --t6a: #33290e;
+    --t6b: #433512;
+    --t6i: #ffd45c;
+    --shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    --bg: #000000;
+    --sunk: rgba(118, 118, 128, 0.24);
+    --line: rgba(84, 84, 88, 0.55);
+    --line-h: rgba(120, 120, 128, 0.7);
+    --muted: #98989f;
+    --g-fill: rgba(44, 44, 52, 0.55);
+    --g-fill-strong: rgba(44, 44, 52, 0.78);
+    --g-brd: rgba(255, 255, 255, 0.14);
+    --g-edge: rgba(255, 255, 255, 0.06);
+    --g-hi: inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+    --g-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 28px rgba(0, 0, 0, 0.45);
+    --g-shadow-float: 0 18px 48px rgba(0, 0, 0, 0.6);
+    --wall:
+      radial-gradient(1100px 620px at 8% -12%, rgba(245, 184, 0, 0.16), transparent 62%),
+      radial-gradient(900px 640px at 105% 0%, rgba(59, 110, 245, 0.2), transparent 60%),
+      radial-gradient(900px 760px at 40% 115%, rgba(124, 92, 250, 0.16), transparent 62%);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --surface: #1c1c1e;
+  --ink: #e9ecf3;
+  --ink-2: #cdd2de;
+  --primary: #f5b800;
+  --on-primary: #141a2b;
+  --primary-hover: #ffc933;
+  --accent: #f5b800;
+  --accent-soft: #3a3010;
+  --accent-ink: #ffd45c;
+  --sale: #ff6b6b;
+  --sale-soft: #3a1717;
+  --ok: #4cc98a;
+  --ok-soft: #12301f;
+  --info: #86a6ff;
+  --info-soft: #18233f;
+  --focus: #7fa2ff;
+  --t1a: #3a2618;
+  --t1b: #4a2f1b;
+  --t1i: #f2b17e;
+  --t2a: #172a44;
+  --t2b: #1d3557;
+  --t2i: #8db8f2;
+  --t3a: #1a2e1c;
+  --t3b: #213b23;
+  --t3i: #93d08e;
+  --t4a: #3a1a2d;
+  --t4b: #4a2139;
+  --t4i: #ee9ccb;
+  --t5a: #251c3d;
+  --t5b: #2f244e;
+  --t5i: #bfa8f5;
+  --t6a: #33290e;
+  --t6b: #433512;
+  --t6i: #ffd45c;
+  --shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  --bg: #000000;
+  --sunk: rgba(118, 118, 128, 0.24);
+  --line: rgba(84, 84, 88, 0.55);
+  --line-h: rgba(120, 120, 128, 0.7);
+  --muted: #98989f;
+  --g-fill: rgba(44, 44, 52, 0.55);
+  --g-fill-strong: rgba(44, 44, 52, 0.78);
+  --g-brd: rgba(255, 255, 255, 0.14);
+  --g-edge: rgba(255, 255, 255, 0.06);
+  --g-hi: inset 0 1px 0 rgba(255, 255, 255, 0.16), inset 0 -1px 0 rgba(255, 255, 255, 0.04);
+  --g-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 28px rgba(0, 0, 0, 0.45);
+  --g-shadow-float: 0 18px 48px rgba(0, 0, 0, 0.6);
+  --wall:
+    radial-gradient(1100px 620px at 8% -12%, rgba(245, 184, 0, 0.16), transparent 62%),
+    radial-gradient(900px 640px at 105% 0%, rgba(59, 110, 245, 0.2), transparent 60%),
+    radial-gradient(900px 760px at 40% 115%, rgba(124, 92, 250, 0.16), transparent 62%);
+  color-scheme: dark;
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+  html {
+    scroll-padding-top: env(safe-area-inset-top, 0px);
+  }
+  body {
+    margin: 0;
+    background: var(--wall), var(--bg);
+    background-attachment: fixed;
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 14px;
+    line-height: 1.5;
+    letter-spacing: -0.006em;
+    -webkit-font-smoothing: antialiased;
+  }
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  /* Glass material: translucent fill + blur/saturation + specular top edge + soft depth. */
+  .glass {
+    background: var(--g-fill);
+    -webkit-backdrop-filter: var(--g-blur);
+    backdrop-filter: var(--g-blur);
+    border: 1px solid var(--g-brd);
+    box-shadow: var(--g-hi), var(--g-shadow);
+  }
+  .glass-strong {
+    background: var(--g-fill-strong);
+    -webkit-backdrop-filter: var(--g-blur-strong);
+    backdrop-filter: var(--g-blur-strong);
+    border: 1px solid var(--g-brd);
+    box-shadow: var(--g-hi), var(--g-shadow-float);
+  }
+
+  /* Floating capsule tab bar (Customer, ≤700px). Hidden on wider screens. */
+  .vb-tabbar {
+    display: none;
+  }
+  @media (max-width: 700px) {
+    .vb-tabbar {
+      position: fixed;
+      z-index: 30;
+      left: 12px;
+      right: 12px;
+      bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: 1fr;
+      padding: 6px;
+      border-radius: 999px;
+      background: var(--g-fill-strong);
+      -webkit-backdrop-filter: var(--g-blur);
+      backdrop-filter: var(--g-blur);
+      border: 1px solid var(--g-brd);
+      box-shadow: var(--g-hi), var(--g-shadow-float);
+      transition:
+        left 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+        right 0.3s;
+    }
+    .vb-tabbar[data-mini='true'] {
+      left: 22%;
+      right: 22%;
+    }
+    .vb-tabbar[data-mini='true'] .vb-tab-label {
+      display: none;
+    }
+  }
+
+  /* Floating side rail (Seller / Provider). Becomes a bottom capsule at ≤860px. */
+  .vb-rail {
+    position: sticky;
+    top: 10px;
+    margin: 10px 0 10px 10px;
+    height: calc(100dvh - 20px);
+    width: 76px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 0;
+    border-radius: 28px;
+    background: var(--g-fill);
+    -webkit-backdrop-filter: var(--g-blur);
+    backdrop-filter: var(--g-blur);
+    border: 1px solid var(--g-brd);
+    box-shadow: var(--g-hi), var(--g-shadow);
+    z-index: 20;
+  }
+  @media (max-width: 860px) {
+    .vb-rail {
+      position: fixed;
+      inset: auto 12px calc(12px + env(safe-area-inset-bottom, 0px)) 12px;
+      margin: 0;
+      width: auto;
+      height: auto;
+      flex-direction: row;
+      justify-content: space-around;
+      padding: 6px;
+      border-radius: 999px;
+      box-shadow: var(--g-hi), var(--g-shadow-float);
+      z-index: 40;
+      transition:
+        inset 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
+        padding 0.3s;
+    }
+    .vb-rail[data-mini='true'] {
+      inset: auto 25% calc(12px + env(safe-area-inset-bottom, 0px)) 25%;
+    }
+    .vb-rail[data-mini='true'] .vb-rail-label,
+    .vb-rail .vb-rail-hide-m {
+      display: none;
+    }
+  }
+
+  /* Sheet: centred modal on desktop, bottom sheet with a grabber at ≤640px. */
+  .vb-sheet {
+    animation: pop 0.28s cubic-bezier(0.2, 0.9, 0.25, 1.15);
+  }
+  @media (max-width: 640px) {
+    .vb-scrim {
+      place-items: end center;
+      padding: 0;
+    }
+    .vb-sheet {
+      border-radius: 28px 28px 0 0;
+      max-height: 92dvh;
+      padding-top: 28px;
+      animation: up 0.32s cubic-bezier(0.2, 0.9, 0.25, 1);
+    }
+    .vb-sheet::before {
+      content: '';
+      position: absolute;
+      top: 8px;
+      left: 50%;
+      width: 38px;
+      height: 5px;
+      margin-left: -19px;
+      border-radius: 3px;
+      background: var(--line-h);
+    }
+  }
+}
+
+/* Reduced transparency: solid surfaces, no blur. */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --g-fill: var(--surface);
+    --g-fill-strong: var(--surface);
+  }
+  * {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
+
+/* Reduced motion: no animations or transitions. */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+}
+@keyframes up {
+  from {
+    transform: translateY(40px);
+    opacity: 0.4;
+  }
+}

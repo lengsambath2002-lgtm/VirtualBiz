@@ -1,0 +1,30 @@
+spring:
+  output:
+    ansi:
+      enabled: ALWAYS
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://127.0.0.1:5433/vbiz}
+    username: ${DATABASE_USERNAME:vbiz}
+    password: ${DATABASE_PASSWORD:vbiz}
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    # Demo accounts and businesses (local only).
+    locations: classpath:db/migration,classpath:db/seed-local
+
+vbiz:
+  jwt:
+    # Local-only default. Every other environment must set VBIZ_JWT_SECRET.
+    secret: ${VBIZ_JWT_SECRET:local-dev-only-secret-change-me-0123456789abcdef}
+  auth:
+    cookie-secure: false
+    google-dev-enabled: true
+  otp:
+    expose-dev-code: true
+  payment:
+    # No Bakong / acquirer credentials locally: "Simulate payment" confirms KHQR transfers.
+    simulator:
+      enabled: true
+  orders:
+    # /api/dev/** test hooks (age an order, run the order jobs now).
+    dev-endpoints: true

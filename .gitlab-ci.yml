@@ -1,0 +1,42 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH =~ /^(uat|prod)$/
+      changes:
+        - backend/**/*
+        - frontend/**/*
+
+stages:
+  - trigger
+
+.trigger_rules: &trigger_rules
+  - if: $CI_COMMIT_BRANCH !~ /^(uat|prod)$/
+    when: never
+
+trigger_backend:
+  stage: trigger
+  rules:
+    - *trigger_rules
+    - changes:
+        - backend/**/*
+  trigger:
+    include:
+      - project: $URL
+        ref: main
+        file: $BACKEND_PIPELINE_FILE
+    strategy: depend
+
+trigger_frontend:
+  stage: trigger
+  needs:
+    - job: trigger_backend
+      optional: true
+  rules:
+    - *trigger_rules
+    - changes:
+        - frontend/**/*
+  trigger:
+    include:
+      - project: $URL
+        ref: main
+        file: $FRONTEND_PIPELINE_FILE
+    strategy: depend

@@ -1,0 +1,13 @@
+{
+  "customerStatus": {
+    "orderPlaced": "Order placed",
+    "preparing": "Preparing",
+    "readyForPickup": "Ready for pickup",
+    "ready": "Ready",
+    "onTheWay": "On the way",
+    "delivered": "Delivered",
+    "pickedUp": "Picked up",
+    "cancelled": "Cancelled",
+    "returned": "Returned"
+  }
+}

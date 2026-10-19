@@ -1,0 +1,72 @@
+# The Xcode project is GENERATED from this file — never edit VirtualBiz.xcodeproj by hand.
+#
+#   brew install xcodegen && xcodegen generate     (run from mobile/ios/)
+#
+# Generating it keeps the project file out of merge conflicts; the .xcodeproj is git-ignored.
+name: VirtualBiz
+
+options:
+  bundleIdPrefix: com.kosign
+  deploymentTarget:
+    iOS: "17.0"
+  developmentLanguage: en
+
+packages:
+  VirtualBizKit:
+    path: Packages/VirtualBizKit
+
+targets:
+  VirtualBiz:
+    type: application
+    platform: iOS
+    sources:
+      - path: VirtualBiz
+        excludes:
+          - "**/.gitkeep"
+    dependencies:
+      - package: VirtualBizKit
+        product: VBizDomain
+      - package: VirtualBizKit
+        product: VBizData
+      - package: VirtualBizKit
+        product: VBizAPI
+      - package: VirtualBizKit
+        product: VBizDesignSystem
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kosign.virtualbiz
+        MARKETING_VERSION: "0.1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        SWIFT_VERSION: "6.0"
+        # Strict concurrency from day one — retrofitting it is the expensive order.
+        SWIFT_STRICT_CONCURRENCY: complete
+        TARGETED_DEVICE_FAMILY: "1"          # iPhone only for now
+        # Signing is per developer for now; the simulator build is ad-hoc signed so the Keychain works.
+        CODE_SIGNING_ALLOWED: "NO"
+        "CODE_SIGNING_ALLOWED[sdk=iphonesimulator*]": "YES"
+        "CODE_SIGN_IDENTITY[sdk=iphonesimulator*]": "-"
+        # Info.plist keys go under `info: properties:` — INFOPLIST_KEY_* settings are ignored when
+        # XcodeGen supplies the plist.
+    info:
+      path: VirtualBiz/Info.plist
+      properties:
+        CFBundleDisplayName: VirtualBiz
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleDevelopmentRegion: en
+        # The product calls Khmer `kh`; Apple's code is `km`. A `kh` region resolves to nothing.
+        CFBundleLocalizations: [en, km]
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        ITSAppUsesNonExemptEncryption: false
+
+schemes:
+  VirtualBiz:
+    build:
+      targets:
+        VirtualBiz: all
+    run:
+      config: Debug
+    archive:
+      config: Release

@@ -1,0 +1,52 @@
+[
+ {
+  "id": "toul-kork",
+  "name": "Toul Kork",
+  "km": 4.0
+ },
+ {
+  "id": "bkk1",
+  "name": "BKK1",
+  "km": 1.5
+ },
+ {
+  "id": "daun-penh",
+  "name": "Daun Penh",
+  "km": 0.5
+ },
+ {
+  "id": "chamkar-mon",
+  "name": "Chamkar Mon",
+  "km": 2.5
+ },
+ {
+  "id": "sen-sok",
+  "name": "Sen Sok",
+  "km": 8.0
+ },
+ {
+  "id": "russey-keo",
+  "name": "Russey Keo",
+  "km": 7.0
+ },
+ {
+  "id": "chbar-ampov",
+  "name": "Chbar Ampov",
+  "km": 6.0
+ },
+ {
+  "id": "mean-chey",
+  "name": "Mean Chey",
+  "km": 7.5
+ },
+ {
+  "id": "por-senchey",
+  "name": "Por Senchey",
+  "km": 14.0
+ },
+ {
+  "id": "prampi-makara",
+  "name": "Prampi Makara",
+  "km": 1.8
+ }
+]

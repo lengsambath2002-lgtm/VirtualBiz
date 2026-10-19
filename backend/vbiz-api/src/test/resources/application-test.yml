@@ -1,0 +1,37 @@
+# Integration tests: a dedicated database (vbiz_test), wiped and migrated once per test JVM.
+# Uses its own variable (not DATABASE_URL) so a developer's .env can never point tests at vbiz.
+spring:
+  datasource:
+    url: ${VBIZ_TEST_DATABASE_URL:jdbc:postgresql://127.0.0.1:5433/vbiz_test}
+    username: ${VBIZ_TEST_DATABASE_USERNAME:vbiz}
+    password: ${VBIZ_TEST_DATABASE_PASSWORD:vbiz}
+    hikari:
+      maximum-pool-size: 10
+  flyway:
+    enabled: true
+    clean-disabled: false
+    locations: classpath:db/migration,classpath:db/seed-local
+
+vbiz:
+  jwt:
+    secret: test-only-secret-0123456789abcdef0123456789abcdef
+  auth:
+    cookie-secure: false
+    google-dev-enabled: true
+  otp:
+    expose-dev-code: true
+  google:
+    client-id: ""
+  payment:
+    simulator:
+      enabled: true
+  storage:
+    dir: build/test-uploads
+  orders:
+    dev-endpoints: true
+    jobs:
+      # Tests run the jobs explicitly (with their own clock instant).
+      enabled: false
+
+log:
+  dir: build/test-logs

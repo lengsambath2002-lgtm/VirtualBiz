@@ -1,0 +1,27 @@
+plugins {
+    id 'java-library'
+    id 'io.spring.dependency-management'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:3.5.0"
+    }
+}
+
+dependencies {
+    api 'org.springframework.boot:spring-boot-starter-web'
+    api 'org.springframework.boot:spring-boot-starter-data-jpa'
+    api 'org.springframework.boot:spring-boot-starter-validation'
+    api 'org.hibernate.orm:hibernate-core'
+
+    // Stateless JWT security: the filter chain lives in vbiz-api (config), the cross-cutting
+    // pieces (token codec, auth filter, JSON 401/403, tenancy filter) live here.
+    api 'org.springframework.boot:spring-boot-starter-security'
+    api 'com.nimbusds:nimbus-jose-jwt:9.40'
+
+    runtimeOnly 'org.postgresql:postgresql'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}

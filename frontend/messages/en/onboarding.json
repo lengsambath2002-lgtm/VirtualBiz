@@ -1,0 +1,114 @@
+{
+  "nav": {
+    "title": "Open your shop",
+    "stepOf": "Step {step} of {total}",
+    "close": "Close",
+    "back": "Back"
+  },
+  "step1": {
+    "title": "What's your business?",
+    "lead": "Your customer account stays the same.",
+    "typeLabel": "Business type",
+    "product": "I sell products",
+    "productHint": "Shop, café, phones, clothes",
+    "service": "I take bookings",
+    "serviceHint": "Salon, spa, nails, repair",
+    "name": "Shop name",
+    "namePlaceholder": "e.g. Sonita Beauty",
+    "category": "Category"
+  },
+  "step2": {
+    "title": "Where are you?",
+    "lead": "So nearby customers can find you.",
+    "district": "District",
+    "street": "Street or landmark",
+    "streetPlaceholder": "#12, St. 516, near Toul Kork market",
+    "phone": "Phone for customers",
+    "hours": "Opening hours",
+    "everyDay": "Every day",
+    "monSat": "Mon–Sat",
+    "change": "Change"
+  },
+  "step3": {
+    "title": "Get paid",
+    "lead": "Last step, and optional. Customers pay you by KHQR. You can add this later in Settings.",
+    "bakong": "Your Bakong ID",
+    "bakongPlaceholder": "sonita@aba",
+    "bakongHint": "Open ABA, ACLEDA or Wing → <b>Receive</b> → your ID looks like <mono>name@bank</mono>.",
+    "idTitle": "Photo of your ID card",
+    "idAdded": "ID added",
+    "idHint": "Or passport. Front side, all corners visible.",
+    "idRetake": "Tap to retake",
+    "idUpload": "Upload ID photo",
+    "privacy": "Only our review team sees it. Your shop opens now. Payouts start once we check your ID, usually within a few hours.",
+    "optional": "Optional",
+    "skip": "Skip for now"
+  },
+  "hours": {
+    "title": "Opening hours",
+    "opens": "Opens",
+    "closes": "Closes",
+    "sunday": "Open on Sunday",
+    "hint": "Different hours on some days? Set them later in Settings.",
+    "done": "Done"
+  },
+  "done": {
+    "title": "{name} is open!",
+    "lead": "Finish these to get your first customer.",
+    "verified": "ID checked. Payouts to <mono>{bakong}</mono> are on.",
+    "pending": "Checking your ID, usually a few hours. You can sell now. Payouts start after the check.",
+    "getReady": "Get ready",
+    "progress": "{done} of {total}",
+    "firstProduct": "Add your first product",
+    "firstService": "Add your first service",
+    "firstHintProduct": "Customers need something to buy",
+    "firstHintService": "Customers need something to book",
+    "logo": "Add a logo or photo",
+    "logoHint": "Shops with photos get 2× more visits",
+    "team": "Invite your team",
+    "teamHint": "Optional",
+    "share": "Share your shop link",
+    "shareHint": "Telegram, Facebook, QR at the counter",
+    "shopLink": "Your shop link",
+    "copy": "Copy",
+    "goToShop": "Go to my shop",
+    "noPayout": "Payouts are off until you add your Bakong ID in Settings. You can sell now."
+  },
+  "actions": {
+    "continue": "Continue",
+    "open": "Open my shop",
+    "opening": "Opening your shop…"
+  },
+  "errors": {
+    "type": "Choose one.",
+    "name": "Enter your shop name.",
+    "cat": "Choose a category.",
+    "street": "Enter your street or a landmark.",
+    "phone": "Use a number like 012 345 678.",
+    "bakong": "Use your Bakong ID, like sonita@aba. Find it in your bank app under “Receive”.",
+    "id": "Add a photo of your ID card or passport.",
+    "server": "We couldn’t open your shop. Check your details and try again."
+  },
+  "toast": {
+    "savedDraft": "Saved. Continue any time from your account menu → Switch to shop → Create a new business.",
+    "saved": "Saved",
+    "photoTooLarge": "Photo is too large. Try again.",
+    "closeAfterOpen": "Closing time must be after opening",
+    "linkCopied": "Link copied",
+    "opening": "Opening {name}…"
+  },
+  "categories": {
+    "cafe-food": "Café & food",
+    "phones-electronics": "Phones & electronics",
+    "fashion": "Fashion",
+    "grocery": "Grocery",
+    "beauty-products": "Beauty products",
+    "other-product": "Other",
+    "salon-barber": "Salon & barber",
+    "spa-massage": "Spa & massage",
+    "nails": "Nails",
+    "repair": "Repair",
+    "fitness": "Fitness",
+    "other-service": "Other"
+  }
+}

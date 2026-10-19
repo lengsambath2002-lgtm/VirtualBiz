@@ -1,0 +1,32 @@
+* text=auto eol=lf
+
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+
+*.md        text diff=markdown
+*.json      text
+*.yml       text
+*.yaml      text
+*.ts        text
+*.tsx       text
+*.js        text
+*.css       text
+*.html      text
+*.java      text diff=java
+*.kt        text
+*.kts       text
+*.gradle    text
+*.sql       text
+
+# 바이너리
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.ico       binary
+*.pdf       binary
+*.zip       binary
+*.gz        binary
+*.jar       binary
+*.woff      binary
+*.woff2     binary

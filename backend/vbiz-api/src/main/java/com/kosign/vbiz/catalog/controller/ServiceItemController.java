@@ -1,0 +1,56 @@
+package com.kosign.vbiz.catalog.controller;
+
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.kosign.vbiz.catalog.payload.ProviderServiceResponse;
+import com.kosign.vbiz.catalog.payload.ServiceInput;
+import com.kosign.vbiz.catalog.service.ServiceItemService;
+import com.kosign.vbiz.common.api.ApiResponse;
+import com.kosign.vbiz.common.api.BaseController;
+import com.kosign.vbiz.common.api.EmptyJsonResponse;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+
+/** Provider services (docs/api/phase2-catalog-inventory.md § Provider services). Needs X-Business-Id. */
+@Tag(name = "Catalog")
+@RestController
+@RequestMapping("/api/catalog/services")
+@RequiredArgsConstructor
+public class ServiceItemController extends BaseController {
+
+    private final ServiceItemService services;
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<ProviderServiceResponse>>> list() {
+        return ok(services.list());
+    }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<ProviderServiceResponse>> create(@RequestBody ServiceInput input) {
+        return created(services.create(input));
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ApiResponse<ProviderServiceResponse>> update(@PathVariable UUID id,
+            @RequestBody ServiceInput input) {
+        return ok(services.update(id, input));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<EmptyJsonResponse>> delete(@PathVariable UUID id) {
+        services.delete(id);
+        return ok();
+    }
+}

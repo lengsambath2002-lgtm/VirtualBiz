@@ -1,0 +1,834 @@
+{
+ "businessId": "glow-beauty",
+ "members": [
+  {
+   "id": "glow-dana",
+   "businessId": "glow-beauty",
+   "name": "Try Dana",
+   "role": "OWNER",
+   "title": "Senior stylist",
+   "color": "#7C5CFA",
+   "shifts": [
+    [
+     480,
+     1020
+    ],
+    [
+     480,
+     1020
+    ],
+    [
+     480,
+     1020
+    ],
+    [
+     480,
+     1020
+    ],
+    [
+     480,
+     1140
+    ],
+    [
+     540,
+     1140
+    ],
+    null
+   ],
+   "active": true,
+   "userId": "u-dana"
+  },
+  {
+   "id": "glow-leak",
+   "businessId": "glow-beauty",
+   "name": "Srey Leak",
+   "role": "STAFF",
+   "title": "Nail technician",
+   "color": "#D9558F",
+   "shifts": [
+    [
+     540,
+     1080
+    ],
+    [
+     540,
+     1080
+    ],
+    null,
+    [
+     540,
+     1080
+    ],
+    [
+     540,
+     1080
+    ],
+    [
+     480,
+     1080
+    ],
+    null
+   ],
+   "active": true
+  },
+  {
+   "id": "glow-vicheka",
+   "businessId": "glow-beauty",
+   "name": "Vicheka Sok",
+   "role": "STAFF",
+   "title": "Stylist · Colour",
+   "color": "#1F9C8B",
+   "shifts": [
+    [
+     600,
+     1080
+    ],
+    [
+     600,
+     1080
+    ],
+    [
+     600,
+     1080
+    ],
+    null,
+    [
+     600,
+     1140
+    ],
+    [
+     480,
+     1140
+    ],
+    null
+   ],
+   "active": true
+  }
+ ],
+ "services": [
+  {
+   "id": "glow-cut",
+   "businessId": "glow-beauty",
+   "name": "Haircut & Style",
+   "category": "Hair",
+   "durationMin": 45,
+   "price": 8.0,
+   "staffIds": [
+    "glow-dana",
+    "glow-vicheka"
+   ],
+   "bookableOnline": true
+  },
+  {
+   "id": "glow-wash",
+   "businessId": "glow-beauty",
+   "name": "Wash & Blow-dry",
+   "category": "Hair",
+   "durationMin": 30,
+   "price": 5.0,
+   "staffIds": [
+    "glow-dana",
+    "glow-vicheka"
+   ],
+   "bookableOnline": true
+  },
+  {
+   "id": "glow-color",
+   "businessId": "glow-beauty",
+   "name": "Hair Colouring",
+   "category": "Hair",
+   "durationMin": 120,
+   "price": 35.0,
+   "staffIds": [
+    "glow-vicheka"
+   ],
+   "bookableOnline": true
+  },
+  {
+   "id": "glow-kera",
+   "businessId": "glow-beauty",
+   "name": "Keratin Treatment",
+   "category": "Hair",
+   "durationMin": 150,
+   "price": 55.0,
+   "staffIds": [
+    "glow-vicheka"
+   ],
+   "bookableOnline": false
+  },
+  {
+   "id": "glow-nails",
+   "businessId": "glow-beauty",
+   "name": "Nail Colouring",
+   "category": "Nails",
+   "durationMin": 45,
+   "price": 12.0,
+   "staffIds": [
+    "glow-leak"
+   ],
+   "bookableOnline": true
+  },
+  {
+   "id": "glow-gel",
+   "businessId": "glow-beauty",
+   "name": "Gel Manicure",
+   "category": "Nails",
+   "durationMin": 60,
+   "price": 18.0,
+   "staffIds": [
+    "glow-leak"
+   ],
+   "bookableOnline": true,
+   "discountPct": 10
+  },
+  {
+   "id": "glow-pedi",
+   "businessId": "glow-beauty",
+   "name": "Spa Pedicure",
+   "category": "Nails",
+   "durationMin": 60,
+   "price": 15.0,
+   "staffIds": [
+    "glow-leak"
+   ],
+   "bookableOnline": true
+  },
+  {
+   "id": "glow-makeup",
+   "businessId": "glow-beauty",
+   "name": "Event Make-up",
+   "category": "Make-up",
+   "durationMin": 60,
+   "price": 30.0,
+   "staffIds": [
+    "glow-dana"
+   ],
+   "bookableOnline": true
+  }
+ ],
+ "clients": [
+  {
+   "id": "glow-c0",
+   "businessId": "glow-beauty",
+   "name": "Chav Rada",
+   "phone": "096382813",
+   "since": "2026-08-30T05:30:00Z",
+   "tags": [],
+   "note": "Prefers Vicheka. Sensitive scalp."
+  },
+  {
+   "id": "glow-c1",
+   "businessId": "glow-beauty",
+   "name": "Jane Cooper",
+   "phone": "012445900",
+   "since": "2026-08-07T05:30:00Z",
+   "tags": [],
+   "email": "jane.cooper@gmail.com"
+  },
+  {
+   "id": "glow-c2",
+   "businessId": "glow-beauty",
+   "name": "Chan Mithona",
+   "phone": "088720114",
+   "since": "2026-07-15T05:30:00Z",
+   "tags": [],
+   "email": "chan.mithona@gmail.com",
+   "note": "Always 10 min early."
+  },
+  {
+   "id": "glow-c3",
+   "businessId": "glow-beauty",
+   "name": "Sokha Chan",
+   "phone": "017221660",
+   "since": "2026-06-22T05:30:00Z",
+   "tags": []
+  },
+  {
+   "id": "glow-c4",
+   "businessId": "glow-beauty",
+   "name": "Dara Vann",
+   "phone": "098334120",
+   "since": "2026-05-30T05:30:00Z",
+   "tags": [],
+   "email": "dara.vann@gmail.com",
+   "note": "Allergic to some gel brands — patch test."
+  },
+  {
+   "id": "glow-c5",
+   "businessId": "glow-beauty",
+   "name": "Sreypov Kim",
+   "phone": "015900223",
+   "since": "2026-05-07T05:30:00Z",
+   "tags": [],
+   "email": "sreypov.kim@gmail.com"
+  },
+  {
+   "id": "glow-c6",
+   "businessId": "glow-beauty",
+   "name": "Pisey Sorn",
+   "phone": "070118772",
+   "since": "2026-04-14T05:30:00Z",
+   "tags": [],
+   "note": "Prefers Vicheka. Sensitive scalp."
+  },
+  {
+   "id": "glow-c7",
+   "businessId": "glow-beauty",
+   "name": "Vannak Heng",
+   "phone": "089554210",
+   "since": "2026-03-22T05:30:00Z",
+   "tags": [],
+   "email": "vannak.heng@gmail.com"
+  },
+  {
+   "id": "glow-c8",
+   "businessId": "glow-beauty",
+   "name": "Rithy Thon",
+   "phone": "097662001",
+   "since": "2026-02-27T05:30:00Z",
+   "tags": [],
+   "email": "rithy.thon@gmail.com",
+   "note": "Always 10 min early."
+  },
+  {
+   "id": "glow-c9",
+   "businessId": "glow-beauty",
+   "name": "Tena Heng",
+   "phone": "061330448",
+   "since": "2026-02-04T05:30:00Z",
+   "tags": []
+  },
+  {
+   "id": "glow-c10",
+   "businessId": "glow-beauty",
+   "name": "Leakhena Ouk",
+   "phone": "069412375",
+   "since": "2026-01-12T05:30:00Z",
+   "tags": [],
+   "email": "leakhena.ouk@gmail.com",
+   "note": "Allergic to some gel brands — patch test."
+  },
+  {
+   "id": "glow-c11",
+   "businessId": "glow-beauty",
+   "name": "Bopha Meas",
+   "phone": "092818404",
+   "since": "2025-12-20T05:30:00Z",
+   "tags": [],
+   "email": "bopha.meas@gmail.com"
+  },
+  {
+   "id": "glow-c12",
+   "businessId": "glow-beauty",
+   "name": "Monika Lim",
+   "phone": "011707303",
+   "since": "2025-11-27T05:30:00Z",
+   "tags": [],
+   "note": "Prefers Vicheka. Sensitive scalp."
+  },
+  {
+   "id": "glow-c13",
+   "businessId": "glow-beauty",
+   "name": "Sophal Keo",
+   "phone": "085223909",
+   "since": "2025-11-04T05:30:00Z",
+   "tags": [],
+   "email": "sophal.keo@gmail.com"
+  },
+  {
+   "id": "glow-c14",
+   "businessId": "glow-beauty",
+   "name": "Kanha Seng",
+   "phone": "016404515",
+   "since": "2025-10-12T05:30:00Z",
+   "tags": [],
+   "email": "kanha.seng@gmail.com",
+   "note": "Always 10 min early."
+  }
+ ],
+ "appointments": [
+  {
+   "id": "bk-04101",
+   "number": "BK-04101",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c0",
+   "serviceId": "glow-cut",
+   "staffId": "glow-dana",
+   "date": "2026-10-09",
+   "start": 510,
+   "durationMin": 45,
+   "price": 8.0,
+   "status": "COMPLETED",
+   "source": "PHONE",
+   "log": [
+    {
+     "text": "Booked by phone",
+     "at": "2026-10-09T00:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04102",
+   "number": "BK-04102",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c2",
+   "serviceId": "glow-wash",
+   "staffId": "glow-vicheka",
+   "date": "2026-10-09",
+   "start": 600,
+   "durationMin": 30,
+   "price": 5.0,
+   "status": "COMPLETED",
+   "source": "ONLINE",
+   "log": [
+    {
+     "text": "Booked online",
+     "at": "2026-10-09T00:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04103",
+   "number": "BK-04103",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c3",
+   "serviceId": "glow-nails",
+   "staffId": "glow-leak",
+   "date": "2026-10-09",
+   "start": 660,
+   "durationMin": 45,
+   "price": 12.0,
+   "status": "COMPLETED",
+   "source": "ONLINE",
+   "log": [
+    {
+     "text": "Booked online",
+     "at": "2026-10-09T00:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04104",
+   "number": "BK-04104",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c5",
+   "serviceId": "glow-color",
+   "staffId": "glow-vicheka",
+   "date": "2026-10-09",
+   "start": 780,
+   "durationMin": 120,
+   "price": 35.0,
+   "status": "CONFIRMED",
+   "source": "PHONE",
+   "log": [
+    {
+     "text": "Booked by phone",
+     "at": "2026-10-09T00:30:00Z"
+    }
+   ],
+   "note": "Highlights, not full colour."
+  },
+  {
+   "id": "bk-04105",
+   "number": "BK-04105",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c7",
+   "serviceId": "glow-cut",
+   "staffId": "glow-dana",
+   "date": "2026-10-09",
+   "start": 840,
+   "durationMin": 45,
+   "price": 8.0,
+   "status": "BOOKED",
+   "source": "ONLINE",
+   "log": [
+    {
+     "text": "Booked online",
+     "at": "2026-10-09T00:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04106",
+   "number": "BK-04106",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c11",
+   "serviceId": "glow-gel",
+   "staffId": "glow-leak",
+   "date": "2026-10-09",
+   "start": 900,
+   "durationMin": 60,
+   "price": 18.0,
+   "status": "CONFIRMED",
+   "source": "ONLINE",
+   "log": [
+    {
+     "text": "Booked online",
+     "at": "2026-10-09T00:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04107",
+   "number": "BK-04107",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c12",
+   "serviceId": "glow-makeup",
+   "staffId": "glow-dana",
+   "date": "2026-10-09",
+   "start": 960,
+   "durationMin": 60,
+   "price": 30.0,
+   "status": "BOOKED",
+   "source": "PHONE",
+   "log": [
+    {
+     "text": "Booked by phone",
+     "at": "2026-10-09T00:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04108",
+   "number": "BK-04108",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c13",
+   "serviceId": "glow-pedi",
+   "staffId": "glow-leak",
+   "date": "2026-10-09",
+   "start": 990,
+   "durationMin": 60,
+   "price": 15.0,
+   "status": "CONFIRMED",
+   "source": "ONLINE",
+   "log": [
+    {
+     "text": "Booked online",
+     "at": "2026-10-09T00:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04109",
+   "number": "BK-04109",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c9",
+   "serviceId": "glow-wash",
+   "staffId": "glow-vicheka",
+   "date": "2026-10-09",
+   "start": 735,
+   "durationMin": 30,
+   "price": 5.0,
+   "status": "ARRIVED",
+   "source": "WALK_IN",
+   "log": [
+    {
+     "text": "Booked as walk-in",
+     "at": "2026-10-09T00:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04110",
+   "number": "BK-04110",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c1",
+   "serviceId": "glow-cut",
+   "staffId": "glow-dana",
+   "date": "2026-10-10",
+   "start": 540,
+   "durationMin": 45,
+   "price": 8.0,
+   "status": "CONFIRMED",
+   "source": "ONLINE",
+   "log": [
+    {
+     "text": "Booked online",
+     "at": "2026-10-08T19:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04111",
+   "number": "BK-04111",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c8",
+   "serviceId": "glow-gel",
+   "staffId": "glow-leak",
+   "date": "2026-10-10",
+   "start": 630,
+   "durationMin": 60,
+   "price": 18.0,
+   "status": "BOOKED",
+   "source": "ONLINE",
+   "log": [
+    {
+     "text": "Booked online",
+     "at": "2026-10-08T19:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04112",
+   "number": "BK-04112",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c9",
+   "serviceId": "glow-color",
+   "staffId": "glow-vicheka",
+   "date": "2026-10-10",
+   "start": 780,
+   "durationMin": 120,
+   "price": 35.0,
+   "status": "CONFIRMED",
+   "source": "ONLINE",
+   "log": [
+    {
+     "text": "Booked online",
+     "at": "2026-10-08T19:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04113",
+   "number": "BK-04113",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c4",
+   "serviceId": "glow-wash",
+   "staffId": "glow-dana",
+   "date": "2026-10-11",
+   "start": 660,
+   "durationMin": 30,
+   "price": 5.0,
+   "status": "BOOKED",
+   "source": "ONLINE",
+   "log": [
+    {
+     "text": "Booked online",
+     "at": "2026-10-08T14:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04114",
+   "number": "BK-04114",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c6",
+   "serviceId": "glow-nails",
+   "staffId": "glow-leak",
+   "date": "2026-10-11",
+   "start": 840,
+   "durationMin": 45,
+   "price": 12.0,
+   "status": "CONFIRMED",
+   "source": "ONLINE",
+   "log": [
+    {
+     "text": "Booked online",
+     "at": "2026-10-08T14:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04115",
+   "number": "BK-04115",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c10",
+   "serviceId": "glow-cut",
+   "staffId": "glow-vicheka",
+   "date": "2026-10-12",
+   "start": 930,
+   "durationMin": 45,
+   "price": 8.0,
+   "status": "BOOKED",
+   "source": "ONLINE",
+   "log": [
+    {
+     "text": "Booked online",
+     "at": "2026-10-08T09:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04116",
+   "number": "BK-04116",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c14",
+   "serviceId": "glow-makeup",
+   "staffId": "glow-dana",
+   "date": "2026-10-13",
+   "start": 570,
+   "durationMin": 60,
+   "price": 30.0,
+   "status": "BOOKED",
+   "source": "ONLINE",
+   "log": [
+    {
+     "text": "Booked online",
+     "at": "2026-10-08T04:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04117",
+   "number": "BK-04117",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c1",
+   "serviceId": "glow-cut",
+   "staffId": "glow-dana",
+   "date": "2026-10-09",
+   "start": 1020,
+   "durationMin": 45,
+   "price": 8.0,
+   "status": "REQUESTED",
+   "source": "ONLINE",
+   "log": [
+    {
+     "text": "Booked online",
+     "at": "2026-10-09T05:05:00Z"
+    }
+   ],
+   "note": "First time. Wants a short bob."
+  },
+  {
+   "id": "bk-04118",
+   "number": "BK-04118",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c4",
+   "serviceId": "glow-color",
+   "staffId": "glow-vicheka",
+   "date": "2026-10-10",
+   "start": 570,
+   "durationMin": 120,
+   "price": 35.0,
+   "status": "REQUESTED",
+   "source": "ONLINE",
+   "log": [
+    {
+     "text": "Booked online",
+     "at": "2026-10-09T03:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04119",
+   "number": "BK-04119",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c6",
+   "serviceId": "glow-gel",
+   "staffId": "glow-leak",
+   "date": "2026-10-10",
+   "start": 630,
+   "durationMin": 60,
+   "price": 18.0,
+   "status": "REQUESTED",
+   "source": "ONLINE",
+   "log": [
+    {
+     "text": "Booked online",
+     "at": "2026-10-09T00:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04120",
+   "number": "BK-04120",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c11",
+   "serviceId": "glow-nails",
+   "staffId": "glow-leak",
+   "date": "2026-10-07",
+   "start": 900,
+   "durationMin": 45,
+   "price": 12.0,
+   "status": "NO_SHOW",
+   "source": "ONLINE",
+   "log": [
+    {
+     "text": "Booked online",
+     "at": "2026-10-08T14:30:00Z"
+    }
+   ]
+  },
+  {
+   "id": "bk-04121",
+   "number": "BK-04121",
+   "businessId": "glow-beauty",
+   "clientId": "glow-c3",
+   "serviceId": "glow-cut",
+   "staffId": "glow-vicheka",
+   "date": "2026-10-08",
+   "start": 660,
+   "durationMin": 45,
+   "price": 8.0,
+   "status": "CANCELLED",
+   "source": "ONLINE",
+   "log": [
+    {
+     "text": "Booked online",
+     "at": "2026-10-08T19:30:00Z"
+    }
+   ]
+  }
+ ],
+ "blocks": [
+  {
+   "id": "b1",
+   "businessId": "glow-beauty",
+   "staffId": "glow-dana",
+   "date": "2026-10-09",
+   "start": 720,
+   "durationMin": 60,
+   "reason": "LUNCH"
+  },
+  {
+   "id": "b2",
+   "businessId": "glow-beauty",
+   "staffId": "glow-leak",
+   "date": "2026-10-09",
+   "start": 750,
+   "durationMin": 45,
+   "reason": "LUNCH"
+  }
+ ],
+ "deals": [
+  {
+   "id": "d1",
+   "businessId": "glow-beauty",
+   "title": "Free nail art on gel sets",
+   "body": "One free accent nail design with any gel manicure booked this month.",
+   "discountPct": 10,
+   "serviceIds": [
+    "glow-gel"
+   ],
+   "startsAt": "2026-10-04T17:00:00Z",
+   "endsAt": "2026-10-18T17:00:00Z",
+   "views": 412
+  },
+  {
+   "id": "d2",
+   "businessId": "glow-beauty",
+   "title": "Water Festival colour week",
+   "body": "10% off all hair colouring during the holiday week.",
+   "discountPct": 10,
+   "serviceIds": [
+    "glow-color"
+   ],
+   "startsAt": "2026-10-28T17:00:00Z",
+   "endsAt": "2026-11-04T17:00:00Z",
+   "views": 0
+  },
+  {
+   "id": "d3",
+   "businessId": "glow-beauty",
+   "title": "Back-to-school haircut",
+   "body": "Students get 20% off haircuts with a valid student card.",
+   "discountPct": 20,
+   "serviceIds": [
+    "glow-cut"
+   ],
+   "startsAt": "2026-08-29T17:00:00Z",
+   "endsAt": "2026-09-28T17:00:00Z",
+   "views": 1290
+  }
+ ]
+}

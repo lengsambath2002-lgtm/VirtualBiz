@@ -1,0 +1,1202 @@
+{
+ "business": {
+  "id": "nita-gadget",
+  "ownerId": "u-sonita",
+  "type": "PRODUCT",
+  "name": "Nita Gadget Store",
+  "slug": "nita-gadget",
+  "categoryId": "electronics",
+  "about": "Official-warranty phones, audio and accessories. Free setup and data transfer in store.",
+  "phone": "0968189261",
+  "email": "nita@nitagadget.com.kh",
+  "district": "bkk1",
+  "street": "#45, St. 278",
+  "hours": [
+   [
+    540,
+    1200
+   ],
+   [
+    540,
+    1200
+   ],
+   [
+    540,
+    1200
+   ],
+   [
+    540,
+    1200
+   ],
+   [
+    540,
+    1200
+   ],
+   [
+    540,
+    1200
+   ],
+   [
+    540,
+    1200
+   ]
+  ],
+  "closures": [],
+  "online": true,
+  "bakongId": "nitagadget@aba",
+  "verification": "VERIFIED",
+  "rating": 4.6,
+  "reviewCount": 5,
+  "since": 2024,
+  "productSettings": {
+   "autoAccept": false,
+   "prepMinutes": 20,
+   "lowStockDefault": 5,
+   "pickup": true,
+   "cod": true,
+   "freeDeliveryOver": 25.0,
+   "zones": [
+    {
+     "label": "BKK1 · Chamkar Mon · Daun Penh",
+     "districts": [
+      "bkk1",
+      "chamkar-mon",
+      "daun-penh",
+      "prampi-makara"
+     ],
+     "fee": 0.75
+    },
+    {
+     "label": "Toul Kork · Sen Sok · Russey Keo",
+     "districts": [
+      "toul-kork",
+      "sen-sok",
+      "russey-keo"
+     ],
+     "fee": 1.5
+    },
+    {
+     "label": "Chbar Ampov · Mean Chey · further",
+     "districts": [
+      "chbar-ampov",
+      "mean-chey",
+      "por-senchey"
+     ],
+     "fee": 2.5
+    }
+   ]
+  }
+ },
+ "members": [
+  {
+   "id": "nita-sonita",
+   "businessId": "nita-gadget",
+   "userId": "u-sonita",
+   "name": "Kry Sonita",
+   "role": "OWNER",
+   "title": "Owner",
+   "shifts": [
+    [
+     540,
+     1200
+    ],
+    [
+     540,
+     1200
+    ],
+    [
+     540,
+     1200
+    ],
+    [
+     540,
+     1200
+    ],
+    [
+     540,
+     1200
+    ],
+    [
+     540,
+     1200
+    ],
+    [
+     540,
+     1200
+    ]
+   ],
+   "active": true
+  }
+ ],
+ "products": [
+  {
+   "id": "iphone15",
+   "businessId": "nita-gadget",
+   "title": "iPhone 15",
+   "description": "6.1-inch display, A16 Bionic, 48 MP camera, USB-C. 12-month official warranty in Cambodia.",
+   "categoryId": "electronics",
+   "status": "ACTIVE",
+   "options": [
+    {
+     "name": "Colour",
+     "values": [
+      "Black",
+      "Blue",
+      "Pink"
+     ]
+    },
+    {
+     "name": "Storage",
+     "values": [
+      "128 GB",
+      "256 GB"
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "id": "iphone15-v1",
+     "productId": "iphone15",
+     "options": {
+      "Colour": "Black",
+      "Storage": "128 GB"
+     },
+     "price": 829.0,
+     "cost": 735.0,
+     "sku": "IP15-BLA-128",
+     "barcode": "885000000101",
+     "stock": 4
+    },
+    {
+     "id": "iphone15-v2",
+     "productId": "iphone15",
+     "options": {
+      "Colour": "Black",
+      "Storage": "256 GB"
+     },
+     "price": 929.0,
+     "cost": 820.0,
+     "sku": "IP15-BLA-256",
+     "barcode": "885000000102",
+     "stock": 2
+    },
+    {
+     "id": "iphone15-v3",
+     "productId": "iphone15",
+     "options": {
+      "Colour": "Blue",
+      "Storage": "128 GB"
+     },
+     "price": 829.0,
+     "cost": 735.0,
+     "sku": "IP15-BLU-128",
+     "barcode": "885000000103",
+     "stock": 6
+    },
+    {
+     "id": "iphone15-v4",
+     "productId": "iphone15",
+     "options": {
+      "Colour": "Blue",
+      "Storage": "256 GB"
+     },
+     "price": 929.0,
+     "cost": 820.0,
+     "sku": "IP15-BLU-256",
+     "barcode": "885000000104",
+     "stock": 0
+    },
+    {
+     "id": "iphone15-v5",
+     "productId": "iphone15",
+     "options": {
+      "Colour": "Pink",
+      "Storage": "128 GB"
+     },
+     "price": 829.0,
+     "cost": 735.0,
+     "sku": "IP15-PIN-128",
+     "barcode": "885000000105",
+     "stock": 3
+    },
+    {
+     "id": "iphone15-v6",
+     "productId": "iphone15",
+     "options": {
+      "Colour": "Pink",
+      "Storage": "256 GB"
+     },
+     "price": 929.0,
+     "cost": 820.0,
+     "sku": "IP15-PIN-256",
+     "barcode": "885000000106",
+     "stock": 1
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 3,
+   "sold": 623,
+   "rating": 4.9
+  },
+  {
+   "id": "airpods-pro",
+   "businessId": "nita-gadget",
+   "title": "AirPods Pro (2nd gen) USB-C",
+   "description": "Active noise cancellation, adaptive audio, MagSafe case.",
+   "categoryId": "electronics",
+   "status": "ACTIVE",
+   "options": [],
+   "variants": [
+    {
+     "id": "airpods-pro-v1",
+     "productId": "airpods-pro",
+     "options": {},
+     "price": 224.1,
+     "cost": 185.0,
+     "sku": "APP2-USBC",
+     "barcode": "885000000107",
+     "stock": 5,
+     "compareAt": 249.0
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 3,
+   "sold": 320,
+   "rating": 4.8
+  },
+  {
+   "id": "watch9",
+   "businessId": "nita-gadget",
+   "title": "Apple Watch Series 9 45 mm",
+   "description": "Always-on display, GPS, health sensors.",
+   "categoryId": "electronics",
+   "status": "ACTIVE",
+   "options": [
+    {
+     "name": "Band",
+     "values": [
+      "S/M",
+      "M/L"
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "id": "watch9-v1",
+     "productId": "watch9",
+     "options": {
+      "Band": "S/M"
+     },
+     "price": 429.0,
+     "cost": 360.0,
+     "sku": "AW9-45-SM",
+     "barcode": "885000000108",
+     "stock": 6
+    },
+    {
+     "id": "watch9-v2",
+     "productId": "watch9",
+     "options": {
+      "Band": "M/L"
+     },
+     "price": 429.0,
+     "cost": 360.0,
+     "sku": "AW9-45-ML",
+     "barcode": "885000000109",
+     "stock": 2
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 2,
+   "sold": 205,
+   "rating": 4.7
+  },
+  {
+   "id": "mba",
+   "businessId": "nita-gadget",
+   "title": "MacBook Air 13\" M3 8/256",
+   "description": "M3 chip, 13.6\" Liquid Retina, 18 h battery.",
+   "categoryId": "electronics",
+   "status": "ACTIVE",
+   "options": [
+    {
+     "name": "Colour",
+     "values": [
+      "Midnight",
+      "Starlight"
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "id": "mba-v1",
+     "productId": "mba",
+     "options": {
+      "Colour": "Midnight"
+     },
+     "price": 1099.0,
+     "cost": 960.0,
+     "sku": "MBA13-M3-MID",
+     "barcode": "885000000110",
+     "stock": 2
+    },
+    {
+     "id": "mba-v2",
+     "productId": "mba",
+     "options": {
+      "Colour": "Starlight"
+     },
+     "price": 1099.0,
+     "cost": 960.0,
+     "sku": "MBA13-M3-STL",
+     "barcode": "885000000111",
+     "stock": 0
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 1,
+   "sold": 48,
+   "rating": 4.9
+  },
+  {
+   "id": "anker",
+   "businessId": "nita-gadget",
+   "title": "Anker PowerCore 20,000 mAh",
+   "description": "20 W USB-C PD. Charges an iPhone 15 about 4 times.",
+   "categoryId": "electronics",
+   "status": "ACTIVE",
+   "options": [],
+   "variants": [
+    {
+     "id": "anker-v1",
+     "productId": "anker",
+     "options": {},
+     "price": 39.0,
+     "cost": 24.0,
+     "sku": "ANK-PC20K",
+     "barcode": "885000000112",
+     "stock": 18
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 5,
+   "sold": 540,
+   "rating": 4.6
+  },
+  {
+   "id": "cable",
+   "businessId": "nita-gadget",
+   "title": "USB-C to USB-C Cable 1 m",
+   "description": "60 W, braided. 12-month warranty.",
+   "categoryId": "electronics",
+   "status": "ACTIVE",
+   "options": [],
+   "variants": [
+    {
+     "id": "cable-v1",
+     "productId": "cable",
+     "options": {},
+     "price": 6.0,
+     "cost": 2.4,
+     "sku": "CBL-CC-1M",
+     "barcode": "885000000113",
+     "stock": 64
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 10,
+   "sold": 1410,
+   "rating": 4.7
+  },
+  {
+   "id": "case15",
+   "businessId": "nita-gadget",
+   "title": "Silicone Case for iPhone 15",
+   "description": "Soft-touch silicone, microfibre lining.",
+   "categoryId": "electronics",
+   "status": "ACTIVE",
+   "options": [
+    {
+     "name": "Colour",
+     "values": [
+      "Black",
+      "Clay",
+      "Storm Blue"
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "id": "case15-v1",
+     "productId": "case15",
+     "options": {
+      "Colour": "Black"
+     },
+     "price": 12.0,
+     "cost": 5.0,
+     "sku": "CASE15-BLA",
+     "barcode": "885000000114",
+     "stock": 9,
+     "compareAt": 15.0
+    },
+    {
+     "id": "case15-v2",
+     "productId": "case15",
+     "options": {
+      "Colour": "Clay"
+     },
+     "price": 12.0,
+     "cost": 5.0,
+     "sku": "CASE15-CLA",
+     "barcode": "885000000115",
+     "stock": 3,
+     "compareAt": 15.0
+    },
+    {
+     "id": "case15-v3",
+     "productId": "case15",
+     "options": {
+      "Colour": "Storm Blue"
+     },
+     "price": 12.0,
+     "cost": 5.0,
+     "sku": "CASE15-STO",
+     "barcode": "885000000116",
+     "stock": 0,
+     "compareAt": 15.0
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 4,
+   "sold": 390,
+   "rating": 4.5
+  },
+  {
+   "id": "glass",
+   "businessId": "nita-gadget",
+   "title": "Tempered Glass Screen Protector",
+   "description": "9H glass, easy-fit frame. Free fitting in store.",
+   "categoryId": "electronics",
+   "status": "DRAFT",
+   "options": [
+    {
+     "name": "Model",
+     "values": [
+      "iPhone 15",
+      "iPhone 15 Pro"
+     ]
+    }
+   ],
+   "variants": [
+    {
+     "id": "glass-v1",
+     "productId": "glass",
+     "options": {
+      "Model": "iPhone 15"
+     },
+     "price": 8.0,
+     "cost": 1.8,
+     "sku": "GLS-15",
+     "barcode": "885000000117",
+     "stock": 40
+    },
+    {
+     "id": "glass-v2",
+     "productId": "glass",
+     "options": {
+      "Model": "iPhone 15 Pro"
+     },
+     "price": 8.0,
+     "cost": 1.8,
+     "sku": "GLS-15P",
+     "barcode": "885000000118",
+     "stock": 35
+    }
+   ],
+   "photos": [],
+   "lowStockAt": 10,
+   "sold": 0,
+   "rating": 0
+  }
+ ],
+ "clients": [
+  {
+   "id": "nita-c0",
+   "businessId": "nita-gadget",
+   "name": "Tena Heng",
+   "phone": "061330448",
+   "email": "tena.heng@gmail.com",
+   "district": "toul-kork",
+   "since": "2026-06-11T03:00:00Z",
+   "tags": []
+  },
+  {
+   "id": "nita-c1",
+   "businessId": "nita-gadget",
+   "name": "Hay Kongmeng",
+   "phone": "012404222",
+   "email": "hay.kongmeng@gmail.com",
+   "district": "toul-kork",
+   "since": "2026-06-20T03:00:00Z",
+   "tags": []
+  },
+  {
+   "id": "nita-c2",
+   "businessId": "nita-gadget",
+   "name": "Alex Noman",
+   "phone": "098777120",
+   "email": "alex.noman@gmail.com",
+   "district": "bkk1",
+   "since": "2026-06-29T03:00:00Z",
+   "tags": []
+  },
+  {
+   "id": "nita-c3",
+   "businessId": "nita-gadget",
+   "name": "Sok Dara",
+   "phone": "017202303",
+   "email": "sok.dara@gmail.com",
+   "district": "chamkar-mon",
+   "since": "2026-07-08T03:00:00Z",
+   "tags": []
+  },
+  {
+   "id": "nita-c4",
+   "businessId": "nita-gadget",
+   "name": "Lang Cutties",
+   "phone": "089101202",
+   "email": "lang.cutties@gmail.com",
+   "district": "daun-penh",
+   "since": "2026-07-17T03:00:00Z",
+   "tags": []
+  },
+  {
+   "id": "nita-c5",
+   "businessId": "nita-gadget",
+   "name": "Pisey Sorn",
+   "phone": "070118772",
+   "email": "pisey.sorn@gmail.com",
+   "district": "sen-sok",
+   "since": "2026-07-26T03:00:00Z",
+   "tags": []
+  },
+  {
+   "id": "nita-c6",
+   "businessId": "nita-gadget",
+   "name": "Rithy Thon",
+   "phone": "097662001",
+   "email": "rithy.thon@gmail.com",
+   "district": "russey-keo",
+   "since": "2026-08-04T03:00:00Z",
+   "tags": []
+  },
+  {
+   "id": "nita-c7",
+   "businessId": "nita-gadget",
+   "name": "Sreypov Kim",
+   "phone": "015900223",
+   "email": "sreypov.kim@gmail.com",
+   "district": "bkk1",
+   "since": "2026-08-13T03:00:00Z",
+   "tags": []
+  },
+  {
+   "id": "nita-c8",
+   "businessId": "nita-gadget",
+   "name": "Vannak Heng",
+   "phone": "089554210",
+   "email": "vannak.heng@gmail.com",
+   "district": "chbar-ampov",
+   "since": "2026-08-22T03:00:00Z",
+   "tags": []
+  },
+  {
+   "id": "nita-c9",
+   "businessId": "nita-gadget",
+   "name": "Monika Lim",
+   "phone": "011707303",
+   "email": "monika.lim@gmail.com",
+   "district": "toul-kork",
+   "since": "2026-08-31T03:00:00Z",
+   "tags": []
+  }
+ ],
+ "orders": [
+  {
+   "id": "ord-24045",
+   "number": "VB-24045",
+   "businessId": "nita-gadget",
+   "customerId": "nita-c4",
+   "lines": [
+    {
+     "variantId": "airpods-pro-v1",
+     "title": "AirPods Pro (2nd gen) USB-C",
+     "variantName": "",
+     "qty": 1,
+     "unitPrice": 224.1
+    }
+   ],
+   "subtotal": 224.1,
+   "discount": 0.0,
+   "deliveryFee": 0.0,
+   "total": 224.1,
+   "payment": {
+    "method": "CARD",
+    "channel": "ONLINE",
+    "paid": true
+   },
+   "method": "PICKUP",
+   "status": "NEW",
+   "timeline": [
+    {
+     "status": "NEW",
+     "at": "2026-10-09T05:27:00Z"
+    }
+   ],
+   "reviewed": false,
+   "createdAt": "2026-10-09T05:27:00Z"
+  },
+  {
+   "id": "ord-24043",
+   "number": "VB-24043",
+   "businessId": "nita-gadget",
+   "customerId": "nita-c0",
+   "lines": [
+    {
+     "variantId": "iphone15-v2",
+     "title": "iPhone 15",
+     "variantName": "Black / 256 GB",
+     "qty": 1,
+     "unitPrice": 929.0
+    },
+    {
+     "variantId": "case15-v1",
+     "title": "Silicone Case for iPhone 15",
+     "variantName": "Black",
+     "qty": 1,
+     "unitPrice": 12.0
+    }
+   ],
+   "subtotal": 941.0,
+   "discount": 0.0,
+   "deliveryFee": 0.0,
+   "total": 941.0,
+   "payment": {
+    "method": "KHQR",
+    "channel": "ONLINE",
+    "paid": true
+   },
+   "method": "DELIVERY",
+   "status": "NEW",
+   "timeline": [
+    {
+     "status": "NEW",
+     "at": "2026-10-09T05:18:00Z"
+    }
+   ],
+   "reviewed": false,
+   "createdAt": "2026-10-09T05:18:00Z",
+   "address": {
+    "id": "nita-c0-addr",
+    "userId": "nita-c0",
+    "label": "HOME",
+    "name": "Tena Heng",
+    "phone": "061330448",
+    "line": "#525, St. 98k",
+    "district": "toul-kork",
+    "isDefault": true
+   },
+   "note": "Please include a gift receipt."
+  },
+  {
+   "id": "ord-24044",
+   "number": "VB-24044",
+   "businessId": "nita-gadget",
+   "customerId": "nita-c3",
+   "lines": [
+    {
+     "variantId": "cable-v1",
+     "title": "USB-C to USB-C Cable 1 m",
+     "variantName": "",
+     "qty": 3,
+     "unitPrice": 6.0
+    }
+   ],
+   "subtotal": 18.0,
+   "discount": 0.0,
+   "deliveryFee": 0.75,
+   "total": 18.75,
+   "payment": {
+    "method": "CASH",
+    "channel": "COD",
+    "paid": false
+   },
+   "method": "DELIVERY",
+   "status": "NEW",
+   "timeline": [
+    {
+     "status": "NEW",
+     "at": "2026-10-09T04:43:00Z"
+    }
+   ],
+   "reviewed": false,
+   "createdAt": "2026-10-09T04:43:00Z",
+   "address": {
+    "id": "nita-c3-addr",
+    "userId": "nita-c3",
+    "label": "HOME",
+    "name": "Sok Dara",
+    "phone": "017202303",
+    "line": "#7, St. 163",
+    "district": "chamkar-mon",
+    "isDefault": true
+   }
+  },
+  {
+   "id": "ord-24046",
+   "number": "VB-24046",
+   "businessId": "nita-gadget",
+   "customerId": "nita-c1",
+   "lines": [
+    {
+     "variantId": "anker-v1",
+     "title": "Anker PowerCore 20,000 mAh",
+     "variantName": "",
+     "qty": 1,
+     "unitPrice": 39.0
+    },
+    {
+     "variantId": "cable-v1",
+     "title": "USB-C to USB-C Cable 1 m",
+     "variantName": "",
+     "qty": 1,
+     "unitPrice": 6.0
+    }
+   ],
+   "subtotal": 45.0,
+   "discount": 0.0,
+   "deliveryFee": 0.0,
+   "total": 45.0,
+   "payment": {
+    "method": "KHQR",
+    "channel": "ONLINE",
+    "paid": true
+   },
+   "method": "DELIVERY",
+   "status": "ACCEPTED",
+   "timeline": [
+    {
+     "status": "NEW",
+     "at": "2026-10-09T04:10:00Z"
+    },
+    {
+     "status": "ACCEPTED",
+     "at": "2026-10-09T04:25:00Z"
+    }
+   ],
+   "reviewed": false,
+   "createdAt": "2026-10-09T04:10:00Z",
+   "address": {
+    "id": "nita-c1-addr",
+    "userId": "nita-c1",
+    "label": "HOME",
+    "name": "Hay Kongmeng",
+    "phone": "012404222",
+    "line": "HRD Center, St. 315",
+    "district": "toul-kork",
+    "isDefault": true
+   }
+  },
+  {
+   "id": "ord-24047",
+   "number": "VB-24047",
+   "businessId": "nita-gadget",
+   "customerId": "nita-c7",
+   "lines": [
+    {
+     "variantId": "watch9-v1",
+     "title": "Apple Watch Series 9 45 mm",
+     "variantName": "S/M",
+     "qty": 1,
+     "unitPrice": 429.0
+    }
+   ],
+   "subtotal": 429.0,
+   "discount": 0.0,
+   "deliveryFee": 0.0,
+   "total": 429.0,
+   "payment": {
+    "method": "CASH",
+    "channel": "COD",
+    "paid": false
+   },
+   "method": "DELIVERY",
+   "status": "PACKED",
+   "timeline": [
+    {
+     "status": "NEW",
+     "at": "2026-10-09T03:30:00Z"
+    },
+    {
+     "status": "ACCEPTED",
+     "at": "2026-10-09T03:45:00Z"
+    },
+    {
+     "status": "PACKED",
+     "at": "2026-10-09T04:00:00Z"
+    }
+   ],
+   "reviewed": false,
+   "createdAt": "2026-10-09T03:30:00Z",
+   "address": {
+    "id": "nita-c7-addr",
+    "userId": "nita-c7",
+    "label": "HOME",
+    "name": "Sreypov Kim",
+    "phone": "015900223",
+    "line": "#21, St. 51",
+    "district": "bkk1",
+    "isDefault": true
+   }
+  },
+  {
+   "id": "ord-24048",
+   "number": "VB-24048",
+   "businessId": "nita-gadget",
+   "customerId": "nita-c2",
+   "lines": [
+    {
+     "variantId": "case15-v2",
+     "title": "Silicone Case for iPhone 15",
+     "variantName": "Clay",
+     "qty": 2,
+     "unitPrice": 12.0
+    }
+   ],
+   "subtotal": 24.0,
+   "discount": 0.0,
+   "deliveryFee": 0.75,
+   "total": 24.75,
+   "payment": {
+    "method": "KHQR",
+    "channel": "ONLINE",
+    "paid": true
+   },
+   "method": "DELIVERY",
+   "status": "SHIPPED",
+   "timeline": [
+    {
+     "status": "NEW",
+     "at": "2026-10-09T02:30:00Z"
+    },
+    {
+     "status": "ACCEPTED",
+     "at": "2026-10-09T02:45:00Z"
+    },
+    {
+     "status": "PACKED",
+     "at": "2026-10-09T03:00:00Z"
+    },
+    {
+     "status": "SHIPPED",
+     "at": "2026-10-09T03:15:00Z"
+    }
+   ],
+   "reviewed": false,
+   "createdAt": "2026-10-09T02:30:00Z",
+   "address": {
+    "id": "nita-c2-addr",
+    "userId": "nita-c2",
+    "label": "HOME",
+    "name": "Alex Noman",
+    "phone": "098777120",
+    "line": "#12, St. 302",
+    "district": "bkk1",
+    "isDefault": true
+   },
+   "rider": {
+    "name": "Vuthy",
+    "vehicle": "Motorbike",
+    "plate": "1A-2345"
+   }
+  },
+  {
+   "id": "ord-24049",
+   "number": "VB-24049",
+   "businessId": "nita-gadget",
+   "customerId": "nita-c9",
+   "lines": [
+    {
+     "variantId": "iphone15-v1",
+     "title": "iPhone 15",
+     "variantName": "Black / 128 GB",
+     "qty": 1,
+     "unitPrice": 829.0
+    }
+   ],
+   "subtotal": 829.0,
+   "discount": 0.0,
+   "deliveryFee": 0.0,
+   "total": 829.0,
+   "payment": {
+    "method": "CARD",
+    "channel": "ONLINE",
+    "paid": true
+   },
+   "method": "DELIVERY",
+   "status": "DELIVERED",
+   "timeline": [
+    {
+     "status": "NEW",
+     "at": "2026-10-09T02:30:00Z"
+    },
+    {
+     "status": "ACCEPTED",
+     "at": "2026-10-09T02:45:00Z"
+    },
+    {
+     "status": "PACKED",
+     "at": "2026-10-09T03:00:00Z"
+    },
+    {
+     "status": "SHIPPED",
+     "at": "2026-10-09T03:15:00Z"
+    },
+    {
+     "status": "DELIVERED",
+     "at": "2026-10-09T03:30:00Z"
+    }
+   ],
+   "reviewed": false,
+   "createdAt": "2026-10-09T02:30:00Z",
+   "address": {
+    "id": "nita-c9-addr",
+    "userId": "nita-c9",
+    "label": "HOME",
+    "name": "Monika Lim",
+    "phone": "011707303",
+    "line": "#40, St. 516",
+    "district": "toul-kork",
+    "isDefault": true
+   }
+  },
+  {
+   "id": "ord-24042",
+   "number": "VB-24042",
+   "businessId": "nita-gadget",
+   "customerId": "nita-c6",
+   "lines": [
+    {
+     "variantId": "watch9-v2",
+     "title": "Apple Watch Series 9 45 mm",
+     "variantName": "M/L",
+     "qty": 1,
+     "unitPrice": 429.0
+    }
+   ],
+   "subtotal": 429.0,
+   "discount": 0.0,
+   "deliveryFee": 0.0,
+   "total": 429.0,
+   "payment": {
+    "method": "KHQR",
+    "channel": "ONLINE",
+    "paid": true
+   },
+   "method": "DELIVERY",
+   "status": "CANCELLED",
+   "timeline": [
+    {
+     "status": "NEW",
+     "at": "2026-10-08T02:30:00Z"
+    },
+    {
+     "status": "CANCELLED",
+     "at": "2026-10-08T02:40:00Z"
+    }
+   ],
+   "reviewed": false,
+   "createdAt": "2026-10-08T02:30:00Z",
+   "address": {
+    "id": "nita-c6-addr",
+    "userId": "nita-c6",
+    "label": "HOME",
+    "name": "Rithy Thon",
+    "phone": "097662001",
+    "line": "#88, NR5",
+    "district": "russey-keo",
+    "isDefault": true
+   },
+   "cancelReason": "Out of stock"
+  },
+  {
+   "id": "ord-24041",
+   "number": "VB-24041",
+   "businessId": "nita-gadget",
+   "customerId": "nita-c5",
+   "lines": [
+    {
+     "variantId": "anker-v1",
+     "title": "Anker PowerCore 20,000 mAh",
+     "variantName": "",
+     "qty": 1,
+     "unitPrice": 39.0
+    }
+   ],
+   "subtotal": 39.0,
+   "discount": 0.0,
+   "deliveryFee": 0.0,
+   "total": 39.0,
+   "payment": {
+    "method": "CARD",
+    "channel": "ONLINE",
+    "paid": true
+   },
+   "method": "PICKUP",
+   "status": "PICKED_UP",
+   "timeline": [
+    {
+     "status": "NEW",
+     "at": "2026-10-07T08:00:00Z"
+    },
+    {
+     "status": "ACCEPTED",
+     "at": "2026-10-07T08:15:00Z"
+    },
+    {
+     "status": "PACKED",
+     "at": "2026-10-07T08:30:00Z"
+    },
+    {
+     "status": "PICKED_UP",
+     "at": "2026-10-07T08:45:00Z"
+    }
+   ],
+   "reviewed": false,
+   "createdAt": "2026-10-07T08:00:00Z"
+  },
+  {
+   "id": "ord-24040",
+   "number": "VB-24040",
+   "businessId": "nita-gadget",
+   "customerId": "nita-c8",
+   "lines": [
+    {
+     "variantId": "cable-v1",
+     "title": "USB-C to USB-C Cable 1 m",
+     "variantName": "",
+     "qty": 2,
+     "unitPrice": 6.0
+    }
+   ],
+   "subtotal": 12.0,
+   "discount": 0.0,
+   "deliveryFee": 2.5,
+   "total": 14.5,
+   "payment": {
+    "method": "CASH",
+    "channel": "COD",
+    "paid": true
+   },
+   "method": "DELIVERY",
+   "status": "DELIVERED",
+   "timeline": [
+    {
+     "status": "NEW",
+     "at": "2026-10-06T04:00:00Z"
+    },
+    {
+     "status": "ACCEPTED",
+     "at": "2026-10-06T04:15:00Z"
+    },
+    {
+     "status": "PACKED",
+     "at": "2026-10-06T04:30:00Z"
+    },
+    {
+     "status": "SHIPPED",
+     "at": "2026-10-06T04:45:00Z"
+    },
+    {
+     "status": "DELIVERED",
+     "at": "2026-10-06T05:00:00Z"
+    }
+   ],
+   "reviewed": false,
+   "createdAt": "2026-10-06T04:00:00Z",
+   "address": {
+    "id": "nita-c8-addr",
+    "userId": "nita-c8",
+    "label": "HOME",
+    "name": "Vannak Heng",
+    "phone": "089554210",
+    "line": "#14, NR1",
+    "district": "chbar-ampov",
+    "isDefault": true
+   }
+  }
+ ],
+ "promotions": [
+  {
+   "id": "pr1",
+   "businessId": "nita-gadget",
+   "name": "Water Festival 10%",
+   "type": "PERCENT",
+   "value": 10,
+   "code": "NITA10",
+   "scope": "ALL",
+   "targetIds": [],
+   "startsAt": "2026-10-05T17:00:00Z",
+   "endsAt": "2026-10-20T17:00:00Z",
+   "uses": 38,
+   "usageLimit": 200
+  },
+  {
+   "id": "pr2",
+   "businessId": "nita-gadget",
+   "name": "Accessories: buy any case, $3 off",
+   "type": "FIXED",
+   "value": 3,
+   "scope": "PRODUCTS",
+   "targetIds": [
+    "anker",
+    "cable",
+    "case15",
+    "glass"
+   ],
+   "minSpend": 12.0,
+   "startsAt": "2026-09-28T17:00:00Z",
+   "endsAt": "2026-10-28T17:00:00Z",
+   "uses": 61
+  },
+  {
+   "id": "pr3",
+   "businessId": "nita-gadget",
+   "name": "Free delivery over $15",
+   "type": "FREE_SHIPPING",
+   "value": 0,
+   "scope": "ALL",
+   "targetIds": [],
+   "minSpend": 15.0,
+   "startsAt": "2026-10-13T17:00:00Z",
+   "endsAt": "2026-10-17T17:00:00Z",
+   "uses": 0
+  },
+  {
+   "id": "pr4",
+   "businessId": "nita-gadget",
+   "name": "Back to school",
+   "type": "PERCENT",
+   "value": 15,
+   "code": "SCHOOL15",
+   "scope": "PRODUCTS",
+   "targetIds": [
+    "mba"
+   ],
+   "startsAt": "2026-08-19T17:00:00Z",
+   "endsAt": "2026-09-18T17:00:00Z",
+   "uses": 12,
+   "usageLimit": 50
+  }
+ ]
+}

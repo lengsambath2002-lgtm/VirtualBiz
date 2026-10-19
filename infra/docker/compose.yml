@@ -1,0 +1,54 @@
+# VirtualBiz full stack on one machine: PostgreSQL, the API and the web app.
+#
+#   docker compose -f infra/docker/compose.yml up --build
+#   open http://localhost:3000   (demo sign-in: nita@virtualbiz.com / Demo@1234)
+#
+# It runs the API with the `local` profile (Flyway + demo seed, payment simulator, dev codes),
+# which suits a demo or a QA box. A real environment runs the same images with the `prod`
+# profile and its own secrets (docs/ops/deploy.md).
+name: virtualbiz
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: vbiz
+      POSTGRES_USER: vbiz
+      POSTGRES_PASSWORD: vbiz
+    volumes:
+      - db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vbiz -d vbiz"]
+      interval: 5s
+      retries: 20
+
+  api:
+    build: ../../backend
+    environment:
+      SPRING_PROFILES_ACTIVE: local
+      DATABASE_URL: jdbc:postgresql://db:5432/vbiz
+      DATABASE_USERNAME: vbiz
+      DATABASE_PASSWORD: vbiz
+    volumes:
+      # Uploaded photos (VBIZ_STORAGE_DIR in the image).
+      - uploads:/app/data/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8180:8180"
+
+  web:
+    build:
+      context: ../../frontend
+      args:
+        API_URL: http://api:8180
+        NEXT_PUBLIC_APP_ENV: local
+    depends_on:
+      - api
+    ports:
+      - "3000:3000"
+
+volumes:
+  db:
+  uploads:

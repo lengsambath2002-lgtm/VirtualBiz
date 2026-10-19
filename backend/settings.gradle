@@ -1,0 +1,4 @@
+rootProject.name = 'vbiz-backend'
+
+include 'vbiz-common'
+include 'vbiz-api'

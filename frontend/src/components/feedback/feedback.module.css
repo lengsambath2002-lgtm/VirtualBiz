@@ -1,0 +1,140 @@
+/* Not found / error / offline / empty / no access: one look on every surface (globals tokens). */
+.view {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 10px;
+  margin: 0 auto;
+  color: var(--ink);
+}
+.page {
+  max-width: 460px;
+  padding: 64px 20px;
+}
+.panel {
+  max-width: 420px;
+  padding: 36px 16px;
+}
+.art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--sunk);
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.page .art {
+  width: 104px;
+  height: 104px;
+}
+.panel .art {
+  width: 64px;
+  height: 64px;
+}
+.art svg {
+  width: 46%;
+  height: 46%;
+}
+.error .art {
+  background: var(--sale-soft);
+  color: var(--sale);
+}
+.offline .art,
+.forbidden .art {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+.notFound .art {
+  background: var(--info-soft);
+  color: var(--info);
+}
+.code {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.title {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.page .title {
+  font-size: clamp(22px, 4vw, 28px);
+}
+.panel .title {
+  font-size: 16px;
+  font-weight: 600;
+}
+.body {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+.panel .body {
+  font-size: 14px;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--g-fill-strong);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn:hover {
+  border-color: var(--line-h);
+}
+.btn:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--on-primary);
+}
+.primary:hover {
+  background: var(--primary-hover);
+}
+.ref {
+  font-size: 12px;
+  color: var(--muted);
+  font-family: var(--f-mono);
+}
+/* A full page of its own (outside any shell): the wall, the logo on top. */
+.screen {
+  min-height: 100dvh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: var(--wall), var(--bg);
+}
+.screenTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+}
+.screenMain {
+  display: grid;
+  align-content: center;
+}

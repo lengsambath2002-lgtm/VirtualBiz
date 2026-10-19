@@ -1,0 +1,49 @@
+/* Console frame bits that differ from the shared glass rail (same as the seller workspace). */
+.rail {
+  width: 86px;
+}
+.logo {
+  margin-bottom: 12px;
+  flex: none;
+  background: linear-gradient(135deg, #3a1f5c, #6b3fa0);
+  color: #fff;
+}
+@media (max-width: 860px) {
+  .rail {
+    width: auto;
+  }
+}
+.loading {
+  min-height: 100dvh;
+}
+.role {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  background: color-mix(in srgb, #6b3fa0 14%, transparent);
+  color: #6b3fa0;
+}
+.denied {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+}
+.denied > div {
+  display: grid;
+  gap: 10px;
+  justify-items: center;
+  max-width: 420px;
+}
+
+@media (max-width: 560px) {
+  /* Phone: the logo mark stays; the search gets the room. */
+  .brandText {
+    display: none;
+  }
+}

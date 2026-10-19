@@ -24,7 +24,7 @@ interface StepProps {
 export function StepLocation({ draft, errors, onChange, onHours }: StepProps) {
   const t = useTranslations('onboarding');
   const tc = useTranslations('common');
-  const { data: districts } = useDistricts();
+  const { data: districts, error: distError, refetch: retryDist } = useDistricts();
 
   return (
     <>
@@ -62,6 +62,14 @@ export function StepLocation({ draft, errors, onChange, onHours }: StepProps) {
             ))}
           </select>
         </div>
+        {distError && !districts && (
+          <div className={s.err} role="alert" style={{ padding: '0 16px 10px' }}>
+            {t('loadFailed')}{' '}
+            <button type="button" className={s.link} onClick={() => void retryDist()}>
+              {t('loadRetry')}
+            </button>
+          </div>
+        )}
         <Field
           id="street"
           label={t('step2.street')}

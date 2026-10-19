@@ -296,7 +296,10 @@
     "freeCancel": "Free cancellation up to {h, plural, one {# hour} other {# hours}} before",
     "saved": "Saved",
     "saveForLater": "Save for later",
-    "moreAt": "More at {shop}"
+    "moreAt": "More at {shop}",
+    "slotsFailed": "We couldn’t load the free times.",
+    "slotsRetry": "Try again",
+    "slotsLoading": "Loading free times"
   },
   "confirm": {
     "crumb": "Confirm booking",

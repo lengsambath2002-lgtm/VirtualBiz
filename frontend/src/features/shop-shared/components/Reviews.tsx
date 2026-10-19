@@ -29,17 +29,25 @@ export interface ReviewRow {
 
 const LEVELS = ['', 'level.1', 'level.2', 'level.3', 'level.4', 'level.5'] as const;
 
+const shopReviewsQuery = (shopId: string | undefined) => ({
+  queryKey: ['shop', 'reviews', shopId],
+  queryFn: () =>
+    api.get<ListingReview[]>(`/marketplace/shops/${encodeURIComponent(shopId!)}/reviews`, {
+      auth: false,
+    }),
+  enabled: !!shopId,
+  staleTime: 60_000,
+});
+
+/** Whether a shop's reviews failed to load (nothing cached), and a retry. */
+export function useShopReviewsLoad(shopId: string | undefined) {
+  const q = useQuery(shopReviewsQuery(shopId));
+  return { error: q.data ? null : q.error, retry: () => void q.refetch() };
+}
+
 /** A shop's listing reviews (`GET /api/marketplace/shops/{slug}/reviews`), grouped by item. */
 export function useShopReviews(shopId: string | undefined) {
-  const q = useQuery({
-    queryKey: ['shop', 'reviews', shopId],
-    queryFn: () =>
-      api.get<ListingReview[]>(`/marketplace/shops/${encodeURIComponent(shopId!)}/reviews`, {
-        auth: false,
-      }),
-    enabled: !!shopId,
-    staleTime: 60_000,
-  });
+  const q = useQuery(shopReviewsQuery(shopId));
   return useMemo(
     () =>
       (q.data ?? []).reduce<Record<string, ListingReview[]>>((m, r) => {

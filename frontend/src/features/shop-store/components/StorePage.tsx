@@ -3,13 +3,17 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import { EmptyView } from '@/components/feedback';
+import { EmptyView, ErrorView } from '@/components/feedback';
 import { Link } from '@/lib/i18n/navigation';
 import { cn } from '@/lib/utils/cn';
 
 import { Ic } from '@/features/shop-shared/components/Ic';
 import { OpenLabel, ProductCard, itemHref } from '@/features/shop-shared/components/cards';
-import { ReviewItem, useReviewRows } from '@/features/shop-shared/components/Reviews';
+import {
+  ReviewItem,
+  useReviewRows,
+  useShopReviewsLoad,
+} from '@/features/shop-shared/components/Reviews';
 import { Crumbs, NotFound, Ph, Star } from '@/features/shop-shared/components/ui';
 import { useFmt, useNeedAuth, useShopData } from '@/features/shop-shared/hooks';
 import { dist, hoursOn, freeOver } from '@/features/shop-shared/rules';
@@ -57,6 +61,7 @@ function StoreView({ sh }: { sh: ShopView }) {
   const following = useIsSaved('shop:' + sh.id);
   const toggleSaved = useToggleSavedKey();
   const rowsFor = useReviewRows(sh.id);
+  const reviewsLoad = useShopReviewsLoad(sh.id);
   const [tab, setTab] = useState<'items' | 'reviews' | 'about'>('items');
   const its = items.filter((i) => i.shop === sh.id);
   const evs = deals.filter((e) => e.shop === sh.id);
@@ -168,7 +173,16 @@ function StoreView({ sh }: { sh: ShopView }) {
         )
       ) : tab === 'reviews' ? (
         <div className={cn(s.panel, s.glassMat)}>
-          {!rv.length && <EmptyView title={t('noReviews')} body={t('noReviewsBody')} />}
+          {reviewsLoad.error ? (
+            <ErrorView
+              error={reviewsLoad.error}
+              retry={reviewsLoad.retry}
+              size="panel"
+              home={null}
+            />
+          ) : (
+            !rv.length && <EmptyView title={t('noReviews')} body={t('noReviewsBody')} />
+          )}
           {rv.map((x) => {
             const it = item(x.itemId);
             return (

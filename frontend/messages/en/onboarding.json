@@ -110,5 +110,7 @@
     "repair": "Repair",
     "fitness": "Fitness",
     "other-service": "Other"
-  }
+  },
+  "loadFailed": "Couldn’t load the list.",
+  "loadRetry": "Try again"
 }

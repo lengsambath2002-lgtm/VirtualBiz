@@ -50,7 +50,12 @@ export function useSlots(it: Item, b: BookingDraft) {
     m: x.start,
     dis: b.staff ? !x.staffIds.includes(b.staff) : x.staffIds.length === 0,
   }));
-  return { slots, loading: q.isLoading };
+  return {
+    slots,
+    loading: q.isLoading,
+    error: q.data ? null : q.error,
+    retry: () => void q.refetch(),
+  };
 }
 
 function ServiceView({ it, sh }: { it: Item; sh: ShopView }) {
@@ -76,7 +81,7 @@ function ServiceView({ it, sh }: { it: Item; sh: ShopView }) {
   const setB = (patch: Partial<BookingDraft>) =>
     useShopStore.getState().set({ bk: { ...b, ...patch } });
 
-  const { slots, loading } = useSlots(it, b);
+  const { slots, loading, error: slotsError, retry: retrySlots } = useSlots(it, b);
   const free = slots.filter((x) => !x.dis).length;
   const more = items.filter((i) => i.shop === sh.id && i.id !== it.id);
   const staff = staffFor(it, sh);
@@ -162,7 +167,23 @@ function ServiceView({ it, sh }: { it: Item; sh: ShopView }) {
               <span className={s.lbl}>
                 {t('time')} <span>{t('open', { n: free })}</span>
               </span>
-              {free || loading ? (
+              {slotsError ? (
+                // Times that failed to load are not "fully booked": say so, offer a retry.
+                <div className={cn(s.alert, s.aInfo)} role="alert">
+                  <span>
+                    {t('slotsFailed')}{' '}
+                    <button className={s.link} style={{ color: 'inherit' }} onClick={retrySlots}>
+                      {t('slotsRetry')}
+                    </button>
+                  </span>
+                </div>
+              ) : loading ? (
+                <div className={s.slots} aria-busy="true" aria-label={t('slotsLoading')}>
+                  {Array.from({ length: 8 }, (_, i) => (
+                    <span key={i} className={cn(s.slot, s.skel)} style={{ minHeight: 40 }} />
+                  ))}
+                </div>
+              ) : free ? (
                 SLOT_GROUPS.map(([g, a, z]) => {
                   const xs = slots.filter((x) => x.m >= a && x.m < z);
                   return xs.length ? (

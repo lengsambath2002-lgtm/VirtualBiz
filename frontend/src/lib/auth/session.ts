@@ -79,7 +79,12 @@ export const useSessionStore = create<SessionState>()(
   ),
 );
 
-/** `POST /api/auth/refresh`: a new access token from the cookie, or null (then signed out). */
+/**
+ * `POST /api/auth/refresh`: a new access token from the cookie, or null. Only the server saying
+ * no (401 / 403: expired, revoked or suspended) signs the user out. A request that never got an
+ * answer (offline, or cut off because the user moved to another page) or a server error keeps
+ * the session: the next request tries again.
+ */
 async function refresh(): Promise<string | null> {
   try {
     const session = await apiFetch<AuthSession>('/auth/refresh', { method: 'POST', auth: false });
@@ -87,7 +92,7 @@ async function refresh(): Promise<string | null> {
     return session.accessToken;
   } catch (e) {
     if (!(e instanceof ApiError)) throw e;
-    useSessionStore.getState().clear();
+    if (e.status === 401 || e.status === 403) useSessionStore.getState().clear();
     return null;
   }
 }

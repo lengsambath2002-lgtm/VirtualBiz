@@ -49,6 +49,23 @@ describe('session', () => {
     expect(useSessionStore.getState().user).toBeNull();
   });
 
+  it('a refresh that never got an answer keeps the user signed in', async () => {
+    // Offline, or cut off because the user moved to another page mid-request.
+    useSessionStore.setState({ user });
+    fetchMock.mockRejectedValueOnce(new TypeError('Failed to fetch'));
+    await expect(refreshAccessToken()).resolves.toBeNull();
+    expect(useSessionStore.getState().user?.id).toBe(user.id);
+  });
+
+  it('a server error during refresh keeps the user signed in', async () => {
+    useSessionStore.setState({ user });
+    fetchMock.mockResolvedValueOnce(
+      new Response(JSON.stringify({ status: { code: 'INTERNAL_ERROR' } }), { status: 500 }),
+    );
+    await expect(refreshAccessToken()).resolves.toBeNull();
+    expect(useSessionStore.getState().user?.id).toBe(user.id);
+  });
+
   it('a good refresh stores the new token and user', async () => {
     useSessionStore.setState({ user });
     fetchMock.mockResolvedValueOnce(

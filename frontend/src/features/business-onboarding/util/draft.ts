@@ -8,8 +8,9 @@ export const MAX_ID_PHOTO_BYTES = 8e6;
 export const SHOP_HOST = 'virtualbiz.com.kh';
 
 /** A fresh draft, prefilled with the signed-in user's phone (prototype `blank()`). */
-export function blankDraft(userPhone?: string): BusinessDraft {
+export function blankDraft(userPhone?: string, ownerId?: string): BusinessDraft {
   return {
+    ...(ownerId ? { ownerId } : {}),
     type: '',
     name: '',
     cat: '',

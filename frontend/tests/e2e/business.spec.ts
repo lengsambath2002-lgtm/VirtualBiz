@@ -1,7 +1,7 @@
 import { expect as baseExpect, type Page, test } from '@playwright/test';
 import path from 'node:path';
 
-import { signIn, trackErrors } from './_helpers/app';
+import { createAccount, forgetSession, signIn, trackErrors } from './_helpers/app';
 
 const expect = baseExpect.configure({ timeout: 20_000 });
 const ID_PHOTO = path.join(__dirname, '_helpers/id-card.png');
@@ -107,5 +107,67 @@ test.describe('Create Business ✕', () => {
 
     await page.goto('/en/create-business?new=1');
     await expect(page.getByLabel('Shop name')).toHaveValue('Half-done Shop');
+  });
+});
+
+test.describe('One account, many shops', () => {
+  test('after opening a shop, "Create a new business" starts the next one', async ({
+    page,
+    request,
+  }) => {
+    const errors = trackErrors(page);
+    const owner = await createAccount(request, 'Leng Sambath');
+    const first = `LSB ${Date.now().toString(36)}`;
+    const second = `LSB Two ${Date.now().toString(36)}`;
+    await signIn(page, '/home', owner);
+    await page.goto('/en/create-business');
+    await createBusiness(page, 'products', first, 'Phones & electronics');
+
+    // Back to Create Business without ?new=1 (the switcher's link): a blank form, not the
+    // first shop's done screen.
+    await page.goto('/en/create-business');
+    await expect(page.getByRole('heading', { name: "What's your business?" })).toBeVisible();
+    await expect(page.getByLabel('Shop name')).toHaveValue('');
+    await createBusiness(page, 'bookings', second, 'Nails');
+
+    // Both are the owner's.
+    const login = await request.post('/api/auth/login', { data: owner });
+    const token = (await login.json()).data.accessToken as string;
+    const mine = await request.get('/api/me/businesses', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const names = ((await mine.json()).data as { name: string }[]).map((x) => x.name);
+    expect(names.sort()).toEqual([first, second].sort());
+    expect(errors).toEqual([]);
+  });
+
+  test('another account on the same browser starts blank and really creates its shop', async ({
+    page,
+    request,
+  }) => {
+    const a = await createAccount(request, 'Leng Sambath');
+    const b = await createAccount(request, 'Leng Tang');
+    const shopA = `Sambath Shop ${Date.now().toString(36)}`;
+    const shopB = `Tang Boxing ${Date.now().toString(36)}`;
+    await signIn(page, '/home', a);
+    await page.goto('/en/create-business');
+    await createBusiness(page, 'products', shopA, 'Phones & electronics');
+
+    // B signs in on the same browser: A's draft (and A's open shop) are not B's.
+    await forgetSession(page);
+    await signIn(page, '/home', b);
+    await page.goto('/en/create-business');
+    await expect(page.getByRole('heading', { name: "What's your business?" })).toBeVisible();
+    await expect(page.getByLabel('Shop name')).toHaveValue('');
+    await createBusiness(page, 'bookings', shopB, 'Nails');
+
+    // The shop exists on the server and belongs to B.
+    const login = await request.post('/api/auth/login', { data: b });
+    const token = (await login.json()).data.accessToken as string;
+    const list = await request.get('/api/me/businesses', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const names = ((await list.json()).data as { name: string }[]).map((x) => x.name);
+    expect(names).toEqual([shopB]);
   });
 });

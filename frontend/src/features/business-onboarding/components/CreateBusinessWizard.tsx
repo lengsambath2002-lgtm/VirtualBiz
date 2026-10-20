@@ -2,7 +2,14 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState, useSyncExternalStore, type KeyboardEvent } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type KeyboardEvent,
+} from 'react';
 
 import { fallbackErrorKey, isApiError } from '@/lib/api';
 import { useSession } from '@/lib/auth';
@@ -57,7 +64,7 @@ function Wizard() {
   const router = useRouter();
   const session = useSession();
   const user = session.user;
-  const { draft, update, reset, ready } = useBusinessDraft(user?.phone);
+  const { draft, update, reset, ready } = useBusinessDraft(user?.id, user?.phone);
   const active = ready && session.ready && user !== null;
   const { view, next, back, finish } = useWizardStep(draft, update, active);
   const { toast, show } = useToast();
@@ -70,6 +77,16 @@ function Wizard() {
     if (draft.done) reset();
     router.replace('/create-business');
   }, [ready, params, draft.done, reset, router]);
+
+  // A shop that is already open shows its done screen only right after opening it (or on a
+  // reload of that screen, `?step=done`). Coming back to Create Business any other way (the
+  // switcher, the landing page, a workspace with no business of that type) starts the next one.
+  const openedNow = useRef(false);
+  useEffect(() => {
+    if (!ready || !draft.done || openedNow.current) return;
+    if (params.get('step') === 'done' || params.get('new') === '1') return;
+    reset();
+  }, [ready, draft.done, params, reset]);
 
   // Errors belong to the view they were raised on; any re-render of the step from new
   // data (type change, photo) clears them, as the prototype's full re-render does.
@@ -133,6 +150,7 @@ function Wizard() {
         return;
       }
     }
+    openedNow.current = true; // the done screen is next, not a fresh start
     finish();
     setOpening(false);
   };

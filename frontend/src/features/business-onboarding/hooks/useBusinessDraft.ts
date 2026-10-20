@@ -52,7 +52,11 @@ export const useDraftStore = create<DraftState>()(
   persist(
     (set) => ({
       draft: null,
-      patch: (patch, base) => set((s) => ({ draft: { ...(s.draft ?? base), ...patch } })),
+      // A stored draft that is someone else's is replaced, not merged into.
+      patch: (patch, base) =>
+        set((s) => ({
+          draft: { ...(s.draft && s.draft.ownerId === base.ownerId ? s.draft : base), ...patch },
+        })),
       reset: () => {
         rawDraftStorage.removeItem(DRAFT_STORAGE_KEY);
         set({ draft: null });
@@ -69,9 +73,10 @@ export const useDraftStore = create<DraftState>()(
 
 /**
  * The onboarding draft for the signed-in user. Rehydrates from localStorage after mount so
- * the server render and first client render agree (`ready` is false until then).
+ * the server render and first client render agree (`ready` is false until then). A stored
+ * draft that another account started on this browser is ignored: this user starts blank.
  */
-export function useBusinessDraft(userPhone: string | undefined) {
+export function useBusinessDraft(userId: string | undefined, userPhone: string | undefined) {
   const stored = useDraftStore((s) => s.draft);
   const patchStore = useDraftStore((s) => s.patch);
   const [ready, setReady] = useState(() => useDraftStore.persist.hasHydrated());
@@ -86,8 +91,8 @@ export function useBusinessDraft(userPhone: string | undefined) {
     return unsub;
   }, []);
 
-  const base = useMemo(() => blankDraft(userPhone), [userPhone]);
-  const draft = stored ?? base;
+  const base = useMemo(() => blankDraft(userPhone, userId), [userPhone, userId]);
+  const draft = stored && userId && stored.ownerId === userId ? stored : base;
   const update = useMemo(
     () => (patch: Partial<BusinessDraft>) => patchStore(patch, base),
     [patchStore, base],

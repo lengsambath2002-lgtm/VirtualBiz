@@ -31,6 +31,11 @@ export interface BusinessDraft {
   todo: Partial<Record<TodoKey, boolean>>;
   /** Id of the business created when the shop opened (set on the done screen). */
   createdId?: string;
+  /**
+   * The account that started the draft. The draft is stored per browser, so a draft from
+   * someone else who signed in here (or one saved before this field existed) is not resumed.
+   */
+  ownerId?: string;
 }
 
 export type WizardStep = 1 | 2 | 3;

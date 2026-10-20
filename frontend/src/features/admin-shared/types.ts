@@ -20,11 +20,14 @@ export interface Period {
   newShops: number;
 }
 
+export type OverviewRange = 7 | 30 | 90;
+
 export interface Overview {
+  /** Length of `current` (and `previous`, the same span before it). */
+  rangeDays: OverviewRange;
   today: Period;
-  last7: Period;
-  last30: Period;
-  previous30: Period;
+  current: Period;
+  previous: Period;
   counts: {
     users: number;
     shops: number;
@@ -50,14 +53,47 @@ export interface Overview {
     gmv: number;
     orders: number;
   }[];
+  categories: { id: string; name: string; nameKh: string; gmv: number; orders: number }[];
 }
+
+/** `GET /api/admin/settings` (and the public `/api/meta/settings`). */
+export interface PlatformSettings {
+  commissionPct: number;
+  payoutDelayDays: number;
+  khrPerUsd: number;
+  updatedAt: string;
+  updatedBy?: string;
+}
+
+export interface AdminCategory {
+  id: string;
+  name: string;
+  nameKh: string;
+  icon: string;
+  tint: 1 | 2 | 3 | 4 | 5 | 6;
+  businessType: BusinessType;
+  inMarketplace: boolean;
+  shops: number;
+}
+
+export type CategoryInput = Partial<
+  Pick<AdminCategory, 'businessType' | 'name' | 'nameKh' | 'icon' | 'tint' | 'inMarketplace'>
+>;
 
 export interface AuditEntry {
   id: string;
   actorId?: string;
   actorName: string;
   action: string;
-  targetType: 'USER' | 'BUSINESS' | 'ORDER' | 'REVIEW' | 'PROMOTION' | 'PAYOUT';
+  targetType:
+    | 'USER'
+    | 'BUSINESS'
+    | 'ORDER'
+    | 'REVIEW'
+    | 'PROMOTION'
+    | 'PAYOUT'
+    | 'SETTINGS'
+    | 'CATEGORY';
   targetId: string;
   targetLabel?: string;
   reason?: string;

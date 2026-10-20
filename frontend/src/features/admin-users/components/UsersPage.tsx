@@ -13,11 +13,12 @@ import {
   Pill,
   SearchBox,
   Seg,
+  useRowLink,
 } from '@/features/admin-shared/components/ui';
 import { useListParams } from '@/features/admin-shared/hooks/useListParams';
 import { useAdminFmt } from '@/features/admin-shared/util/format';
 import { cx, s } from '@/features/seller-shared';
-import { useRouter } from '@/lib/i18n/navigation';
+import { Link } from '@/lib/i18n/navigation';
 import { formatPhone } from '@/lib/utils/phone';
 
 import { RolePill } from './RolePill';
@@ -29,10 +30,9 @@ export function UsersPage() {
   const t = useTranslations('admin.users');
   const ta = useTranslations('admin');
   const f = useAdminFmt();
-  const router = useRouter();
+  const row = useRowLink();
   const { values: v, page, set } = useListParams(KEYS);
   const { data, isPending, error, refetch } = useUsers({ ...v, page, size: 20 });
-  const open = (id: string) => router.push(`/admin/users/${id}`);
   return (
     <>
       <PageHead title={t('title')} sub={data ? t('sub', { n: data.total }) : undefined} />
@@ -96,18 +96,14 @@ export function UsersPage() {
               </thead>
               <tbody>
                 {data.items.map((u) => (
-                  <tr
-                    key={u.id}
-                    className={s.clk}
-                    tabIndex={0}
-                    onClick={() => open(u.id)}
-                    onKeyDown={(e) => e.key === 'Enter' && open(u.id)}
-                  >
+                  <tr key={u.id} {...row(`/admin/users/${u.id}`)}>
                     <td>
                       <div className={s.cw}>
                         <Avatar name={u.name} url={u.avatarUrl} size={34} />
                         <div style={{ minWidth: 0 }}>
-                          <div className={s.who}>{u.name}</div>
+                          <Link href={`/admin/users/${u.id}`} className={cx(s.who, s.noUnderline)}>
+                            {u.name}
+                          </Link>
                           {u.platformRole && <RolePill role={u.platformRole} />}
                         </div>
                       </div>

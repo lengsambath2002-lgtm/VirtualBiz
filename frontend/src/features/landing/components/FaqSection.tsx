@@ -11,7 +11,7 @@ const ITEMS = ['registered', 'paid', 'counter', 'delivery', 'staff', 'khmer'] as
 const INDIVIDUAL_SELLER_LIMIT_USD = 1000;
 
 /** FAQ accordion (native <details>; items open and close independently). */
-export function FaqSection() {
+export function FaqSection({ payoutDays }: { payoutDays: number }) {
   const t = useTranslations('marketing.faq');
   return (
     <section id="faq" className={cn(s.section, s.flushTop)}>
@@ -30,7 +30,7 @@ export function FaqSection() {
               <p>
                 {key === 'registered'
                   ? t('items.registered.a', { limit: formatUsdWhole(INDIVIDUAL_SELLER_LIMIT_USD) })
-                  : t(`items.${key}.a`)}
+                  : t(`items.${key}.a`, { days: payoutDays })}
               </p>
             </details>
           ))}

@@ -8,7 +8,7 @@ import { FeeCalculator } from './FeeCalculator';
 function setup() {
   render(
     <NextIntlClientProvider locale="en" messages={messages}>
-      <FeeCalculator />
+      <FeeCalculator commissionPct={5} payoutDays={1} />
     </NextIntlClientProvider>,
   );
   const text = (id: string) => screen.getByTestId(`calc-${id}`).textContent;

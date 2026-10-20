@@ -38,6 +38,10 @@ public class AuditLog {
     public static final String PROMOTION_UPDATED = "PROMOTION_UPDATED";
     public static final String PROMOTION_ENDED = "PROMOTION_ENDED";
     public static final String PAYOUT_RECORDED = "PAYOUT_RECORDED";
+    public static final String SETTINGS_UPDATED = "SETTINGS_UPDATED";
+    public static final String CATEGORY_CREATED = "CATEGORY_CREATED";
+    public static final String CATEGORY_UPDATED = "CATEGORY_UPDATED";
+    public static final String CATEGORIES_REORDERED = "CATEGORIES_REORDERED";
 
     private final AdminAuditRepository audits;
     private final Clock clock;

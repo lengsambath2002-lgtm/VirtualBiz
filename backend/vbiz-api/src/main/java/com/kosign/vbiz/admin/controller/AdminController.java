@@ -16,12 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.kosign.vbiz.admin.payload.AdminBusinessDetail;
 import com.kosign.vbiz.admin.payload.AdminBusinessRow;
+import com.kosign.vbiz.admin.payload.AdminCategoryRow;
 import com.kosign.vbiz.admin.payload.AdminOrderDetail;
 import com.kosign.vbiz.admin.payload.AdminOrderRow;
 import com.kosign.vbiz.admin.payload.AdminReviewRow;
 import com.kosign.vbiz.admin.payload.AdminUserDetail;
 import com.kosign.vbiz.admin.payload.AdminUserRow;
 import com.kosign.vbiz.admin.payload.AuditEntry;
+import com.kosign.vbiz.admin.payload.CategoryInput;
 import com.kosign.vbiz.admin.payload.IdPhotoResponse;
 import com.kosign.vbiz.admin.payload.OverviewResponse;
 import com.kosign.vbiz.admin.payload.PageResponse;
@@ -31,18 +33,22 @@ import com.kosign.vbiz.admin.payload.PayoutResponse;
 import com.kosign.vbiz.admin.payload.ReasonInput;
 import com.kosign.vbiz.admin.payload.RefundInput;
 import com.kosign.vbiz.admin.payload.RoleInput;
+import com.kosign.vbiz.admin.payload.SettingsInput;
 import com.kosign.vbiz.admin.service.AdminAuditService;
 import com.kosign.vbiz.admin.service.AdminBusinessService;
+import com.kosign.vbiz.admin.service.AdminCategoryService;
 import com.kosign.vbiz.admin.service.AdminOrderService;
 import com.kosign.vbiz.admin.service.AdminOverviewService;
 import com.kosign.vbiz.admin.service.AdminPayoutService;
 import com.kosign.vbiz.admin.service.AdminPromotionService;
 import com.kosign.vbiz.admin.service.AdminReviewService;
+import com.kosign.vbiz.admin.service.AdminSettingsService;
 import com.kosign.vbiz.admin.service.AdminUserService;
 import com.kosign.vbiz.business.domain.BusinessType;
 import com.kosign.vbiz.business.domain.VerificationStatus;
 import com.kosign.vbiz.common.api.ApiResponse;
 import com.kosign.vbiz.common.api.BaseController;
+import com.kosign.vbiz.meta.payload.PlatformSettingsResponse;
 import com.kosign.vbiz.promotion.payload.PromotionInput;
 import com.kosign.vbiz.promotion.payload.PromotionResponse;
 
@@ -68,10 +74,12 @@ public class AdminController extends BaseController {
     private final AdminPromotionService promotions;
     private final AdminPayoutService payouts;
     private final AdminAuditService audit;
+    private final AdminSettingsService settings;
+    private final AdminCategoryService categories;
 
     @GetMapping("/overview")
-    public ResponseEntity<ApiResponse<OverviewResponse>> overview() {
-        return ok(overview.overview());
+    public ResponseEntity<ApiResponse<OverviewResponse>> overview(@RequestParam(required = false) Integer days) {
+        return ok(overview.overview(days));
     }
 
     // ── Shops ──
@@ -244,6 +252,40 @@ public class AdminController extends BaseController {
     @PostMapping("/payouts")
     public ResponseEntity<ApiResponse<PayoutResponse>> pay(@Valid @RequestBody PayoutInput in) {
         return created(payouts.pay(in));
+    }
+
+    // ── Settings and categories ──
+
+    @GetMapping("/settings")
+    public ResponseEntity<ApiResponse<PlatformSettingsResponse>> settings() {
+        return ok(settings.get());
+    }
+
+    @PutMapping("/settings")
+    public ResponseEntity<ApiResponse<PlatformSettingsResponse>> updateSettings(@Valid @RequestBody SettingsInput in) {
+        return ok(settings.update(in));
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<ApiResponse<List<AdminCategoryRow>>> categories() {
+        return ok(categories.list());
+    }
+
+    @PostMapping("/categories")
+    public ResponseEntity<ApiResponse<AdminCategoryRow>> createCategory(@RequestBody CategoryInput in) {
+        return created(categories.create(in));
+    }
+
+    @PatchMapping("/categories/{id}")
+    public ResponseEntity<ApiResponse<AdminCategoryRow>> updateCategory(@PathVariable String id,
+            @RequestBody CategoryInput in) {
+        return ok(categories.update(id, in));
+    }
+
+    /** Body: every category id in the new display order. */
+    @PutMapping("/categories/order")
+    public ResponseEntity<ApiResponse<List<AdminCategoryRow>>> reorderCategories(@RequestBody List<String> ids) {
+        return ok(categories.reorder(ids));
     }
 
     // ── Audit log ──

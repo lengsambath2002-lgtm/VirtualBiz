@@ -14,7 +14,7 @@ export interface PriceProps {
 
 const SIZES = { sm: 'text-[13px]', md: 'text-[15px]', lg: 'text-[22px]' } as const;
 
-/** USD price with the riel equivalent (1 USD ≈ 4,100 KHR, rounded to 100). */
+/** USD price with the riel equivalent (the platform's rate, rounded to 100 riel). */
 export function Price({ usd, compareAt, showKhr = true, size = 'md', className }: PriceProps) {
   const discounted = compareAt != null && compareAt > usd;
   return (

@@ -3,11 +3,11 @@
 import { useTranslations } from 'next-intl';
 
 import { cx, s } from '@/features/seller-shared';
-import { useRouter } from '@/lib/i18n/navigation';
+import { Link } from '@/lib/i18n/navigation';
 
 import type { OrderRow } from '../types';
 import { useAdminFmt } from '../util/format';
-import { Empty, OrderStatusPill, PaymentPill } from './ui';
+import { Empty, OrderStatusPill, PaymentPill, useRowLink } from './ui';
 
 /** Orders across shops; a row opens the order. */
 export function OrdersTable({
@@ -21,9 +21,8 @@ export function OrdersTable({
 }) {
   const t = useTranslations('admin.orders');
   const f = useAdminFmt();
-  const router = useRouter();
+  const row = useRowLink();
   if (!rows.length) return <Empty title={t('empty')} />;
-  const open = (n: string) => router.push(`/admin/orders/${encodeURIComponent(n)}`);
   return (
     <div className={s.tblWrap}>
       <table>
@@ -39,15 +38,15 @@ export function OrdersTable({
         </thead>
         <tbody>
           {rows.map((o) => (
-            <tr
-              key={o.id}
-              className={s.clk}
-              tabIndex={0}
-              onClick={() => open(o.number)}
-              onKeyDown={(e) => e.key === 'Enter' && open(o.number)}
-            >
+            <tr key={o.id} {...row(`/admin/orders/${encodeURIComponent(o.number)}`)}>
               <td>
-                <strong className={s.num}>{o.number}</strong>
+                <Link
+                  href={`/admin/orders/${encodeURIComponent(o.number)}`}
+                  className={cx(s.num, s.noUnderline)}
+                  style={{ fontWeight: 600, color: 'inherit' }}
+                >
+                  {o.number}
+                </Link>
                 <span className={cx(s.tiny, s.muted, s.block)}>{f.dateTime(o.at)}</span>
               </td>
               {!hideShop && <td>{o.shopName}</td>}

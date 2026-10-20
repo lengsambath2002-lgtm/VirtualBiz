@@ -746,7 +746,7 @@
     "freeOver": "Free delivery on orders over",
     "payments": "Payments",
     "khqr": "KHQR merchant (Bakong ID)",
-    "khqrHint": "Payouts settle to this account next business day.",
+    "khqrHint": "Payouts settle to this account {days, plural, =0 {the same day as delivery} one {the day after delivery} other {# days after delivery}}.",
     "cod": "Cash on delivery",
     "codHint": "Rider collects cash and returns it within 24 h"
   },

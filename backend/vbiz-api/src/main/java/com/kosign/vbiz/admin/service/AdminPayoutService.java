@@ -24,6 +24,7 @@ import com.kosign.vbiz.business.repository.BusinessRepository;
 import com.kosign.vbiz.common.api.StatusCode;
 import com.kosign.vbiz.common.error.BusinessException;
 import com.kosign.vbiz.common.helper.Money;
+import com.kosign.vbiz.meta.service.PlatformSettingsService;
 import com.kosign.vbiz.notification.domain.NotificationKind;
 import com.kosign.vbiz.notification.service.NotificationService;
 
@@ -33,7 +34,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * Shop payouts (docs/api/phase7-admin.md § Payouts). VirtualBiz collects online payments (KHQR,
  * card) and keeps its commission; a payment is released to the shop a day after its order was
- * delivered or picked up ({@link PayoutProperties}). Staff transfer the balance to the shop's Bakong account and
+ * delivered or picked up (platform settings). Staff transfer the balance to the shop's Bakong account and
  * record it here with the transfer reference; a refund of an already paid-out payment is taken
  * back from the next payout. Cash on delivery and counter sales never pass through VirtualBiz.
  */
@@ -47,7 +48,7 @@ public class AdminPayoutService {
     private final PayoutRepository payouts;
     private final BusinessRepository businesses;
     private final NotificationService notifications;
-    private final PayoutProperties payoutProps;
+    private final PlatformSettingsService settings;
     private final EntityManager em;
     private final Clock clock;
 
@@ -118,6 +119,6 @@ public class AdminPayoutService {
     }
 
     private Instant releaseBefore() {
-        return clock.instant().minus(payoutProps.releaseAfter());
+        return clock.instant().minus(settings.payoutDelay());
     }
 }

@@ -11,14 +11,17 @@ import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Platform category (reference data, seeded by Flyway). Open question #11: platform categories
  * are the marketplace level; shop-defined collections are a separate, per-business concept.
  * {@code inMarketplace} marks the ones shown in the marketplace category bar; all are offered
- * when a business is created (filtered by {@code businessType}).
+ * when a business is created (filtered by {@code businessType}). A super-admin adds, renames,
+ * hides and reorders them from the console; the id never changes (businesses point at it).
  */
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Table(name = "category")
@@ -30,6 +33,9 @@ public class Category {
 
     @Column(name = "name", length = 80, nullable = false)
     private String name;
+
+    @Column(name = "name_kh", length = 80, nullable = false)
+    private String nameKh;
 
     @Column(name = "icon", length = 40, nullable = false)
     private String icon;
@@ -47,4 +53,11 @@ public class Category {
 
     @Column(name = "sort_order", nullable = false)
     private int sortOrder;
+
+    public static Category create(String id, BusinessType type) {
+        Category c = new Category();
+        c.id = id;
+        c.businessType = type;
+        return c;
+    }
 }

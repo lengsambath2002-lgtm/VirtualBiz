@@ -41,7 +41,7 @@ Lists take `page` (0-based) and `size` (1–100, default 20) and answer
 
 | Method & path | Body | Returns |
 |---|---|---|
-| GET `/api/admin/overview` | | `Overview`: GMV / orders / commission / bookings / new users / new shops for today, 7 and 30 days and the 30 before; counts; queues (pending ID checks, stuck orders, payouts due, suspended shops and accounts, 1–2★ reviews this week); 30 days of GMV; top 5 shops |
+| GET `/api/admin/overview` | `?days=7\|30\|90` (default 30) | `Overview`: `rangeDays`; GMV / orders / commission / bookings / new users / new shops for today, the `current` period and the `previous` one of the same length; counts; queues (pending ID checks, stuck orders, payouts due, suspended shops and accounts, 1–2★ reviews this week); GMV per day of the period; top 5 shops and sales by category for the period |
 | GET `/api/admin/businesses` | `?q&type&verification&status=active\|offline\|suspended&sort=newest\|pending\|gmv\|rating\|name` | page of `AdminBusinessRow` |
 | GET `/api/admin/businesses/{id}` | | `AdminBusinessDetail` (stats, payable, members, recent orders, history) |
 | GET `/api/admin/businesses/{id}/id-photo` | | `{contentType, size, dataUrl, uploadedAt}`; **404** when none |
@@ -69,6 +69,13 @@ Lists take `page` (0-based) and `size` (1–100, default 20) and answer
 | GET `/api/admin/payouts` | `?businessId` | page of `Payout` |
 | POST `/api/admin/payouts` | `{businessId, reference, note?}` | **201** `Payout` |
 | GET `/api/admin/audit` | `?q&targetType&targetId&action` | page of `AuditEntry` |
+| GET `/api/admin/settings` | | `PlatformSettings` |
+| PUT `/api/admin/settings` | `{commissionPct, payoutDelayDays, khrPerUsd}` | `PlatformSettings` (super-admin only) |
+| GET `/api/admin/categories` | | `AdminCategoryRow[]` (with shop counts), display order |
+| POST `/api/admin/categories` | `{businessType, name, nameKh, icon?, tint?, inMarketplace?}` | **201** row (super-admin only); **409** `CONFLICT` for a name taken in that type |
+| PATCH `/api/admin/categories/{id}` | any of `{name, nameKh, icon, tint, inMarketplace}` | row (super-admin only) |
+| PUT `/api/admin/categories/order` | every category id, in the new order | rows (super-admin only) |
+| GET `/api/meta/settings` | (public) | `{commissionPct, payoutDelayDays, khrPerUsd, updatedAt, updatedBy}` |
 | GET `/api/payouts` | (shop, `X-Business-Id`, owner or manager) | `{balance, payouts (last 10), releaseDays, commissionPct}` |
 
 ### Orders: support's dispute tools
@@ -94,12 +101,13 @@ before a shop's code.
 
 ### Payouts
 
-VirtualBiz collects online payments (KHQR, card) and keeps its commission (5 %,
-`payment.commission`). Cash on delivery and counter sales never pass through VirtualBiz.
+VirtualBiz collects online payments (KHQR, card) and keeps its commission (a platform setting,
+5 % at launch, saved on each payment as `payment.commission` when it is created, so a change
+only affects later payments). Cash on delivery and counter sales never pass through VirtualBiz.
 
-- A payment is **released** one day after its order was delivered or picked up
-  (`vbiz.payouts.release-after`, `P1D`: the landing page promises payouts the next business
-  day); before that it is **on hold**.
+- A payment is **released** a number of days after its order was delivered or picked up (the
+  `payoutDelayDays` setting, 1 at launch; the landing page and seller settings quote it);
+  before that it is **on hold**.
 - A payment refunded after it was paid out (a return inside the 7-day window) is **taken back**
   from the next payout.
 - `payable = released − commission − (taken back − its commission)`.
@@ -115,7 +123,32 @@ Every action writes `admin_audit` in the same transaction: actor, action (`BUSIN
 `BUSINESS_REJECTED`, `BUSINESS_SUSPENDED`, `BUSINESS_REINSTATED`, `USER_SUSPENDED`,
 `USER_REINSTATED`, `USER_SIGNED_OUT`, `USER_ROLE_CHANGED`, `ORDER_CANCELLED`, `ORDER_REFUNDED`,
 `REVIEW_HIDDEN`, `REVIEW_RESTORED`, `PROMOTION_CREATED`, `PROMOTION_UPDATED`, `PROMOTION_ENDED`,
-`PAYOUT_RECORDED`), target, reason and details. Nothing edits or deletes it.
+`PAYOUT_RECORDED`, `SETTINGS_UPDATED` with `{field: {from, to}}` details, `CATEGORY_CREATED`,
+`CATEGORY_UPDATED`, `CATEGORIES_REORDERED`), target, reason and details. Nothing edits or
+deletes it.
+
+## Settings
+
+A super-admin changes the platform's numbers from **Settings** (`/admin/settings`); other staff
+see them read-only. One row, `platform_settings`:
+
+| Setting | Range | Used by |
+|---|---|---|
+| `commissionPct` | 0–30, 2 decimals | new online payments; landing pricing card and fee calculator |
+| `payoutDelayDays` | 0–30 | payout release, balances, the shop's payouts view; landing, seller settings and console wording |
+| `khrPerUsd` | 1,000–10,000 | every riel amount the app shows (prices, POS cash and change, payout totals), rounded to 100 riel |
+
+The frontend reads them from `GET /api/meta/settings`: the locale layout sets the riel rate for
+server and browser rendering (cached up to 60 s), and `usePlatformSettings()` serves client
+components.
+
+## Categories
+
+Platform categories (`category`) are edited from Settings → Categories: English and Khmer names
+(`name_kh`), an icon from the marketplace's set, a colour (tint 1–6), whether it shows in the
+marketplace bar, and the display order. The id is a slug of the English name and never changes;
+categories are never deleted (businesses point at them), only hidden. The storefront shows the
+API's names (Khmer in `kh`), so a new category needs no deploy.
 
 ## Shops' side
 
@@ -128,6 +161,10 @@ Every action writes `admin_audit` in the same transaction: actor, action (`BUSIN
   provider settings also take a Bakong ID.
 
 ## Database
+
+Flyway `V20261020_130000__platform_settings.sql`: table `platform_settings` (5 %, 1 day,
+4,100 riel), `category.name_kh`, marketplace-safe icons, and `SETTINGS` / `CATEGORY` audit
+targets.
 
 Flyway `V20261019_120000__platform_admin.sql`:
 - `users.platform_role`, `users.suspended_at`, `users.suspended_reason`;

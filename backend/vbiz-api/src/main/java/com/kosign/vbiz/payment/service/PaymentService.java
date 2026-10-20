@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kosign.vbiz.common.api.StatusCode;
 import com.kosign.vbiz.common.error.BusinessException;
 import com.kosign.vbiz.common.helper.Money;
+import com.kosign.vbiz.meta.service.PlatformSettingsService;
 import com.kosign.vbiz.notification.sse.StreamEvent;
 import com.kosign.vbiz.payment.domain.IntentStatus;
 import com.kosign.vbiz.payment.domain.Payment;
@@ -54,6 +55,7 @@ public class PaymentService {
     private final KhqrGateway khqrGateway;
     private final CardGateway cardGateway;
     private final PaymentProperties props;
+    private final PlatformSettingsService settings;
     private final ApplicationEventPublisher events;
     private final Clock clock;
     private final PaymentOrderRefs refs;
@@ -106,7 +108,7 @@ public class PaymentService {
         p.setChannel(method == PaymentMethod.CASH ? PaymentChannel.COD : PaymentChannel.ONLINE);
         p.setAmount(Money.usd(amount));
         p.setCommission(p.getChannel() == PaymentChannel.ONLINE
-                ? Money.percentOf(p.getAmount(), BigDecimal.valueOf(props.commissionPct())) : Money.ZERO);
+                ? Money.percentOf(p.getAmount(), settings.commissionPct()) : Money.ZERO);
         p.setPayoutTo(payoutTo);
         p.setStatus(paid ? PaymentStatus.PAID : PaymentStatus.PENDING);
         p.setPaidAt(paid ? clock.instant() : null);

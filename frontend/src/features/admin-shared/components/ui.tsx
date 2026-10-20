@@ -1,13 +1,35 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useLocale, useTranslations } from 'next-intl';
+import { useEffect, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
 
 import { EmptyView, ErrorView } from '@/components/feedback';
 import { cx, Ic, s } from '@/features/seller-shared';
+import { useRouter } from '@/lib/i18n/navigation';
 import { photoBg } from '@/lib/utils/photo';
 
 import type { Verification } from '../types';
+
+/**
+ * A table row that opens `href`: click or Enter opens it, Cmd / Ctrl-click opens a new tab. Put a
+ * real `<Link>` on the row's name too, so it can be middle-clicked and copied.
+ */
+export function useRowLink() {
+  const router = useRouter();
+  const locale = useLocale();
+  return (href: string) => ({
+    className: s.clk,
+    tabIndex: 0,
+    onClick: (e: MouseEvent<HTMLElement>) => {
+      if ((e.target as HTMLElement).closest('a, button, input, select, label')) return;
+      if (e.metaKey || e.ctrlKey) window.open(`/${locale}${href}`, '_blank', 'noopener');
+      else router.push(href);
+    },
+    onKeyDown: (e: KeyboardEvent<HTMLElement>) => {
+      if (e.key === 'Enter' && e.target === e.currentTarget) router.push(href);
+    },
+  });
+}
 
 /** Page title row. */
 export function PageHead({

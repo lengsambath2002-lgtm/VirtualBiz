@@ -13,6 +13,13 @@ All notable changes are recorded here. Format: [Keep a Changelog](https://keepac
 
 ### Added
 
+- Super-admin console:
+  - **Settings**: commission %, payout delay and the riel exchange rate are database settings a super-admin changes from the console (other staff see them read-only). Saving asks first and the audit log records old → new values. They replace `vbiz.payment.commission-pct`, `vbiz.payouts.release-after` and the frontend's fixed 4,100 rate.
+  - **Categories**: add, rename (English and Khmer), pick icon and colour, show or hide in the marketplace, reorder. The storefront reads names from the API, so a new category needs no deploy.
+  - **Overview**: a 7 / 30 / 90-day switch kept in the URL, KPIs with sparklines and average order value, "New" or "N×" instead of huge percentages, queue cards that turn green when clear, a sales / orders chart with hover details, top shops with share bars, sales by category, growth, and a refresh every minute.
+  - **Audit log**: grouped by day, with an icon and tone per action and settings changes shown as old → new.
+  - Shop, user and order lists: each row's name is a real link (Cmd / Ctrl-click opens a new tab).
+- Pages now follow the platform settings: the landing pricing card and fee calculator use the current commission; the payout timing on the landing page, seller settings and console Payouts page uses the current payout delay; every riel amount uses the current rate.
 - Provider Services page redesign: search and category chips, an "Add to <category>" button per table (opens the form with it chosen), team avatars with names (or "No one assigned"), 30-day bookings with a bar, Online / Hidden next to the switch, a deal's discount under the price, inline actions, phone cards, and retail products as a shelf of cards with stock.
 ### Added
 

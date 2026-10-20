@@ -1,5 +1,6 @@
 package com.kosign.vbiz.admin.payload;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -7,5 +8,5 @@ import java.util.List;
  * transfers. {@code balance} is null when no online payment has come in yet.
  */
 public record ShopPayoutsResponse(PayoutBalance balance, List<PayoutResponse> payouts, int releaseDays,
-        int commissionPct) {
+        BigDecimal commissionPct) {
 }

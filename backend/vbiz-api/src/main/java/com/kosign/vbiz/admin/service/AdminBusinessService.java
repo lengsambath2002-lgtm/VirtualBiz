@@ -26,6 +26,7 @@ import com.kosign.vbiz.business.repository.BusinessDocumentRepository;
 import com.kosign.vbiz.business.repository.BusinessRepository;
 import com.kosign.vbiz.common.api.StatusCode;
 import com.kosign.vbiz.common.error.BusinessException;
+import com.kosign.vbiz.meta.service.PlatformSettingsService;
 import com.kosign.vbiz.notification.domain.NotificationKind;
 import com.kosign.vbiz.notification.service.NotificationService;
 
@@ -48,7 +49,7 @@ public class AdminBusinessService {
     private final BusinessDocumentRepository documents;
     private final UserRepository users;
     private final NotificationService notifications;
-    private final PayoutProperties payoutProps;
+    private final PlatformSettingsService settings;
     private final Clock clock;
 
     @Transactional(readOnly = true)
@@ -68,7 +69,7 @@ public class AdminBusinessService {
                 .orElseThrow(() -> new BusinessException(StatusCode.BUSINESS_NOT_FOUND));
         Business b = require(id);
         AdminBusinessDetail.Stats s = queries.businessStats(id);
-        var payable = queries.balance(id, now.minus(payoutProps.releaseAfter())).map(PayoutBalance::payable)
+        var payable = queries.balance(id, now.minus(settings.payoutDelay())).map(PayoutBalance::payable)
                 .orElse(java.math.BigDecimal.ZERO);
         String verifiedBy = b.getVerifiedBy() == null ? null
                 : users.findById(b.getVerifiedBy()).map(u -> u.getName()).orElse(null);

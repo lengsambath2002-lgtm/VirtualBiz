@@ -14,11 +14,12 @@ import {
   SearchBox,
   Seg,
   VerificationPill,
+  useRowLink,
 } from '@/features/admin-shared/components/ui';
 import { useListParams } from '@/features/admin-shared/hooks/useListParams';
 import { useAdminFmt } from '@/features/admin-shared/util/format';
 import { cx, s } from '@/features/seller-shared';
-import { useRouter } from '@/lib/i18n/navigation';
+import { Link } from '@/lib/i18n/navigation';
 
 const KEYS = ['q', 'type', 'verification', 'status', 'sort'] as const;
 
@@ -27,10 +28,9 @@ export function ShopsPage() {
   const t = useTranslations('admin.shops');
   const ta = useTranslations('admin');
   const f = useAdminFmt();
-  const router = useRouter();
+  const row = useRowLink();
   const { values: v, page, set } = useListParams(KEYS);
   const { data, isPending, error, refetch } = useShops({ ...v, page, size: 20 });
-  const open = (id: string) => router.push(`/admin/shops/${id}`);
   return (
     <>
       <PageHead title={t('title')} sub={data ? t('sub', { n: data.total }) : undefined} />
@@ -119,18 +119,14 @@ export function ShopsPage() {
               </thead>
               <tbody>
                 {data.items.map((b) => (
-                  <tr
-                    key={b.id}
-                    className={s.clk}
-                    tabIndex={0}
-                    onClick={() => open(b.id)}
-                    onKeyDown={(e) => e.key === 'Enter' && open(b.id)}
-                  >
+                  <tr key={b.id} {...row(`/admin/shops/${b.id}`)}>
                     <td>
                       <div className={s.cw}>
                         <Avatar name={b.name} url={b.logoUrl} size={34} square />
                         <div style={{ minWidth: 0 }}>
-                          <div className={s.who}>{b.name}</div>
+                          <Link href={`/admin/shops/${b.id}`} className={cx(s.who, s.noUnderline)}>
+                            {b.name}
+                          </Link>
                           <span className={cx(s.tiny, s.muted)}>
                             {ta(`type.${b.type}`)} · {b.district}
                           </span>

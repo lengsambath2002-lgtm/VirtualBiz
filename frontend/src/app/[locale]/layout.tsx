@@ -6,6 +6,8 @@ import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server
 import type { ReactNode } from 'react';
 
 import { Providers } from '@/app/providers';
+import { serverGet } from '@/lib/api/server';
+import { setKhrRate } from '@/lib/money';
 import { isLocale, SUPPORTED_LOCALES } from '@/lib/i18n/config';
 
 import '../globals.css';
@@ -53,6 +55,9 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
   const messages = await getMessages();
+  // The riel rate is a platform setting; server and browser render prices with the same one.
+  const settings = await serverGet<{ khrPerUsd: number }>('/meta/settings', 60);
+  setKhrRate(settings?.khrPerUsd);
 
   return (
     <html
@@ -62,7 +67,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
     >
       <body suppressHydrationWarning>
         <NextIntlClientProvider locale={locale} messages={messages}>
-          <Providers>{children}</Providers>
+          <Providers khrPerUsd={settings?.khrPerUsd ?? null}>{children}</Providers>
         </NextIntlClientProvider>
       </body>
     </html>

@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils/cn';
 import { searchHref } from '../util/searchHref';
 import s from './landing.module.css';
 
-export function LandingFooter() {
+export function LandingFooter({ khrPerUsd }: { khrPerUsd: number }) {
   const t = useTranslations('marketing');
   const tc = useTranslations('common');
   return (
@@ -46,7 +46,7 @@ export function LandingFooter() {
         </div>
         <div className={s.ftB}>
           <span>{t('footer.copyright')}</span>
-          <span>{tc('rateNote')}</span>
+          <span>{tc('rateNote', { rate: khrPerUsd.toLocaleString('en-US') })}</span>
         </div>
       </div>
     </footer>

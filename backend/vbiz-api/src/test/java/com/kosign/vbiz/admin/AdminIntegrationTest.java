@@ -60,7 +60,7 @@ class AdminIntegrationTest extends OrderTestSupport {
         assertThat(o.path("days").size()).isEqualTo(30);
         assertThat(o.path("counts").path("shops").asLong()).isGreaterThanOrEqualTo(10);
         assertThat(o.path("queues").path("pendingVerifications").isIntegralNumber()).isTrue();
-        assertThat(o.path("last30").path("gmv").decimalValue()).isPositive();
+        assertThat(o.path("current").path("gmv").decimalValue()).isPositive();
         assertThat(o.path("topShops").size()).isPositive();
     }
 

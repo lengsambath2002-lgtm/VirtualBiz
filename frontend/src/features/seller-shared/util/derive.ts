@@ -1,6 +1,6 @@
 // Pure derivations over the seller state, ported from the prototype's "Derived" helpers.
 import type { Client, Variant } from '@/lib/domain';
-import { KHR_PER_USD, round2 } from '@/lib/money';
+import { khrRate, round2 } from '@/lib/money';
 
 import type {
   PayLabel,
@@ -153,7 +153,7 @@ export const posSalesFrom = (sales: SellerPosSale[], t: number) =>
   sales.filter((s) => ms(s.at) >= t);
 
 export const shiftFloat = (sh: Pick<SellerShift, 'floatUsd' | 'floatKhr'>) =>
-  round2(sh.floatUsd + sh.floatKhr / KHR_PER_USD);
+  round2(sh.floatUsd + sh.floatKhr / khrRate());
 
 /** Cash that should be in the drawer: float + cash sales − cash refunds ± cash moves. */
 export function shiftCash(pos: Pick<PosState, 'shift' | 'sales'>): number {

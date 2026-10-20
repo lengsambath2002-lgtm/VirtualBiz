@@ -13,8 +13,7 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 @ConfigurationProperties("vbiz.payment")
 public record PaymentProperties(
         @DefaultValue Khqr khqr,
-        @DefaultValue Simulator simulator,
-        @DefaultValue("5") int commissionPct) {
+        @DefaultValue Simulator simulator) {
 
     public record Khqr(
             @DefaultValue("virtualbiz@aclb") String bakongId,

@@ -86,7 +86,11 @@ export function ConfirmDialog({
   return (
     <Modal>
       <h2>{spec.title}</h2>
-      {spec.body && <p className={s.muted}>{spec.body}</p>}
+      {spec.body && (
+        <p className={s.muted} style={{ whiteSpace: 'pre-line' }}>
+          {spec.body}
+        </p>
+      )}
       {(spec.fields ?? []).map((f, i) =>
         Array.isArray(f) ? (
           <div key={i} className={s.g2}>

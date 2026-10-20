@@ -13,15 +13,19 @@ import { api } from '@/lib/api';
 import { useSession } from '@/lib/auth';
 
 import type {
+  AdminCategory,
   AuditEntry,
+  CategoryInput,
   OrderDetail,
   OrderRow,
   Overview,
+  OverviewRange,
   Page,
   Payout,
   PayoutBalance,
   PlatformPromo,
   PlatformRole,
+  PlatformSettings,
   PromoInput,
   ReviewRow,
   ShopDetail,
@@ -44,19 +48,25 @@ export function qs(p: Params): string {
   return s ? `?${s}` : '';
 }
 
-function useAdminQuery<T>(key: QueryKey, path: string, enabled = true) {
+function useAdminQuery<T>(key: QueryKey, path: string, enabled = true, refetchInterval?: number) {
   const { user } = useSession();
   return useQuery({
     queryKey: ['admin', user?.id, ...key],
     queryFn: () => api.get<T>(`/admin${path}`),
     enabled: enabled && !!user?.platformRole,
     placeholderData: keepPreviousData,
+    ...(refetchInterval ? { refetchInterval } : {}),
     // A missing shop / user / order is final; other failures get one more try.
     retry: (n, e) => !isNotFound(e) && n < 1,
   });
 }
 
-export const useOverview = () => useAdminQuery<Overview>(['overview'], '/overview');
+/** The overview (and the rail's queue badges): refreshed every minute while open. */
+export const useOverview = (days: OverviewRange = 30) =>
+  useAdminQuery<Overview>(['overview', days], `/overview?days=${days}`, true, 60_000);
+
+export const useSettings = () => useAdminQuery<PlatformSettings>(['settings'], '/settings');
+export const useCategories = () => useAdminQuery<AdminCategory[]>(['categories'], '/categories');
 
 export const useShops = (p: Params) =>
   useAdminQuery<Page<ShopRow>>(['shops', p], `/businesses${qs(p)}`);
@@ -128,6 +138,12 @@ export const adminApi = {
   updatePromo: (id: string, input: PromoInput) =>
     api.patch<PlatformPromo>(`/admin/promotions/${id}`, input),
   endPromo: (id: string) => api.post<PlatformPromo>(`/admin/promotions/${id}/end`, {}),
+  updateSettings: (s: Pick<PlatformSettings, 'commissionPct' | 'payoutDelayDays' | 'khrPerUsd'>) =>
+    api.put<PlatformSettings>('/admin/settings', s),
+  createCategory: (input: CategoryInput) => api.post<AdminCategory>('/admin/categories', input),
+  updateCategory: (id: string, input: CategoryInput) =>
+    api.patch<AdminCategory>(`/admin/categories/${encodeURIComponent(id)}`, input),
+  reorderCategories: (ids: string[]) => api.put<AdminCategory[]>('/admin/categories/order', ids),
   pay: (businessId: string, reference: string, note?: string) =>
     api.post<Payout>('/admin/payouts', { businessId, reference, ...(note ? { note } : {}) }),
 };

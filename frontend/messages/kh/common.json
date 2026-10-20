@@ -2,7 +2,7 @@
   "appName": "VirtualBiz",
   "close": "បិទ",
   "language": "ភាសា",
-  "rateNote": "តម្លៃគិតជាដុល្លារ · 1 ដុល្លារ ≈ 4,100 រៀល",
+  "rateNote": "តម្លៃគិតជាដុល្លារ · 1 ដុល្លារ ≈ {rate} រៀល",
   "payments": {
     "khqr": "KHQR",
     "abaPay": "ABA PAY",

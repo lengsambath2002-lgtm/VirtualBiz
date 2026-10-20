@@ -69,7 +69,7 @@ export function useFmt() {
   const locale = useLocale();
   const t = useTranslations('shop.time');
   const tc = useTranslations('common');
-  const ids = useShopData().districtIds;
+  const { districtIds: ids, categories } = useShopData();
   const tag = intlTag(locale);
   const fmtD = useCallback(
     (ms: number) =>
@@ -115,9 +115,14 @@ export function useFmt() {
     },
     [ids, tc],
   );
+  // Category names come from the API (a super-admin edits them); message keys cover older ids.
   const category = useCallback(
-    (id: string) => (tc.has(`categories.${id}` as never) ? tc(`categories.${id}` as never) : id),
-    [tc],
+    (id: string) => {
+      const c = categories.find((x) => x.id === id);
+      if (c) return locale === 'kh' ? c.nameKh || c.name : c.name;
+      return tc.has(`categories.${id}` as never) ? tc(`categories.${id}` as never) : id;
+    },
+    [categories, locale, tc],
   );
   return {
     money: formatUsd,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
 
 import { adminApi, useAdminAction, usePromos } from '@/features/admin-shared/api';
@@ -40,11 +40,14 @@ const toLocal = (iso: string) => {
 
 function PromoForm({ promo, onClose }: { promo: PlatformPromo | null; onClose: () => void }) {
   const t = useTranslations('admin.promos');
+  const locale = useLocale();
   const run = useAdminAction((fn: () => Promise<unknown>) => fn());
   const { data: cats = [] } = useQuery({
     queryKey: ['meta', 'categories'],
     queryFn: () =>
-      api.get<{ id: string; name: string; inMarketplace: boolean }[]>('/meta/categories'),
+      api.get<{ id: string; name: string; nameKh: string; inMarketplace: boolean }[]>(
+        '/meta/categories',
+      ),
     staleTime: 60 * 60_000,
   });
   const now = new Date();
@@ -182,7 +185,7 @@ function PromoForm({ promo, onClose }: { promo: PlatformPromo | null; onClose: (
                         )
                       }
                     >
-                      {c.name}
+                      {locale === 'kh' ? c.nameKh : c.name}
                     </button>
                   );
                 })}

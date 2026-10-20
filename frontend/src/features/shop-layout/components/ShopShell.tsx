@@ -25,6 +25,7 @@ import { useShopStore } from '@/features/shop-shared/store';
 import { searchHref } from '@/features/shop-search/util/searchParams';
 
 import { ShopHeader } from './ShopHeader';
+import { khrRate } from '@/lib/money';
 
 function ShopFooter() {
   const t = useTranslations('shop.footer');
@@ -69,7 +70,7 @@ function ShopFooter() {
       </div>
       <div className={cn(s.wrap, s.ftB)}>
         <span>{t('copyright')}</span>
-        <span>{tc('rateNote')}</span>
+        <span>{tc('rateNote', { rate: khrRate().toLocaleString('en-US') })}</span>
       </div>
     </footer>
   );

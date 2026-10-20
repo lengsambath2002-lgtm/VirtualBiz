@@ -21,6 +21,7 @@ export function useAdminFmt() {
       date: (iso?: string | null) => dt(iso, { day: 'numeric', month: 'short', year: 'numeric' }),
       dateTime: (iso?: string | null) =>
         dt(iso, { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }),
+      time: (iso: string) => dt(iso, { hour: '2-digit', minute: '2-digit' }),
       day: (iso: string) =>
         new Date(iso + 'T00:00:00').toLocaleDateString(tag(locale), {
           day: 'numeric',

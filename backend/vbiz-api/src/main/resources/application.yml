@@ -94,12 +94,9 @@ vbiz:
     # Where uploaded images are kept (local disk; an S3 / MinIO backend can replace it).
     dir: ${VBIZ_STORAGE_DIR:./data/uploads}
     max-bytes: 8388608
-  payouts:
-    # A paid online payment goes to the shop this long after delivery (the landing page promises
-    # next business day); later returns are taken back from the next payout.
-    release-after: P1D
+  # Commission, payout delay and the riel rate are platform settings (table platform_settings),
+  # changed by a super-admin from the console.
   payment:
-    commission-pct: 5
     khqr:
       # VirtualBiz's merchant Bakong account (collects online payments, pays shops out).
       bakong-id: ${VBIZ_KHQR_BAKONG_ID:virtualbiz@aclb}

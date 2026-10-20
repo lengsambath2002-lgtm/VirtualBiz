@@ -176,6 +176,8 @@ export async function loadCatalog(): Promise<Catalog> {
       icon: c.icon,
       tint: c.tint,
       type: c.businessType === 'PRODUCT' ? 'product' : 'service',
+      name: c.name,
+      nameKh: c.nameKh,
     })),
     deals: deals.map((d) => ({
       id: d.id,

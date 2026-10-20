@@ -1,7 +1,20 @@
 // The one place money is formatted (ARCHITECTURE.md §1). USD is the stored currency; KHR is
-// derived as round(usd × rate / 100) × 100. The rate comes from `meta` — 4100 is the default.
+// derived as round(usd × rate / 100) × 100. The rate is a platform setting (`GET /api/meta/settings`,
+// changed by a super-admin); the app sets it on load (`setKhrRate`) and 4100 is used until then.
 
 export const KHR_PER_USD = 4100;
+
+let rate = KHR_PER_USD;
+
+/** Riel per US dollar right now. */
+export function khrRate(): number {
+  return rate;
+}
+
+/** Use the platform's rate from now on (ignored unless a sane number). */
+export function setKhrRate(n: number | null | undefined) {
+  if (typeof n === 'number' && n >= 1000 && n <= 10000) rate = n;
+}
 
 /** Round a number to 2 decimal places (cents), avoiding 1.005 → 1.00 drift. */
 export function round2(n: number): number {
@@ -14,8 +27,8 @@ export function rielRound(khr: number): number {
 }
 
 /** USD → KHR, rounded to 100 riel. */
-export function usdToKhr(usd: number, rate: number = KHR_PER_USD): number {
-  return rielRound(usd * rate);
+export function usdToKhr(usd: number, r: number = rate): number {
+  return rielRound(usd * r);
 }
 
 /** "$1,234.50" — always 2 decimals; negative as "-$3.00". */
@@ -39,8 +52,8 @@ export function formatKhr(khr: number): string {
 }
 
 /** "10,300 KHR" for a USD amount (converted + rounded to 100). */
-export function formatUsdAsKhr(usd: number, rate: number = KHR_PER_USD): string {
-  return formatKhr(usdToKhr(usd, rate));
+export function formatUsdAsKhr(usd: number, r: number = rate): string {
+  return formatKhr(usdToKhr(usd, r));
 }
 
 export interface CashTender {
@@ -79,7 +92,7 @@ export function cashChange({
   totalUsd,
   tenderedUsd,
   tenderedKhr,
-  rate = KHR_PER_USD,
+  rate = khrRate(),
 }: CashTender): CashResult {
   const paidUsd = (tenderedUsd || 0) + (tenderedKhr || 0) / rate;
   const changeUsd = round2(paidUsd - totalUsd);

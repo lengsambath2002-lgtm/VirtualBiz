@@ -177,7 +177,7 @@
     "included": {
       "noFee": "No signup or monthly fee",
       "posFree": "Counter (POS) sales are free, cash or KHQR",
-      "payouts": "Payouts next business day to your KHQR account",
+      "payouts": "Payouts to your KHQR account {days, plural, =0 {the same day as delivery} one {the day after delivery} other {# days after delivery}}",
       "tools": "Orders, bookings, stock, staff and reports included",
       "cancel": "Cancel any time. Your data is yours to export"
     },
@@ -188,7 +188,7 @@
       "fee": "VirtualBiz fee",
       "keep": "You keep",
       "effective": "Fee on all sales",
-      "note": "Example only. Delivery fees are paid by the customer. Payouts reach your KHQR account the next business day."
+      "note": "Example only. Delivery fees are paid by the customer. Payouts reach your KHQR account {days, plural, =0 {the same day as delivery} one {the day after delivery} other {# days after delivery}}."
     }
   },
   "open": {
@@ -220,7 +220,7 @@
       },
       "paid": {
         "q": "How do I get paid?",
-        "a": "Customers pay by KHQR, card or cash. Online payments go to your Bakong ID the next business day. Cash on delivery is collected by the rider and returned within 24 hours."
+        "a": "Customers pay by KHQR, card or cash. Online payments go to your Bakong ID {days, plural, =0 {the same day as delivery} one {the day after delivery} other {# days after delivery}}. Cash on delivery is collected by the rider and returned within 24 hours."
       },
       "counter": {
         "q": "Can I use it only at my counter?",

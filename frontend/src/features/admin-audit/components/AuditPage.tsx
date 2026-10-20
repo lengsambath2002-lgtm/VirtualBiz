@@ -53,6 +53,8 @@ export function AuditPage() {
             { value: 'REVIEW', label: t('target.REVIEW') },
             { value: 'PROMOTION', label: t('target.PROMOTION') },
             { value: 'PAYOUT', label: t('target.PAYOUT') },
+            { value: 'SETTINGS', label: t('target.SETTINGS') },
+            { value: 'CATEGORY', label: t('target.CATEGORY') },
           ]}
         />
       </div>

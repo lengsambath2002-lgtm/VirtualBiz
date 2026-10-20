@@ -124,6 +124,27 @@ public class AdminQueries {
                 rs.getLong("orders")));
     }
 
+    public List<OverviewResponse.CategorySales> categorySales(Instant from) {
+        MapSqlParameterSource p = new MapSqlParameterSource().addValue("from", ts(from));
+        return jdbc.query("""
+                SELECT c.id, c.name, c.name_kh, sum(o.total) gmv, count(*) orders
+                  FROM orders o JOIN business b ON b.id = o.business_id JOIN category c ON c.id = b.category_id
+                 WHERE %s AND o.placed_at >= :from
+                 GROUP BY c.id ORDER BY gmv DESC, c.name
+                """.formatted(SOLD), p, (rs, i) -> new OverviewResponse.CategorySales(rs.getString("id"),
+                rs.getString("name"), rs.getString("name_kh"), rs.getBigDecimal("gmv"), rs.getLong("orders")));
+    }
+
+    /** Shops in each category (the console's Categories tab). */
+    public java.util.Map<String, Long> shopsPerCategory() {
+        java.util.Map<String, Long> m = new java.util.HashMap<>();
+        jdbc.query("SELECT category_id, count(*) n FROM business GROUP BY category_id", new MapSqlParameterSource(),
+                rs -> {
+                    m.put(rs.getString("category_id"), rs.getLong("n"));
+                });
+        return m;
+    }
+
     // ── Businesses ─────────────────────────────────────────────────────────────────────
 
     public record BusinessFilter(String q, BusinessType type, VerificationStatus verification, String status,

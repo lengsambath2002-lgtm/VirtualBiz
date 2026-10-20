@@ -23,7 +23,7 @@ import {
   useMethodName,
 } from '@/features/seller-shared';
 import type { PaymentMethod } from '@/lib/domain';
-import { cashChange, formatCashChange, KHR_PER_USD, round2 } from '@/lib/money';
+import { cashChange, formatCashChange, khrRate, round2 } from '@/lib/money';
 
 import { focusPosSearch, usePosActions } from '../hooks/usePosActions';
 
@@ -37,7 +37,7 @@ export function OpenShiftDialog() {
   const [err, setErr] = useState('');
   const u = parseFloat(usd) || 0;
   const k = parseInt(khr.replace(/\D/g, ''), 10) || 0;
-  const total = u + k / KHR_PER_USD;
+  const total = u + k / khrRate();
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     if (total < 0) {
@@ -754,7 +754,7 @@ export function CloseShiftDialog() {
   const ref = round2(ss.reduce((x, sl) => x + sl.refunds.reduce((y, r) => y + r.amount, 0), 0));
   const moves = sh.moves.reduce((x, m) => x + m.amount, 0);
   const any = u !== '' || k !== '';
-  const counted = (parseFloat(u) || 0) + (parseInt(k.replace(/\D/g, ''), 10) || 0) / KHR_PER_USD;
+  const counted = (parseFloat(u) || 0) + (parseInt(k.replace(/\D/g, ''), 10) || 0) / khrRate();
   const d = round2(counted - exp);
 
   return (

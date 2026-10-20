@@ -12,14 +12,20 @@ import s from './landing.module.css';
 const ONLINE = { min: 0, max: 10000, step: 100, initial: 2000 };
 const COUNTER = { min: 0, max: 20000, step: 100, initial: 4000 };
 
-/** "What would I pay?" — 5% of online sales only; counter (POS) sales are free. */
-export function FeeCalculator() {
+/** "What would I pay?" — the commission on online sales only; counter (POS) sales are free. */
+export function FeeCalculator({
+  commissionPct,
+  payoutDays,
+}: {
+  commissionPct: number;
+  payoutDays: number;
+}) {
   const t = useTranslations('marketing.pricing.calc');
   const [online, setOnline] = useState(ONLINE.initial);
   const [counter, setCounter] = useState(COUNTER.initial);
   const onlineId = useId();
   const counterId = useId();
-  const { fee, keep, effectivePct } = commissionEstimate(online, counter);
+  const { fee, keep, effectivePct } = commissionEstimate(online, counter, commissionPct / 100);
   const effective = online + counter ? `${effectivePct.toFixed(1)}%` : '0%';
 
   return (
@@ -79,7 +85,7 @@ export function FeeCalculator() {
           </b>
         </div>
       </div>
-      <p className={cn(s.muted, s.calcNote)}>{t('note')}</p>
+      <p className={cn(s.muted, s.calcNote)}>{t('note', { days: payoutDays })}</p>
     </div>
   );
 }

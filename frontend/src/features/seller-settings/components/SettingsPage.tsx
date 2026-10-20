@@ -7,12 +7,14 @@ import { ShopPhotos } from '@/components/media';
 import { PayoutsPanel, VerificationPanel } from '@/features/business-status';
 import { cx, s, SwitchRow, useDb, useSellerStore, useUi } from '@/features/seller-shared';
 import { round2 } from '@/lib/money';
+import { usePlatformSettings } from '@/lib/platform';
 import { formatPhone, isValidPhone, normalizePhone } from '@/lib/utils/phone';
 
 type Toggle = 'online' | 'autoAccept' | 'pickup' | 'cod';
 
 export function SettingsPage() {
   const t = useTranslations('seller.settings');
+  const platform = usePlatformSettings();
   const tc = useTranslations('common');
   const db = useDb();
   const shop = db.shop;
@@ -279,7 +281,7 @@ export function SettingsPage() {
                   void update({ bakongId: khqr.trim() }).then((ok) => ok && toast(t('saved')));
                 }}
               />
-              <span className={s.hint}>{t('khqrHint')}</span>
+              <span className={s.hint}>{t('khqrHint', { days: platform.payoutDelayDays })}</span>
             </div>
             <SwitchRow
               title={t('cod')}

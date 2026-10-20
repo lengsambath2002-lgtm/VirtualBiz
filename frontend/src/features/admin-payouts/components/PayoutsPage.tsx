@@ -19,6 +19,7 @@ import { useAdminFmt } from '@/features/admin-shared/util/format';
 import { cx, s, useUi } from '@/features/seller-shared';
 import { fallbackErrorKey, isApiError } from '@/lib/api';
 import { Link } from '@/lib/i18n/navigation';
+import { usePlatformSettings } from '@/lib/platform';
 
 const KEYS = ['view'] as const;
 
@@ -206,6 +207,7 @@ function History() {
 /** `/admin/payouts`: what VirtualBiz owes each shop, and the transfers made. */
 export function PayoutsPage() {
   const t = useTranslations('admin.payouts');
+  const platform = usePlatformSettings();
   const f = useAdminFmt();
   const { values: v, set } = useListParams(KEYS);
   const { data } = useBalances();
@@ -213,7 +215,7 @@ export function PayoutsPage() {
   const hold = (data ?? []).reduce((n, b) => n + b.onHold, 0);
   return (
     <>
-      <PageHead title={t('title')} sub={t('sub')} />
+      <PageHead title={t('title')} sub={t('sub', { days: platform.payoutDelayDays })} />
       <div
         className={s.kpis}
         style={{ gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', marginBottom: 16 }}

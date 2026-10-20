@@ -7,5 +7,7 @@ public enum AuditTarget {
     ORDER,
     REVIEW,
     PROMOTION,
-    PAYOUT
+    PAYOUT,
+    SETTINGS,
+    CATEGORY
 }

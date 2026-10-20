@@ -54,7 +54,7 @@ public class ReferenceDataService {
         return categories.findAll(Sort.by("sortOrder")).stream()
                 .filter(c -> type == null || c.getBusinessType() == type)
                 .filter(c -> !marketplaceOnly || c.isInMarketplace())
-                .map(c -> new CategoryResponse(c.getId(), c.getName(), c.getIcon(), c.getTint(),
+                .map(c -> new CategoryResponse(c.getId(), c.getName(), c.getNameKh(), c.getIcon(), c.getTint(),
                         c.getBusinessType(), c.isInMarketplace()))
                 .toList();
     }

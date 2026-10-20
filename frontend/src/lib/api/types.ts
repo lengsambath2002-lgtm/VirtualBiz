@@ -116,6 +116,8 @@ export interface ApiDistrict {
 export interface ApiCategory {
   id: string;
   name: string;
+  /** Khmer name. */
+  nameKh: string;
   icon: string;
   tint: Tint;
   businessType: BusinessType;

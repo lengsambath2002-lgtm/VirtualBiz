@@ -96,7 +96,14 @@ export interface Catalog {
   districts: string[];
   /** District name → reference id (for translated names). */
   districtIds: Record<string, string>;
-  categories: { id: string; icon: string; tint: Tint; type: 'product' | 'service' }[];
+  categories: {
+    id: string;
+    icon: string;
+    tint: Tint;
+    type: 'product' | 'service';
+    name: string;
+    nameKh: string;
+  }[];
   deals: { id: string; shop: string; title: string; body: string; ends: number }[];
   promos: Promotion[];
 }

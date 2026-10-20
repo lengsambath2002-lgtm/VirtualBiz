@@ -18,6 +18,7 @@ export const ADMIN_NAV: { key: string; href: string; icon: IcName; hideM?: boole
   { key: 'promos', href: '/admin/promos', icon: 'tag', hideM: true },
   { key: 'payouts', href: '/admin/payouts', icon: 'receipt' },
   { key: 'audit', href: '/admin/audit', icon: 'alert', hideM: true },
+  { key: 'settings', href: '/admin/settings', icon: 'gear', hideM: true },
 ];
 
 // Same item styling as the seller rail (SellerRail.tsx).

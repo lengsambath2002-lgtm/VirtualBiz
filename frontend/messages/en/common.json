@@ -2,7 +2,7 @@
   "appName": "VirtualBiz",
   "close": "Close",
   "language": "Language",
-  "rateNote": "Prices in USD · 1 USD ≈ 4,100 KHR",
+  "rateNote": "Prices in USD · 1 USD ≈ {rate} KHR",
   "payments": {
     "khqr": "KHQR",
     "abaPay": "ABA PAY",

@@ -43,7 +43,7 @@ export function OverlayHost() {
     case 'confirm':
       return <ConfirmBox key={o.opts.title} />;
     case 'svcForm':
-      return <ServiceForm key={o.id ?? 'new'} id={o.id} />;
+      return <ServiceForm key={o.id ?? 'new'} id={o.id} cat={o.cat} />;
     case 'staffForm':
       return <StaffForm key={o.id ?? 'new'} id={o.id} />;
     case 'dealForm':

@@ -43,6 +43,7 @@ import type {
   ProviderReview,
   ProviderSale,
 } from './types';
+import { STAFF_COLORS } from './types';
 
 // ---- Mappers ------------------------------------------------------------------------------
 
@@ -58,7 +59,11 @@ export const toService = (s: ApiProviderService): Service => ({
   ...(s.discountPct ? { discountPct: s.discountPct } : {}),
 });
 
-/** A member without shifts works the shop's opening hours. */
+/** A colour for a member who never picked one (the owner added when the shop opened): the same one every time. */
+const fallbackColor = (id: string) =>
+  STAFF_COLORS[[...id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 0) % STAFF_COLORS.length];
+
+/** A member without shifts works the shop's opening hours; one without a colour gets one. */
 export const toMember = (m: ApiMember, hours: WeekRanges): BusinessMember => ({
   id: m.id,
   businessId: m.businessId,
@@ -66,7 +71,7 @@ export const toMember = (m: ApiMember, hours: WeekRanges): BusinessMember => ({
   name: m.name,
   role: m.role,
   ...(m.title ? { title: m.title } : {}),
-  ...(m.color ? { color: m.color } : {}),
+  color: m.color || fallbackColor(m.id),
   shifts: m.shifts ?? hours,
   active: m.active,
 });

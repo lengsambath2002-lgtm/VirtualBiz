@@ -2,9 +2,11 @@
 
 import { useState } from 'react';
 
-import { EmptyRow, EmptyView } from '@/components/feedback';
+import { EmptyView } from '@/components/feedback';
 import { isApiError } from '@/lib/api';
 import type { Service } from '@/lib/domain';
+import { cn as cx } from '@/lib/utils/cn';
+import { photoBg } from '@/lib/utils/photo';
 
 import {
   createService,
@@ -23,9 +25,11 @@ import { SERVICE_CATEGORIES } from '@/features/provider-shared/types';
 import { firstName } from '@/features/provider-shared/util/logic';
 import { addDays, todayIso } from '@/features/provider-shared/util/time';
 
+import c from './services.module.css';
+
 const DURATIONS = [15, 30, 45, 60, 75, 90, 120, 150, 180];
 
-/** Services by category + retail products (prototype `P.services`). */
+/** Services by category (searchable, filterable) + retail products (prototype `P.services`). */
 export function ServicesPage() {
   const f = useFmt();
   const { t } = f;
@@ -34,6 +38,8 @@ export function ServicesPage() {
   const today = todayIso();
   const from30 = addDays(today, -30);
   const update = useProviderStore((s) => s.update);
+  const [query, setQuery] = useState('');
+  const [cat, setCat] = useState<'all' | (typeof SERVICE_CATEGORIES)[number]>('all');
 
   const remove = async (s: Service) => {
     const up = d.appointments.filter(
@@ -101,6 +107,22 @@ export function ServicesPage() {
     }
   };
 
+  const q = query.trim().toLowerCase();
+  const used = SERVICE_CATEGORIES.filter((c) => d.services.some((s) => s.category === c));
+  const shown = d.services.filter(
+    (s) => (cat === 'all' || s.category === cat) && (!q || s.name.toLowerCase().includes(q)),
+  );
+  // Completed bookings in the last 30 days, and the most any service had (the bars' full width).
+  const booked = new Map(
+    d.services.map((s) => [
+      s.id,
+      d.appointments.filter(
+        (a) => a.serviceId === s.id && a.date > from30 && a.status === 'COMPLETED',
+      ).length,
+    ]),
+  );
+  const most = Math.max(1, ...booked.values());
+
   return (
     <>
       <div className={k('ph-h')}>
@@ -139,21 +161,93 @@ export function ServicesPage() {
           />
         </section>
       )}
-      {SERVICE_CATEGORIES.map((cat) => {
-        const list = d.services.filter((s) => s.category === cat);
+      {d.services.length > 0 && (
+        <div className={c.bar}>
+          <label className={k('search')}>
+            <PIcon name="search" size={18} />
+            <input
+              type="search"
+              aria-label={t('services.searchPh')}
+              placeholder={t('services.searchPh')}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+          </label>
+          {used.length > 1 && (
+            <div className={k('chips')} role="group" aria-label={t('services.category')}>
+              {(['all', ...used] as const).map((x) => (
+                <button
+                  key={x}
+                  type="button"
+                  className={k('chip', cat === x && 'on')}
+                  aria-pressed={cat === x}
+                  onClick={() => setCat(x)}
+                >
+                  {x === 'all' ? t('services.all') : f.category(x)}
+                  <span className={k('ct')}>
+                    {x === 'all'
+                      ? d.services.length
+                      : d.services.filter((s) => s.category === x).length}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+      {d.services.length > 0 && !shown.length && (
+        <section className={k('panel')}>
+          <EmptyView
+            title={t('services.noMatch', { q: query.trim() })}
+            body={t('services.noMatchBody')}
+            action={
+              <button
+                type="button"
+                className={k('btn')}
+                onClick={() => {
+                  setQuery('');
+                  setCat('all');
+                }}
+              >
+                {t('services.clear')}
+              </button>
+            }
+          />
+        </section>
+      )}
+      {SERVICE_CATEGORIES.map((cg) => {
+        const list = shown.filter((s) => s.category === cg);
         if (!list.length) return null;
         return (
-          <section key={cat} className={k('panel')}>
-            <div className={k('panel-h')}>
+          <section key={cg} className={k('panel')}>
+            <div className={c.panelH}>
               <h2>
-                {f.category(cat)}{' '}
-                <span className={k('muted num')} style={{ fontWeight: 400 }}>
-                  {list.length}
+                <span className={c.catIc}>
+                  <PIcon name="scissors" size={16} />
                 </span>
+                {f.category(cg)}
+                <span className={c.count}>{list.length}</span>
               </h2>
+              <button
+                type="button"
+                className={c.addIn}
+                onClick={() => ui.open({ t: 'svcForm', cat: cg })}
+              >
+                <PIcon name="plus" size={16} />
+                {t('services.addIn', { cat: f.category(cg) })}
+              </button>
             </div>
             <div className={k('tbl-wrap')}>
-              <table>
+              <table className={c.table}>
+                <colgroup>
+                  <col />
+                  <col style={{ width: 110 }} />
+                  <col style={{ width: 110 }} />
+                  <col style={{ width: 210 }} />
+                  <col style={{ width: 140 }} />
+                  <col style={{ width: 130 }} />
+                  <col style={{ width: 84 }} />
+                </colgroup>
                 <thead>
                   <tr>
                     <th>{t('services.thService')}</th>
@@ -166,76 +260,112 @@ export function ServicesPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {list.map((s) => (
-                    <tr key={s.id}>
-                      <td>
-                        <strong style={{ fontWeight: 500 }}>{s.name}</strong>
-                      </td>
-                      <td className={k('num')}>{f.dur(s.durationMin)}</td>
-                      <td className={k('r num')}>{f.money(s.price)}</td>
-                      <td>
-                        <span className={k('stack')}>
-                          {s.staffIds.map((sid) => {
-                            const m = d.staff.find((x) => x.id === sid);
-                            return m ? (
-                              <span key={sid} title={m.name}>
-                                <StaffAvatar m={m} size={26} />
+                  {list.map((s) => {
+                    const team = s.staffIds.flatMap((id) => d.staff.find((m) => m.id === id) ?? []);
+                    const n = booked.get(s.id) ?? 0;
+                    return (
+                      <tr key={s.id} className={cx(c.row, !s.bookableOnline && c.off)}>
+                        <td className={cx(c.cName, c.name)}>
+                          <strong>{s.name}</strong>
+                          {!s.bookableOnline && (
+                            <span className={c.sub}>{t('services.hiddenSub')}</span>
+                          )}
+                        </td>
+                        <td className={c.cDur}>
+                          <span className={c.dur}>{f.dur(s.durationMin)}</span>
+                        </td>
+                        <td className={cx(c.cPrice, k('r'))}>
+                          <span className={c.price}>{f.money(s.price)}</span>
+                          {s.discountPct ? (
+                            <span className={c.deal}>
+                              {t('services.dealPct', { n: s.discountPct })}
+                            </span>
+                          ) : null}
+                        </td>
+                        <td className={c.cTeam}>
+                          {team.length ? (
+                            <span className={c.team}>
+                              <span className={c.avs}>
+                                {team.slice(0, 3).map((m) => (
+                                  <span key={m.id} title={m.name}>
+                                    <StaffAvatar m={m} size={26} />
+                                  </span>
+                                ))}
                               </span>
-                            ) : null;
-                          })}
-                        </span>
-                      </td>
-                      <td className={k('r num')}>
-                        {
-                          d.appointments.filter(
-                            (a) =>
-                              a.serviceId === s.id && a.date > from30 && a.status === 'COMPLETED',
-                          ).length
-                        }
-                      </td>
-                      <td>
-                        <label className={k('sw')}>
-                          <input
-                            type="checkbox"
-                            checked={s.bookableOnline}
-                            aria-label={t('services.onlineLabel', { name: s.name })}
-                            onChange={(e) => {
-                              const on = e.target.checked;
-                              void setOnline(s, on).then(
-                                (ok) =>
-                                  ok &&
-                                  ui.showToast(
-                                    on
-                                      ? t('services.toastOnline', { name: s.name })
-                                      : t('services.toastHidden', { name: s.name }),
-                                  ),
-                              );
-                            }}
-                          />
-                          <span />
-                        </label>
-                      </td>
-                      <td className={k('r')} style={{ whiteSpace: 'nowrap' }}>
-                        <button
-                          type="button"
-                          className={k('ibtn')}
-                          aria-label={t('services.edit', { name: s.name })}
-                          onClick={() => ui.open({ t: 'svcForm', id: s.id })}
-                        >
-                          <PIcon name="edit" size={18} />
-                        </button>
-                        <button
-                          type="button"
-                          className={k('ibtn')}
-                          style={{ color: 'var(--danger)' }}
-                          aria-label={t('services.delete', { name: s.name })}
-                          onClick={() => void remove(s)}
-                        >
-                          <PIcon name="trash" size={18} />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
+                              <span className={c.names}>
+                                {team.length > 2
+                                  ? t('services.namesMore', {
+                                      name: firstName(team[0]!.name),
+                                      n: team.length - 1,
+                                    })
+                                  : team.map((m) => firstName(m.name)).join(', ')}
+                              </span>
+                            </span>
+                          ) : (
+                            <span className={c.nobody}>
+                              <PIcon name="alert" size={14} />
+                              {t('services.noStaff')}
+                            </span>
+                          )}
+                        </td>
+                        <td className={cx(c.cBooked, k('r'))}>
+                          <span className={c.booked}>
+                            <b>{n}</b>
+                            <span className={c.meter} aria-hidden>
+                              <i style={{ width: `${(n / most) * 100}%` }} />
+                            </span>
+                          </span>
+                        </td>
+                        <td className={c.cOnline}>
+                          <span className={c.online}>
+                            <label className={k('sw')}>
+                              <input
+                                type="checkbox"
+                                checked={s.bookableOnline}
+                                aria-label={t('services.onlineLabel', { name: s.name })}
+                                onChange={(e) => {
+                                  const on = e.target.checked;
+                                  void setOnline(s, on).then(
+                                    (ok) =>
+                                      ok &&
+                                      ui.showToast(
+                                        on
+                                          ? t('services.toastOnline', { name: s.name })
+                                          : t('services.toastHidden', { name: s.name }),
+                                      ),
+                                  );
+                                }}
+                              />
+                              <span />
+                            </label>
+                            {s.bookableOnline ? t('services.isOnline') : t('services.isHidden')}
+                          </span>
+                        </td>
+                        <td className={c.cActs}>
+                          <span className={c.acts}>
+                            <button
+                              type="button"
+                              className={c.act}
+                              aria-label={t('services.edit', { name: s.name })}
+                              title={t('services.edit', { name: s.name })}
+                              onClick={() => ui.open({ t: 'svcForm', id: s.id })}
+                            >
+                              <PIcon name="edit" size={17} />
+                            </button>
+                            <button
+                              type="button"
+                              className={cx(c.act, c.danger)}
+                              aria-label={t('services.delete', { name: s.name })}
+                              title={t('services.delete', { name: s.name })}
+                              onClick={() => void remove(s)}
+                            >
+                              <PIcon name="trash" size={17} />
+                            </button>
+                          </span>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -243,42 +373,49 @@ export function ServicesPage() {
         );
       })}
       <section className={k('panel')}>
-        <div className={k('panel-h')}>
-          <h2>{t('services.retail')}</h2>
+        <div className={c.panelH}>
+          <h2>
+            {t('services.retail')}
+            {d.products.length > 0 && <span className={c.count}>{d.products.length}</span>}
+          </h2>
           <span className={k('tiny muted')}>{t('services.retailSub')}</span>
         </div>
-        <div className={k('tbl-wrap')}>
-          <table style={{ minWidth: 420 }}>
-            <tbody>
-              {!d.products.length && (
-                <EmptyRow
-                  cols={2}
-                  title={t('services.noRetail')}
-                  body={t('services.noRetailBody')}
-                />
-              )}
-              {d.products.map((p) => (
-                <tr key={p.id}>
-                  <td>{p.title}</td>
-                  <td className={k('r num')}>{f.money(p.variants[0]?.price ?? 0)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        {d.products.length ? (
+          <div className={c.shelf}>
+            {d.products.map((p) => {
+              const stock = p.variants.reduce((n, v) => n + v.stock, 0);
+              return (
+                <div key={p.id} className={c.item}>
+                  <span className={c.thumb} style={photoBg(p.photos[0])}>
+                    {p.photos[0] ? null : <PIcon name="receipt" size={18} />}
+                  </span>
+                  <span className={c.itemText}>
+                    <strong>{p.title}</strong>
+                    <span>
+                      {f.money(p.variants[0]?.price ?? 0)} ·{' '}
+                      {stock > 0 ? t('services.inStock', { n: stock }) : t('services.outStock')}
+                    </span>
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <EmptyView title={t('services.noRetail')} body={t('services.noRetailBody')} />
+        )}
       </section>
     </>
   );
 }
 
 /** Add / edit service (prototype `svcForm`). */
-export function ServiceForm({ id }: { id?: string }) {
+export function ServiceForm({ id, cat: preset }: { id?: string; cat?: string }) {
   const { t, category } = useFmt();
   const d = useData();
   const ui = useUi();
   const s = id ? d.services.find((x) => x.id === id) : undefined;
   const [name, setName] = useState(s?.name ?? '');
-  const [cat, setCat] = useState(s?.category ?? 'Hair');
+  const [cat, setCat] = useState(s?.category ?? preset ?? 'Hair');
   const [dur, setDur] = useState(s?.durationMin ?? 45);
   const [price, setPrice] = useState(s ? String(s.price) : '');
   const [staff, setStaff] = useState<string[]>(s?.staffIds ?? []);

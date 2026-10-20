@@ -489,7 +489,21 @@
     "emptyTitle": "No services yet",
     "emptyBody": "Add what you offer, with its price and duration, so clients can book it.",
     "noRetail": "No retail products",
-    "noRetailBody": "Products you sell at checkout appear here."
+    "noRetailBody": "Products you sell at checkout appear here.",
+    "searchPh": "Search services",
+    "all": "All",
+    "addIn": "Add to {cat}",
+    "noMatch": "No services match “{q}”",
+    "noMatchBody": "Try another name or category.",
+    "clear": "Clear filters",
+    "hiddenSub": "Hidden from online booking",
+    "noStaff": "No one assigned",
+    "namesMore": "{name} +{n}",
+    "dealPct": "{n}% off deal",
+    "isOnline": "Online",
+    "isHidden": "Hidden",
+    "inStock": "{n} in stock",
+    "outStock": "Out of stock"
   },
   "team": {
     "title": "Team",

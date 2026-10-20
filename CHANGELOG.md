@@ -6,12 +6,14 @@ All notable changes are recorded here. Format: [Keep a Changelog](https://keepac
 
 ### Fixed
 
+- Team members with no colour (the owner added when a shop opens) showed as an empty ring in the provider workspace. They now get a steady colour from the team palette.
 - Signed out while moving between pages: a sign-in renewal cut off by navigation (or lost to a network blip or a server error) was treated as a rejected session and cleared it. Only a 401 / 403 from the server signs the user out now.
 - Seller forms: a field next to one showing an error no longer stretches and drops out of line. Adjust stock's quantity has −/+ and quick amounts (+1, +5, +10, +50) and takes digits only.
 - Create Business: a second shop could not be created, and another account on the same browser could not create one. The wizard's draft was shared by everyone on the browser and stayed on the "open" screen after a shop opened (and kept that shop's id, so the next "Open my shop" created nothing). The draft now belongs to the account that started it, and a finished draft starts a new shop unless the done screen was just reached (e2e "One account, many shops").
 
 ### Added
 
+- Provider Services page redesign: search and category chips, an "Add to <category>" button per table (opens the form with it chosen), team avatars with names (or "No one assigned"), 30-day bookings with a bar, Online / Hidden next to the switch, a deal's discount under the price, inline actions, phone cards, and retail products as a shelf of cards with stock.
 ### Added
 
 - Language switcher (English / ខ្មែរ) in the marketplace header and the seller, provider and admin top bars. It keeps the current page, and shows just the flag on phones. Workspace top bars now shorten a long shop name on phones instead of pushing the bell off-screen.

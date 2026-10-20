@@ -1,0 +1,288 @@
+/* The services page: a toolbar, one table per category, and the retail shelf. */
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.panelH {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px 12px 20px;
+  border-bottom: 1px solid var(--line);
+}
+.panelH h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+.catIc {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: var(--sunk);
+  color: var(--ink-2);
+}
+.count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  background: var(--sunk);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+.addIn {
+  border: 0;
+  background: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.addIn:hover {
+  background: var(--sunk);
+  color: var(--ink);
+}
+
+.table {
+  table-layout: fixed;
+  min-width: 860px;
+}
+.table td {
+  vertical-align: middle;
+}
+.name strong {
+  display: block;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.off .name strong,
+.off .price {
+  color: var(--muted);
+}
+.dur {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--sunk);
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.price {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.deal {
+  display: block;
+  font-size: 12px;
+  color: var(--accent-ink);
+}
+.team {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+.avs {
+  display: flex;
+  flex: none;
+}
+.avs > span + span {
+  margin-left: -5px;
+}
+.avs > span > span {
+  box-shadow: 0 0 0 2px var(--g-fill-strong, #fff);
+}
+.names {
+  min-width: 0;
+  font-size: 13px;
+  color: var(--ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.nobody {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  color: var(--accent-ink);
+}
+.booked {
+  display: grid;
+  gap: 5px;
+  justify-items: end;
+}
+.booked b {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.meter {
+  width: 100%;
+  max-width: 90px;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--sunk);
+  overflow: hidden;
+}
+.meter i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ok);
+}
+.online {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.acts {
+  display: flex;
+  justify-content: flex-end;
+  gap: 2px;
+  opacity: 0.55;
+  transition: opacity 0.15s;
+}
+tr:hover .acts,
+tr:focus-within .acts {
+  opacity: 1;
+}
+.act {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--ink-2);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.act:hover {
+  background: var(--sunk);
+}
+.danger {
+  color: var(--danger);
+}
+
+/* Retail shelf: a card per product. */
+.shelf {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 10px;
+  padding: 14px 16px 16px;
+}
+.item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  min-width: 0;
+}
+.thumb {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  border-radius: 8px;
+  background: var(--sunk) center / cover no-repeat;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+.itemText {
+  min-width: 0;
+}
+.itemText strong {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.itemText span {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Phone: each service is a card. */
+@media (max-width: 640px) {
+  .table {
+    min-width: 0;
+  }
+  .table colgroup,
+  .table thead {
+    display: none;
+  }
+  .table tbody {
+    display: block;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'name price'
+      'team online'
+      'meta acts';
+    gap: 10px 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .row > td {
+    display: block;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+  .cName {
+    grid-area: name;
+  }
+  .cPrice {
+    grid-area: price;
+    text-align: right;
+  }
+  .cTeam {
+    grid-area: team;
+  }
+  .cOnline {
+    grid-area: online;
+    text-align: right;
+  }
+  .cDur {
+    grid-area: meta;
+  }
+  .cBooked {
+    display: none !important;
+  }
+  .cActs {
+    grid-area: acts;
+  }
+  .acts {
+    opacity: 1;
+  }
+}

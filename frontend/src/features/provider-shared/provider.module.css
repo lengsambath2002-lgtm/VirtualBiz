@@ -192,6 +192,7 @@
   gap: 12px;
   padding: 10px 20px;
   height: 60px;
+  min-width: 0;
   background: color-mix(in srgb, var(--bg) 62%, transparent);
   -webkit-backdrop-filter: var(--g-blur);
   backdrop-filter: var(--g-blur);

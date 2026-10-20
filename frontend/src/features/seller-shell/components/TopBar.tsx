@@ -21,6 +21,7 @@ import { useStatusNotifText } from '@/features/business-status';
 import { useReasonText } from '@/features/seller-orders/hooks/useReasonText';
 import { formatUsd } from '@/lib/money';
 import { photoBg } from '@/lib/utils/photo';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 const NEW_MENU: { key: 'product' | 'receive' | 'promo' | 'manual'; icon: IcName }[] = [
   { key: 'product', icon: 'box' },
@@ -141,6 +142,7 @@ export function TopBar() {
           </div>
         )}
       </div>
+      <LanguageSwitcher compact />
       <div className={s.rel} data-menu>
         <button
           type="button"

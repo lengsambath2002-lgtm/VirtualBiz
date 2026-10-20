@@ -146,6 +146,7 @@
   gap: 12px;
   padding: 10px 20px;
   height: 60px;
+  min-width: 0;
 }
 .biz {
   display: flex;

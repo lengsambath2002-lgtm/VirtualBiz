@@ -9,6 +9,7 @@ import { useSession } from '@/lib/auth';
 import { useRouter } from '@/lib/i18n/navigation';
 
 import shell from './shell.module.css';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 const initials = (n: string) =>
   n
@@ -77,6 +78,7 @@ export function AdminTopBar() {
           }}
         />
       </form>
+      <LanguageSwitcher compact />
       <WorkspaceSwitcher
         active={{ kind: 'admin' }}
         className={s.me}

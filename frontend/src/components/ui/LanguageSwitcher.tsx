@@ -15,8 +15,17 @@ import { cn } from '@/lib/utils/cn';
 import { Flag } from './Flag';
 import { Icon } from './Icon';
 
-/** Compact language picker: flag + short label, opening a menu of flag + endonym. */
-export function LanguageSwitcher({ className }: { className?: string }) {
+/**
+ * Compact language picker: flag + short label, opening a menu of flag + endonym. `compact` shows
+ * only the flag on phones (for crowded headers).
+ */
+export function LanguageSwitcher({
+  className,
+  compact,
+}: {
+  className?: string;
+  compact?: boolean;
+}) {
   const tc = useTranslations('common');
   const current = useLocale();
   const locale = isLocale(current) ? current : SUPPORTED_LOCALES[0];
@@ -52,12 +61,16 @@ export function LanguageSwitcher({ className }: { className?: string }) {
         className="inline-flex h-9 items-center gap-1.5 rounded-[var(--r-sm)] border border-[var(--line)] bg-[var(--g-fill-strong)] pl-2.5 pr-2 text-[13px] font-semibold text-[var(--ink)] transition-colors hover:border-[var(--line-h)]"
       >
         <Flag locale={locale} />
-        <span>{LOCALE_SHORT_LABELS[locale]}</span>
+        <span className={compact ? 'max-sm:hidden' : undefined}>{LOCALE_SHORT_LABELS[locale]}</span>
         <Icon
           name="chevronDown"
           size={14}
           strokeWidth={2.2}
-          className={cn('text-[var(--muted)] transition-transform', open && 'rotate-180')}
+          className={cn(
+            'text-[var(--muted)] transition-transform',
+            open && 'rotate-180',
+            compact && 'max-sm:hidden',
+          )}
         />
       </button>
       {open && (

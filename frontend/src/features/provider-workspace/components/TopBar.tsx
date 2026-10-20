@@ -15,6 +15,7 @@ import type { ProviderData, ProviderNotification } from '@/features/provider-sha
 import { initials } from '@/features/provider-shared/util/logic';
 import { relKey, todayIso } from '@/features/provider-shared/util/time';
 import { photoBg } from '@/lib/utils/photo';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 const NEW_MENU: [string, PIconName, Overlay][] = [
   ['appointment', 'cal', { t: 'apptForm', opts: {} }],
@@ -88,6 +89,7 @@ export function TopBar() {
           </div>
         )}
       </div>
+      <LanguageSwitcher compact />
       <div className={k('rel')} data-menu>
         <button
           type="button"

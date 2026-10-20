@@ -20,6 +20,7 @@ import { useInbox } from '@/features/notification/hooks/useInbox';
 import s from '@/features/shop-shared/shop.module.css';
 import { toast, useShopStore, useShopUi } from '@/features/shop-shared/store';
 import { searchHref } from '@/features/shop-search/util/searchParams';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 
 const POPULAR = ['iced latte', 'massage', 'iPhone', 'krama', 'haircut', 'rice'];
 
@@ -535,6 +536,7 @@ export function ShopHeader() {
         </button>
         <SearchBox />
         <div className={s.hdrR} ref={right}>
+          <LanguageSwitcher compact />
           <div className={cn(s.rel, s.hideM)}>
             <button
               className={s.ibtn}

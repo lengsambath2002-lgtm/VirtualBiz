@@ -299,9 +299,9 @@ public class AdminQueries {
 
     private static final String ORDER_ROW = """
             SELECT o.id, o.number, o.status, o.method, o.total, p.method pay_method, p.status pay_status,
-                   o.business_id, b.name shop_name, o.customer_id, u.name customer_name, o.cancel_reason,
-                   COALESCE(o.placed_at, o.created_at) at
-              FROM orders o JOIN business b ON b.id = o.business_id JOIN users u ON u.id = o.customer_id
+                   o.business_id, b.name shop_name, o.customer_id, COALESCE(u.name, o.contact_name) customer_name,
+                   o.cancel_reason, COALESCE(o.placed_at, o.created_at) at
+              FROM orders o JOIN business b ON b.id = o.business_id LEFT JOIN users u ON u.id = o.customer_id
               LEFT JOIN payment p ON p.order_id = o.id AND p.channel <> 'POS'
             """;
 
@@ -309,7 +309,7 @@ public class AdminQueries {
         Where w = orderWhere(f);
         long total = jdbc.queryForObject("""
                 SELECT count(*) FROM orders o JOIN business b ON b.id = o.business_id
-                  JOIN users u ON u.id = o.customer_id""" + w.sql, w.p, Long.class);
+                  LEFT JOIN users u ON u.id = o.customer_id""" + w.sql, w.p, Long.class);
         List<AdminOrderRow> items = jdbc.query(ORDER_ROW + w.sql + " ORDER BY at DESC, o.number DESC"
                 + page(w, page, size), w.p, AdminQueries::orderRow);
         return new PageResponse<>(items, total, page, size);
@@ -324,7 +324,8 @@ public class AdminQueries {
     private static Where orderWhere(OrderFilter f) {
         Where w = new Where();
         if (notBlank(f.q())) {
-            w.and("(o.number ILIKE :q OR u.name ILIKE :q OR u.email ILIKE :q OR u.phone ILIKE :q OR b.name ILIKE :q)",
+            w.and("(o.number ILIKE :q OR u.name ILIKE :q OR u.email ILIKE :q OR u.phone ILIKE :q OR b.name ILIKE :q"
+                    + " OR o.contact_name ILIKE :q OR o.contact_phone ILIKE :q)",
                     "q", like(f.q()));
         }
         if ("open".equals(f.status())) {
@@ -371,9 +372,9 @@ public class AdminQueries {
                 rs.getString("status"), rs.getBigDecimal("amount"), rs.getBigDecimal("commission"),
                 instant(rs, "paid_at"), instant(rs, "refunded_at"), rs.getString("payout_id")));
         return jdbc.query("""
-                SELECT u.email, u.phone, b.phone shop_phone, o.address::text address, o.note, o.subtotal, o.discount,
-                       o.promo_discount, o.promo_code, o.delivery_fee
-                  FROM orders o JOIN users u ON u.id = o.customer_id JOIN business b ON b.id = o.business_id
+                SELECT u.email, COALESCE(u.phone, o.contact_phone) phone, b.phone shop_phone, o.address::text address,
+                       o.note, o.subtotal, o.discount, o.promo_discount, o.promo_code, o.delivery_fee
+                  FROM orders o LEFT JOIN users u ON u.id = o.customer_id JOIN business b ON b.id = o.business_id
                  WHERE o.id = :id
                 """, p, (rs, i) -> new AdminOrderDetail(rows.get(0), rs.getString("email"), rs.getString("phone"),
                 rs.getString("shop_phone"), map(rs.getString("address")), rs.getString("note"),

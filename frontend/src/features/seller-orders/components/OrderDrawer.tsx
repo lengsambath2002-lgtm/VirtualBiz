@@ -28,6 +28,7 @@ import {
 import type { OrderStatus } from '@/lib/domain';
 import { formatPhone } from '@/lib/utils/phone';
 
+import { SourcePill } from './SourcePill';
 import { useOrderActions } from '../hooks/useOrderActions';
 import { useReasonText } from '../hooks/useReasonText';
 
@@ -186,6 +187,7 @@ export function OrderDrawer({ id }: { id: string }) {
         <div>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
             <StatusPill status={o.status} />
+            <SourcePill o={o} />
             <PayPill o={o} />
           </div>
           <h2 style={{ marginTop: 6 }} className={s.num}>

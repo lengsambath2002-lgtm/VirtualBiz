@@ -906,5 +906,65 @@
       "closedOver": "Shift closed · over {amount}",
       "closedBalanced": "Shift closed · balanced"
     }
+  },
+  "manual": {
+    "title": "New manual order",
+    "hint": "For an order taken by phone, Facebook, Telegram or at the counter. It starts accepted and takes stock right away.",
+    "sourceLabel": "Where it came from",
+    "source": {
+      "PHONE": "Phone",
+      "FACEBOOK": "Facebook",
+      "TELEGRAM": "Telegram",
+      "WALK_IN": "Walk-in",
+      "OTHER": "Other"
+    },
+    "items": "Items",
+    "itemsPh": "Search a product, SKU or scan a barcode",
+    "soldOut": "sold out",
+    "inStock": "{n} in stock",
+    "onlyN": "Only {n} in stock",
+    "less": "One less",
+    "more": "One more",
+    "name": "Customer name",
+    "phone": "Phone",
+    "methodLabel": "How they get it",
+    "method": {
+      "DELIVERY": "Delivery",
+      "PICKUP": "Pickup at the shop"
+    },
+    "line": "Address",
+    "linePh": "House, street, landmark",
+    "district": "District",
+    "districtPh": "Choose a district",
+    "addressNote": "Note for the rider",
+    "fee": "Delivery fee (USD)",
+    "feeHint": "From your delivery zones; change it if you agreed another price.",
+    "feeFree": "Free: the order is over your free-delivery amount.",
+    "discount": "Discount (USD)",
+    "note": "Order note",
+    "payLabel": "Payment",
+    "pay": {
+      "COD": "Cash on delivery",
+      "COD_PICKUP": "Pay at pickup",
+      "PAID_CASH": "Paid cash",
+      "PAID_KHQR": "Paid KHQR / transfer"
+    },
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "cancel": "Cancel",
+    "create": "Create order · {total}",
+    "creating": "Creating…",
+    "created": "Order {no} created",
+    "err": {
+      "lines": "Add at least one item.",
+      "name": "Enter the customer’s name.",
+      "phone": "That phone number doesn’t look right.",
+      "phoneNeeded": "The rider needs a phone number.",
+      "line": "Enter where to deliver.",
+      "district": "Choose the district.",
+      "stock": "Only {n} of {name} in stock.",
+      "stockServer": "Not enough stock for one of the items. Check the quantities.",
+      "check": "Check this field."
+    }
   }
 }

@@ -1,3 +1,4 @@
+export { ManualOrderDialog } from './components/ManualOrderDialog';
 export { OrdersPage } from './components/OrdersPage';
 export { OrderDrawer, copyText } from './components/OrderDrawer';
 export { InvoiceDialog, PackDialog, ShipDialog } from './components/OrderDialogs';

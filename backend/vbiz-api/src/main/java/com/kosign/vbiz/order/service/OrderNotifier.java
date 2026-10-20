@@ -35,7 +35,8 @@ public class OrderNotifier {
         if (paymentStatus != null) {
             data.put("paymentStatus", paymentStatus.name());
         }
-        events.publishEvent(new StreamEvent(Set.of(o.getCustomerId()),
+        // A manual order has no account to tell.
+        events.publishEvent(new StreamEvent(o.getCustomerId() == null ? Set.of() : Set.of(o.getCustomerId()),
                 o.getPlacedAt() == null ? Set.of() : Set.of(o.getBusinessId()), "order", data));
     }
 
@@ -82,6 +83,9 @@ public class OrderNotifier {
     }
 
     private void toCustomer(Order o, String kind, String shopName, Map<String, String> extra) {
+        if (o.getCustomerId() == null) {
+            return; // a manual order: the shop contacts the customer itself
+        }
         Map<String, String> params = new LinkedHashMap<>();
         params.put("number", o.getNumber());
         params.put("shop", shopName);

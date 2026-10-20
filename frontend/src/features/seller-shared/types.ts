@@ -1,6 +1,6 @@
 // Seller workspace client-state shapes. They extend the domain types (src/lib/domain) with the
 // fields the prototype keeps that the domain model does not carry yet.
-import type { PaymentStatus } from '@/lib/api';
+import type { OrderSource, PaymentStatus } from '@/lib/api';
 import type {
   Client,
   DeliveryZone,
@@ -42,10 +42,12 @@ export interface SellerOrder extends Omit<Order, 'timeline'> {
   /** The customer's account (name / phone / email at the time of the request). */
   customer?: { id: string; name: string; phone?: string; email?: string };
   paymentStatus: PaymentStatus;
+  /** ONLINE (the marketplace) or where a manual order came from. */
+  source: OrderSource;
 }
 
-/** How the prototype labels a payment: KHQR, Card, or cash on delivery. */
-export type PayLabel = 'KHQR' | 'CARD' | 'COD';
+/** How the prototype labels a payment: KHQR, Card, cash on delivery, or cash paid at the shop. */
+export type PayLabel = 'KHQR' | 'CARD' | 'COD' | 'CASH';
 
 export interface SellerShop {
   id: string;

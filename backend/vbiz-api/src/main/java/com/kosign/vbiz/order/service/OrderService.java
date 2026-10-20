@@ -345,7 +345,7 @@ public class OrderService {
     /** The order becomes visible to the shop: auto-accept, the shop's inbox, both streams. */
     void place(Order o, Business shop, String customerName) {
         o.setPlacedAt(clock.instant());
-        users.findById(o.getCustomerId()).ifPresent(u -> clients.linkOrderCustomer(o.getBusinessId(), u.getId(),
+        java.util.Optional.ofNullable(o.getCustomerId()).flatMap(users::findById).ifPresent(u -> clients.linkOrderCustomer(o.getBusinessId(), u.getId(),
                 u.getName(), u.getPhone() != null ? u.getPhone() : o.getAddress() == null ? null : o.getAddress().phone(),
                 u.getEmail(), o.getAddress() == null ? null : o.getAddress().district()));
         ProductSettings ps = shop.getProductSettings();
@@ -571,7 +571,7 @@ public class OrderService {
 
     private Order customerOrder(UUID customerId, String ref) {
         Order o = find(ref);
-        if (!o.getCustomerId().equals(customerId)) {
+        if (!customerId.equals(o.getCustomerId())) {
             throw new BusinessException(StatusCode.ORDER_NOT_FOUND);
         }
         return o;

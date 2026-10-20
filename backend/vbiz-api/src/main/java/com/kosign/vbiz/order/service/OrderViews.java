@@ -62,13 +62,15 @@ public class OrderViews {
         Map<UUID, Business> shops = byId(businesses.findAllById(
                 orders.stream().map(Order::getBusinessId).collect(Collectors.toSet())), Business::getId);
         Map<UUID, User> customers = byId(users.findAllById(
-                orders.stream().map(Order::getCustomerId).collect(Collectors.toSet())), User::getId);
+                orders.stream().map(Order::getCustomerId).filter(java.util.Objects::nonNull)
+                        .collect(Collectors.toSet())), User::getId);
         Instant now = clock.instant();
         List<OrderResponse> out = new ArrayList<>(orders.size());
         for (Order o : orders) {
             out.add(toResponse(o, linesOf.getOrDefault(o.getId(), List.of()),
                     eventsOf.getOrDefault(o.getId(), List.of()), paymentOf.get(o.getId()),
-                    shops.get(o.getBusinessId()), customers.get(o.getCustomerId()), now));
+                    shops.get(o.getBusinessId()),
+                    o.getCustomerId() == null ? null : customers.get(o.getCustomerId()), now));
         }
         return out;
     }
@@ -86,8 +88,10 @@ public class OrderViews {
                 o.getBusinessId().toString(),
                 b == null ? null : new OrderResponse.Shop(b.getId().toString(), b.getSlug(), b.getName(), b.getPhone(),
                         b.getStreet(), b.getDistrict()),
-                c == null ? null : new OrderResponse.Customer(c.getId().toString(), c.getName(), c.getPhone(),
-                        c.getEmail()),
+                c != null ? new OrderResponse.Customer(c.getId().toString(), c.getName(), c.getPhone(), c.getEmail())
+                        // A manual order: the contact the shop took down.
+                        : o.getContactName() == null ? null
+                        : new OrderResponse.Customer(null, o.getContactName(), o.getContactPhone(), null),
                 o.getStatus().name(),
                 o.getMethod().name(),
                 ls.stream().map(l -> new OrderResponse.Line(l.getVariantId().toString(), l.getProductId().toString(),
@@ -120,7 +124,7 @@ public class OrderViews {
                 deadline,
                 canCancel,
                 autoCancelAt,
-                o.isReviewed());
+                o.isReviewed(), o.getSource().name());
     }
 
     private static <T> Map<UUID, T> byId(Collection<T> rows, Function<T, UUID> id) {

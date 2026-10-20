@@ -96,6 +96,8 @@ const SAME_OK = new Set([
   'shop.account.methods.GOOGLE',
   'admin.payment.method.KHQR',
   'admin.signIn.GOOGLE',
+  'seller.manual.source.FACEBOOK',
+  'seller.manual.source.TELEGRAM',
 ]);
 const KHMER = /[ក-៿]/;
 if (dicts.kh && dicts.en) {

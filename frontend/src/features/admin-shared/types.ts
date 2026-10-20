@@ -164,7 +164,8 @@ export interface OrderRow {
   paymentStatus?: string;
   businessId: string;
   shopName: string;
-  customerId: string;
+  /** Absent for a manual order the shop entered without an account. */
+  customerId?: string;
   customerName: string;
   cancelReason?: string;
   at: string;

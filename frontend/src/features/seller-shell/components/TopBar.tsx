@@ -84,7 +84,7 @@ export function TopBar() {
     if (k === 'product') void go('/seller/products/new');
     else if (k === 'receive') open({ kind: 'receive' });
     else if (k === 'promo') open({ kind: 'promo' });
-    else useUi.getState().showToast(t('manualSoon'));
+    else open({ kind: 'manual' });
   };
 
   return (

@@ -364,7 +364,8 @@
     "address": "Deliver to",
     "note": "Note",
     "missing": "Order not found",
-    "backList": "All orders"
+    "backList": "All orders",
+    "noAccount": "no account (entered by the shop)"
   },
   "reviews": {
     "title": "Reviews",

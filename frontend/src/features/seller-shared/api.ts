@@ -7,6 +7,7 @@ import {
   type ApiCollection,
   type ApiNotification,
   type ApiOrder,
+  type OrderSource,
   type ApiPosSale,
   type ApiPromotion,
   type ApiSellerProduct,
@@ -145,7 +146,7 @@ export function toSellerOrder(o: ApiOrder): SellerOrder {
     ...(o.customer
       ? {
           customer: {
-            id: o.customer.id,
+            id: o.customer.id ?? '',
             name: o.customer.name,
             ...(o.customer.phone ? { phone: o.customer.phone } : {}),
             ...(o.customer.email ? { email: o.customer.email } : {}),
@@ -191,6 +192,7 @@ export function toSellerOrder(o: ApiOrder): SellerOrder {
     ...(o.deliveryBy ? { deliveryBy: o.deliveryBy === 'OWN_DELIVERY' ? 'OWN' : 'VB' } : {}),
     ...(o.cancelReason ? { cancelReason: o.cancelReason } : {}),
     reviewed: o.reviewed,
+    source: o.source ?? 'ONLINE',
     createdAt: o.placedAt ?? o.createdAt,
   };
 }
@@ -203,6 +205,26 @@ export const toSellerNotification = (n: ApiNotification): SellerNotification => 
   unread: n.unread,
   at: n.at,
 });
+
+/** `POST /api/orders/manual` (docs/api/phase8-manual-orders.md). */
+export interface ManualOrderInput {
+  source: Exclude<OrderSource, 'ONLINE'>;
+  name: string;
+  phone?: string;
+  method: 'DELIVERY' | 'PICKUP';
+  line?: string;
+  district?: string;
+  addressNote?: string;
+  lines: { variantId: string; qty: number }[];
+  deliveryFee?: number;
+  discount?: number;
+  payment: 'COD' | 'PAID_CASH' | 'PAID_KHQR';
+  note?: string;
+}
+
+/** An order the shop took by phone, Facebook, Telegram or at the counter; it starts ACCEPTED. */
+export const createManualOrder = async (businessId: string, input: ManualOrderInput) =>
+  toSellerOrder(await api.post<ApiOrder>('/orders/manual', input, opts(businessId)));
 
 /** The shop's placed orders (newest first) and its inbox. */
 export async function fetchSellerOrders(businessId: string) {

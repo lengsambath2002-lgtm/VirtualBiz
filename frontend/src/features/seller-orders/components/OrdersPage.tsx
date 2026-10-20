@@ -28,6 +28,7 @@ import { usePathname, useRouter } from '@/lib/i18n/navigation';
 import { formatPhone } from '@/lib/utils/phone';
 
 import { useOrderActions } from '../hooks/useOrderActions';
+import { SourcePill } from './SourcePill';
 
 const LATE = 30 * 60_000;
 
@@ -126,7 +127,7 @@ export function OrdersPage() {
         <button
           type="button"
           className={cx(s.btn, s.btnGhost)}
-          onClick={() => useUi.getState().showToast(t('manualSoon'))}
+          onClick={() => useUi.getState().open({ kind: 'manual' })}
         >
           <Ic name="plus" size={18} />
           {t('manual')}
@@ -211,7 +212,7 @@ export function OrdersPage() {
                     <span style={{ textAlign: 'right' }}>
                       <b className={s.num}>{f.money(o.total)}</b>
                       <span className={s.block}>
-                        <StatusPill status={o.status} />
+                        <StatusPill status={o.status} /> <SourcePill o={o} />
                       </span>
                     </span>
                     {n && (
@@ -336,7 +337,7 @@ export function OrdersPage() {
                           <PayPill o={o} />
                         </td>
                         <td>
-                          <StatusPill status={o.status} />
+                          <StatusPill status={o.status} /> <SourcePill o={o} />
                         </td>
                         <td className={cx(s.r, s.num)}>
                           <b>{f.money(o.total)}</b>

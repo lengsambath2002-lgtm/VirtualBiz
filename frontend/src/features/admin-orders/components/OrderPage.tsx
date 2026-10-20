@@ -241,9 +241,14 @@ export function OrderPage({ number }: { number: string }) {
                 rows={[
                   [
                     t('customer'),
-                    <Link key="c" href={`/admin/users/${o.customerId}`}>
-                      {o.customerName}
-                    </Link>,
+                    o.customerId ? (
+                      <Link key="c" href={`/admin/users/${o.customerId}`}>
+                        {o.customerName}
+                      </Link>
+                    ) : (
+                      // A manual order the shop entered: no VirtualBiz account behind it.
+                      `${o.customerName} · ${t('noAccount')}`
+                    ),
                   ],
                   [
                     t('contact'),

@@ -4,7 +4,14 @@ All notable changes are recorded here. Format: [Keep a Changelog](https://keepac
 
 ## [Unreleased]
 
+### Fixed
+
+- Create Business: a second shop could not be created, and another account on the same browser could not create one. The wizard's draft was shared by everyone on the browser and stayed on the "open" screen after a shop opened (and kept that shop's id, so the next "Open my shop" created nothing). The draft now belongs to the account that started it, and a finished draft starts a new shop unless the done screen was just reached (e2e "One account, many shops").
+
 ### Added
+
+- Manual orders (`docs/api/phase8-manual-orders.md`): Seller **New → Manual order** for orders taken by phone, Facebook, Telegram or at the counter. Items by search or barcode, customer and address, delivery fee from the shop's zones, discount, cash on delivery or paid up front (cash / KHQR to the shop). The order starts accepted, takes stock through the stock writer, links the customer to the shop's clients, carries no commission and is never paid out; a "Phone" / "Facebook" … badge marks it in the order list. Flyway `V20261020_120000__manual_orders.sql`, `ManualOrderIntegrationTest`, e2e `manual-order.spec.ts`.
+- Load errors with a retry for booking times, the store's reviews tab and the Create Business district list.
 
 - Not found, error and empty states everywhere (`src/components/feedback`):
   - 404 pages inside each surface's frame (marketplace, Seller, Provider, admin console) via catch-all routes, plus a locale-level and a root fallback; unknown items (product, service, shop, order, booking, and admin shop / user / order) say what is missing.

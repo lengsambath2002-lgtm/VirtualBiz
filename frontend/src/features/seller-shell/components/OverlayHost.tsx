@@ -6,7 +6,13 @@ import { useMemo } from 'react';
 import { CommandPalette, type PaletteCommand } from '@/features/command-palette';
 import { CustomerDrawer } from '@/features/seller-customers';
 import { AdjustDialog, ReceiveDialog, ScanDialog } from '@/features/seller-inventory';
-import { InvoiceDialog, OrderDrawer, PackDialog, ShipDialog } from '@/features/seller-orders';
+import {
+  InvoiceDialog,
+  ManualOrderDialog,
+  OrderDrawer,
+  PackDialog,
+  ShipDialog,
+} from '@/features/seller-orders';
 import {
   ChargeDialog,
   CloseShiftDialog,
@@ -103,6 +109,8 @@ export function OverlayHost() {
       return <ConfirmDialog key={o.spec.title} spec={o.spec} resolve={o.resolve} />;
     case 'order':
       return <OrderDrawer key={o.id} id={o.id} />;
+    case 'manual':
+      return <ManualOrderDialog />;
     case 'customer':
       return <CustomerDrawer key={o.id} id={o.id} />;
     case 'pack':

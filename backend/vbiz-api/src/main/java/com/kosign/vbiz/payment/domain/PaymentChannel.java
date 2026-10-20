@@ -4,5 +4,7 @@ package com.kosign.vbiz.payment.domain;
 public enum PaymentChannel {
     ONLINE,
     COD,
-    POS
+    POS,
+    /** Paid to the shop itself (a manual order paid up front): no commission, no payout. */
+    DIRECT
 }

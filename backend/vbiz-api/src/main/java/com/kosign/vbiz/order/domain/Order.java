@@ -41,8 +41,21 @@ public class Order extends BaseEntity {
     @Column(name = "business_id", nullable = false, updatable = false)
     private UUID businessId;
 
-    @Column(name = "customer_id", nullable = false, updatable = false)
+    /** The ordering account; null for a manual order without one (see {@link #contactName}). */
+    @Column(name = "customer_id", updatable = false)
     private UUID customerId;
+
+    /** Where the order came from: the marketplace, or a channel the shop entered it from. */
+    @Enumerated(EnumType.STRING)
+    @Column(name = "source", length = 10, nullable = false, updatable = false)
+    private OrderSource source = OrderSource.ONLINE;
+
+    /** Manual orders: who to contact (the account's details are used otherwise). */
+    @Column(name = "contact_name", length = 80)
+    private String contactName;
+
+    @Column(name = "contact_phone", length = 10)
+    private String contactPhone;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = 10, nullable = false)

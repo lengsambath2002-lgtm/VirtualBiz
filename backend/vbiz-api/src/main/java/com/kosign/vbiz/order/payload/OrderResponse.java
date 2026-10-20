@@ -47,7 +47,9 @@ public record OrderResponse(
         Instant cancelDeadline,
         boolean canCancel,
         Instant autoCancelAt,
-        boolean reviewed) {
+        boolean reviewed,
+        /** {@code ONLINE}, or the channel a manual order came from (PHONE, FACEBOOK, …). */
+        String source) {
 
     public record Shop(String id, String slug, String name, String phone, String street, String district) {
     }

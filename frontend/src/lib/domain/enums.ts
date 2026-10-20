@@ -40,7 +40,8 @@ export type DeliveryProvider = (typeof DELIVERY_PROVIDERS)[number];
 export const PAYMENT_METHODS = ['KHQR', 'CARD', 'CASH'] as const;
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 
-export const PAYMENT_CHANNELS = ['ONLINE', 'COD', 'POS'] as const;
+/** DIRECT: paid to the shop itself (a manual order paid up front). */
+export const PAYMENT_CHANNELS = ['ONLINE', 'COD', 'POS', 'DIRECT'] as const;
 export type PaymentChannel = (typeof PAYMENT_CHANNELS)[number];
 
 export const APPOINTMENT_STATUSES = [

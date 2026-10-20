@@ -528,7 +528,13 @@ export interface ApiOrder {
   checkoutId?: string | null;
   businessId: string;
   shop: { id: string; slug: string; name: string; phone: string; street: string; district: string };
-  customer?: { id: string; name: string; phone?: string | null; email?: string | null } | null;
+  /** `id` is absent for a manual order without a VirtualBiz account. */
+  customer?: {
+    id?: string | null;
+    name: string;
+    phone?: string | null;
+    email?: string | null;
+  } | null;
   status: OrderStatus;
   method: FulfilmentMethod;
   lines: ApiOrderLine[];
@@ -569,7 +575,11 @@ export interface ApiOrder {
   canCancel: boolean;
   autoCancelAt?: string | null;
   reviewed: boolean;
+  /** ONLINE, or the channel a manual order came from (PHONE, FACEBOOK, TELEGRAM, WALK_IN, OTHER). */
+  source?: OrderSource;
 }
+
+export type OrderSource = 'ONLINE' | 'PHONE' | 'FACEBOOK' | 'TELEGRAM' | 'WALK_IN' | 'OTHER';
 
 export interface CheckoutResult {
   checkoutId: string;

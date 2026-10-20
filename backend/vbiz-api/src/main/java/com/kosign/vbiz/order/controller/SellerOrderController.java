@@ -17,6 +17,7 @@ import com.kosign.vbiz.order.payload.BulkResultResponse;
 import com.kosign.vbiz.order.payload.OrderCountsResponse;
 import com.kosign.vbiz.order.payload.OrderInputs;
 import com.kosign.vbiz.order.payload.OrderResponse;
+import com.kosign.vbiz.order.service.ManualOrderService;
 import com.kosign.vbiz.order.service.OrderService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -31,6 +32,13 @@ import lombok.RequiredArgsConstructor;
 public class SellerOrderController extends BaseController {
 
     private final OrderService orders;
+    private final ManualOrderService manual;
+
+    /** An order the shop took by phone, Facebook, Telegram or at the counter (docs/api/phase8-manual-orders.md). */
+    @PostMapping("/manual")
+    public ResponseEntity<ApiResponse<OrderResponse>> manual(@Valid @RequestBody OrderInputs.Manual in) {
+        return created(manual.create(in));
+    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<OrderResponse>>> list(@RequestParam(required = false) String tab,

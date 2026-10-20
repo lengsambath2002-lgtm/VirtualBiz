@@ -113,6 +113,23 @@ public class PaymentService {
         return payments.save(p);
     }
 
+    /**
+     * A manual order's payment (docs/api/phase8-manual-orders.md): paid up front to the shop
+     * ({@code DIRECT}, already PAID) or due on delivery / pickup ({@code COD}, PENDING). VirtualBiz
+     * never holds this money: no commission, never part of a payout.
+     */
+    public Payment createManual(UUID orderId, PaymentMethod method, BigDecimal amount, boolean paid) {
+        Payment p = new Payment();
+        p.setOrderId(orderId);
+        p.setMethod(method);
+        p.setChannel(paid ? PaymentChannel.DIRECT : PaymentChannel.COD);
+        p.setAmount(Money.usd(amount));
+        p.setCommission(Money.ZERO);
+        p.setStatus(paid ? PaymentStatus.PAID : PaymentStatus.PENDING);
+        p.setPaidAt(paid ? clock.instant() : null);
+        return payments.save(p);
+    }
+
     @Transactional
     public PaymentIntentResponse get(UUID customerId, UUID id) {
         PaymentIntent i = owned(customerId, id);

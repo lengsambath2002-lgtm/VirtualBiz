@@ -73,7 +73,7 @@ public class MyReviewService {
         String number;
         if (byOrder) {
             Order o = orders.findByNumber(in.order().trim().toUpperCase(Locale.ROOT))
-                    .filter(x -> x.getCustomerId().equals(userId))
+                    .filter(x -> userId.equals(x.getCustomerId()))
                     .orElseThrow(() -> BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "order",
                             "Not one of your orders"));
             if (!o.getStatus().isFulfilled()) {

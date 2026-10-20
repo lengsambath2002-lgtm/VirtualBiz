@@ -8,7 +8,12 @@ export {
 } from './store/sellerStore';
 export type { CashTenderInfo, FailReason, RejectReason, ReturnReason } from './store/sellerStore';
 export { writeStock, revertStock, SYSTEM_USER, isTmp } from './store/stock';
-export { fetchSellerCatalog, toSellerProduct } from './api';
+export {
+  createManualOrder,
+  fetchSellerCatalog,
+  toSellerProduct,
+  type ManualOrderInput,
+} from './api';
 export {
   useUi,
   useToast,

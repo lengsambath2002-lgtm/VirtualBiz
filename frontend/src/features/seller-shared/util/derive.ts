@@ -77,7 +77,13 @@ export function pStock(p: SellerProduct) {
 }
 
 export const payLabel = (o: SellerOrder): PayLabel =>
-  o.payment.channel === 'COD' ? 'COD' : o.payment.method === 'CARD' ? 'CARD' : 'KHQR';
+  o.payment.channel === 'COD'
+    ? 'COD'
+    : o.payment.method === 'CARD'
+      ? 'CARD'
+      : o.payment.method === 'CASH'
+        ? 'CASH'
+        : 'KHQR';
 
 export type OrderTab = 'new' | 'pack' | 'ship' | 'done' | 'cancelled' | 'all';
 export const ORDER_TABS: OrderTab[] = ['new', 'pack', 'ship', 'done', 'cancelled', 'all'];

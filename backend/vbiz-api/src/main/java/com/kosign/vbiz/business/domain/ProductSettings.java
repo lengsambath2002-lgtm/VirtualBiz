@@ -11,7 +11,21 @@ public record ProductSettings(
         Boolean pickup,
         Boolean cod,
         BigDecimal freeDeliveryOver,
-        List<DeliveryZone> zones) {
+        List<DeliveryZone> zones,
+        /** Days after delivery or pickup a return is accepted (0–30; default 7). */
+        Integer returnDays) {
+
+    public static final int DEFAULT_RETURN_DAYS = 7;
+
+    /** Without a return window (the default applies). */
+    public ProductSettings(Boolean autoAccept, Integer prepMinutes, Integer lowStockDefault, Boolean pickup,
+            Boolean cod, BigDecimal freeDeliveryOver, List<DeliveryZone> zones) {
+        this(autoAccept, prepMinutes, lowStockDefault, pickup, cod, freeDeliveryOver, zones, null);
+    }
+
+    public int returnDaysOrDefault() {
+        return returnDays == null ? DEFAULT_RETURN_DAYS : returnDays;
+    }
 
     /** Seller prototype's three zones (open question #7). */
     public static final List<DeliveryZone> DEFAULT_ZONES = List.of(
@@ -24,6 +38,6 @@ public record ProductSettings(
 
     /** Defaults for a new shop (Create Business). */
     public static ProductSettings defaults() {
-        return new ProductSettings(false, 20, 5, true, true, null, DEFAULT_ZONES);
+        return new ProductSettings(false, 20, 5, true, true, null, DEFAULT_ZONES, DEFAULT_RETURN_DAYS);
     }
 }

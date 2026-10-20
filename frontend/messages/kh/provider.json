@@ -323,7 +323,9 @@
     "sms": "ផ្ញើតាម SMS",
     "bookNext": "កក់ពេលក្រោយ",
     "done": "រួចរាល់",
-    "sent": "បានផ្ញើបង្កាន់ដៃទៅ {phone}"
+    "sent": "បានផ្ញើបង្កាន់ដៃទៅ {phone}",
+    "vatIncluded": "រួមបញ្ចូលអាករ {pct}%",
+    "vatTin": "លេខ TIN {tin}"
   },
   "home": {
     "morning": "អរុណសួស្ដី {name}",
@@ -646,7 +648,20 @@
     "payments": "ការបង់ប្រាក់",
     "bakong": "Bakong ID សម្រាប់ការទូទាត់",
     "bakongHint": "បើក ABA, ACLEDA ឬ Wing → ទទួល; វាមានទម្រង់ name@bank។ ទុកទទេដើម្បីបន្ថែមពេលក្រោយ។",
-    "errBakong": "ប្រើទម្រង់ name@bank ឧ. glowbeauty@aba។"
+    "errBakong": "ប្រើទម្រង់ name@bank ឧ. glowbeauty@aba។",
+    "hAhead": "មុន {n} ម៉ោង",
+    "slot": "ម៉ោងចាប់ផ្ដើម",
+    "everyMin": "រៀងរាល់ {n} នាទី",
+    "ahead": "អតិថិជនកក់បានរហូតដល់",
+    "upToDays": "{n} ថ្ងៃខាងមុខ",
+    "reminderWhen": "ការរំលឹកអតិថិជន",
+    "reminderOff": "គ្មានការរំលឹក",
+    "tips": "ទឹកប្រាក់លើកទឹកចិត្តពេលគិតលុយ",
+    "tipsHint": "ជម្រើសទឹកប្រាក់លើកទឹកចិត្ត ជាភាគរយ (រហូតដល់ ៥)។ 0 មានន័យថាគ្មាន។",
+    "tipN": "ជម្រើសទី {n}",
+    "tipRemove": "ដកជម្រើស {n}%",
+    "tipAdd": "បន្ថែមជម្រើស",
+    "errTip": "ទឹកប្រាក់លើកទឹកចិត្តជាលេខគត់ពី 0 ដល់ 50។"
   },
   "requests": {
     "title": "សំណើអនឡាញ",

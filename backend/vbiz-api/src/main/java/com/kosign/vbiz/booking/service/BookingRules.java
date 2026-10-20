@@ -31,7 +31,9 @@ public class BookingRules {
         }
         return new BookingSettings(or(s.onlineBooking(), d.onlineBooking()), or(s.autoConfirm(), d.autoConfirm()),
                 or(s.reminderHours(), d.reminderHours()), or(s.minNoticeHours(), d.minNoticeHours()),
-                or(s.freeCancelHours(), d.freeCancelHours()), or(s.bufferMinutes(), d.bufferMinutes()));
+                or(s.freeCancelHours(), d.freeCancelHours()), or(s.bufferMinutes(), d.bufferMinutes()),
+                or(s.slotMinutes(), d.slotMinutes()), or(s.maxDaysAhead(), d.maxDaysAhead()),
+                or(s.tipPresets(), d.tipPresets()));
     }
 
     /** The customer may cancel or reschedule until the start minus the free-cancellation hours. */
@@ -45,7 +47,8 @@ public class BookingRules {
         Set<LocalDate> closed = b.getClosures() == null ? Set.of()
                 : b.getClosures().stream().map(Closure::date).filter(java.util.Objects::nonNull)
                         .map(LocalDate::parse).collect(Collectors.toSet());
-        return new Availability.Shop(b.getHours(), closed, s.bufferMinutes(), s.minNoticeHours());
+        return new Availability.Shop(b.getHours(), closed, s.bufferMinutes(), s.minNoticeHours(), s.slotMinutes(),
+                s.maxDaysAhead());
     }
 
     /**

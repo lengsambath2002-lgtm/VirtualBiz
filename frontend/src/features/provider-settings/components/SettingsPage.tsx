@@ -1,32 +1,34 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { createElement as h, useState } from 'react';
+import { useState } from 'react';
 
 import { ShopPhotos } from '@/components/media';
 import { useMyRole } from '@/features/account-switcher';
 import { PayoutsPanel, VerificationPanel } from '@/features/business-status';
+import { HoursPanel, LocationPanel, PolicyPanel } from '@/features/shop-settings';
 import { formatPhone, isValidPhone, normalizePhone } from '@/lib/utils/phone';
 
 import { PIcon } from '@/features/provider-shared/components/Icon';
 import { Field } from '@/features/provider-shared/components/Overlay';
 import { k } from '@/features/provider-shared/cx';
 import { useFmt } from '@/features/provider-shared/hooks/useFmt';
-import { useSaveBusiness } from '@/features/provider-shared/hooks/useSaveBusiness';
+import {
+  toApiBusiness,
+  useSaveBusiness,
+  useSaveBusinessRaw,
+} from '@/features/provider-shared/hooks/useSaveBusiness';
 import { useData, useUi } from '@/features/provider-shared/store';
 import type { ProviderBusinessState } from '@/features/provider-shared/types';
-import {
-  addDays,
-  fmtD,
-  hm,
-  isIsoDate,
-  todayIso,
-  toMin,
-} from '@/features/provider-shared/util/time';
 
-const DAYS = [0, 1, 2, 3, 4, 5, 6] as const;
-type Toggle = 'online' | 'autoConfirm' | 'reminder';
-type Sel = 'minNoticeHours' | 'freeCancelHours' | 'bufferMinutes';
+type Toggle = 'online' | 'autoConfirm';
+type Sel =
+  | 'minNoticeHours'
+  | 'freeCancelHours'
+  | 'bufferMinutes'
+  | 'slotMinutes'
+  | 'maxDaysAhead'
+  | 'reminderHours';
 
 /** Settings: business, hours & closures, booking rules (prototype `P.settings`). */
 export function SettingsPage() {
@@ -34,7 +36,10 @@ export function SettingsPage() {
   const ui = useUi();
   const tab = ui.setTab;
   // What this member's role may change (docs/api/phase10-shop-team.md); the API enforces it.
-  const role = useMyRole(useData().business.id);
+  const data = useData();
+  const role = useMyRole(data.business.id);
+  const api = toApiBusiness(data.business);
+  const saveRaw = useSaveBusinessRaw();
   const tt = useTranslations('team');
   return (
     <>
@@ -69,10 +74,12 @@ export function SettingsPage() {
             <>
               <BusinessPhotos />
               <BusinessForm />
+              <LocationPanel business={api} save={saveRaw} canEdit={role !== 'STAFF'} />
+              <PolicyPanel business={api} save={saveRaw} canEdit={role !== 'STAFF'} />
               <BusinessPayments />
             </>
           ) : tab === 'hours' ? (
-            <Hours />
+            <HoursPanel business={api} save={saveRaw} canEdit={role !== 'STAFF'} />
           ) : (
             <Rules />
           )}
@@ -178,7 +185,6 @@ function BusinessForm() {
   const [about, setAbout] = useState(b.about ?? '');
   const [phone, setPhone] = useState(formatPhone(b.phone));
   const [email, setEmail] = useState(b.email ?? '');
-  const [address, setAddress] = useState(b.address);
   const [err, setErr] = useState<{ bn?: string; bp?: string }>({});
   return (
     <form
@@ -198,7 +204,6 @@ function BusinessForm() {
           about: about.trim(),
           phone: normalizePhone(phone),
           email: email.trim(),
-          address: address.trim(),
         } satisfies Partial<ProviderBusinessState>).then(
           (ok) => ok && ui.showToast(t('settings.savedBiz')),
         );
@@ -229,9 +234,6 @@ function BusinessForm() {
             <input id="be" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </Field>
         </div>
-        <Field id="bd" label={t('settings.address')}>
-          <input id="bd" value={address} onChange={(e) => setAddress(e.target.value)} />
-        </Field>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <button type="submit" className={k('btn btn-primary')}>
             {t('settings.save')}
@@ -242,198 +244,13 @@ function BusinessForm() {
   );
 }
 
-function Hours() {
-  const f = useFmt();
-  const { t, locale } = f;
-  const d = useData();
-  const ui = useUi();
-  const save = useSaveBusiness();
-  const today = todayIso();
-  const closures = [...d.business.closures].sort((a, b) => a.date.localeCompare(b.date));
-
-  const addClosure = async () => {
-    const r = await ui.confirm({
-      title: t('settings.addClosure'),
-      ok: t('settings.add'),
-      extra: h(
-        'div',
-        { className: k('g2') },
-        h(
-          'div',
-          { className: k('field') },
-          h('label', { htmlFor: 'cd' }, t('settings.date')),
-          h('input', {
-            type: 'date',
-            id: 'cd',
-            'data-k': 'date',
-            defaultValue: addDays(today, 1),
-            min: today,
-          }),
-        ),
-        h(
-          'div',
-          { className: k('field') },
-          h('label', { htmlFor: 'cr2' }, t('settings.reason')),
-          h('input', { id: 'cr2', 'data-k': 'reason', defaultValue: t('settings.defaultReason') }),
-        ),
-      ),
-    });
-    if (!r || !isIsoDate(r.date)) return;
-    const date = r.date;
-    const hit = d.appointments.filter(
-      (x) => x.date === date && ['BOOKED', 'CONFIRMED', 'REQUESTED'].includes(x.status),
-    ).length;
-    const ok = await save({
-      closures: [
-        ...d.business.closures,
-        { date, reason: r.reason || t('settings.fallbackReason') },
-      ],
-    });
-    if (!ok) return;
-    ui.showToast(
-      hit
-        ? t('settings.closedHit', { date: fmtD(date, locale), n: hit })
-        : t('settings.closedOk', { date: fmtD(date, locale) }),
-    );
-  };
-
-  return (
-    <>
-      <section className={k('panel')}>
-        <div className={k('panel-h')}>
-          <h2>{t('settings.hoursTitle')}</h2>
-          <span className={k('hint')}>{t('settings.hoursHint')}</span>
-        </div>
-        <div className={k('panel-b hours')}>
-          {DAYS.map((i) => {
-            const hr = d.business.hours[i];
-            const day = t(`days.long.${i}`);
-            return (
-              <div key={i} className={k('hour')}>
-                <span>{day}</span>
-                <label className={k('sw')}>
-                  <input
-                    type="checkbox"
-                    checked={!!hr}
-                    aria-label={t('settings.openDay', { day })}
-                    onChange={(e) => {
-                      const on = e.target.checked;
-                      const hours = [...d.business.hours] as typeof d.business.hours;
-                      hours[i] = on ? [540, 1080] : null;
-                      void save({ hours }).then(
-                        (ok) =>
-                          ok &&
-                          ui.showToast(on ? t('settings.toastOpen') : t('settings.toastClosed')),
-                      );
-                    }}
-                  />
-                  <span />
-                </label>
-                <span>
-                  {hr ? (
-                    <>
-                      <HourInput i={i} which={0} label={t('settings.opens', { day })} />
-                      {' – '}
-                      <HourInput i={i} which={1} label={t('settings.closes', { day })} />
-                    </>
-                  ) : (
-                    <span className={k('muted')}>{t('settings.closed')}</span>
-                  )}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-      <section className={k('panel')}>
-        <div className={k('panel-h')}>
-          <h2>{t('settings.closuresTitle')}</h2>
-          <button
-            type="button"
-            className={k('btn btn-ghost btn-sm')}
-            onClick={() => void addClosure()}
-          >
-            <PIcon name="plus" size={16} />
-            {t('settings.add')}
-          </button>
-        </div>
-        <div className={k('panel-b')}>
-          {closures.length ? (
-            closures.map((c) => (
-              <div
-                key={c.date}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  gap: 8,
-                }}
-              >
-                <span>
-                  <b className={k('num')}>{fmtD(c.date, locale)}</b> · {c.reason}
-                </span>
-                <button
-                  type="button"
-                  className={k('link quiet small')}
-                  onClick={() =>
-                    void save({
-                      closures: d.business.closures.filter((x) => x.date !== c.date),
-                    }).then((ok) => ok && ui.showToast(t('settings.closureRemoved')))
-                  }
-                >
-                  {t('settings.remove')}
-                </button>
-              </div>
-            ))
-          ) : (
-            <span className={k('muted')}>{t('settings.nonePlanned')}</span>
-          )}
-        </div>
-      </section>
-    </>
-  );
-}
-
-/** Hour input saved on change; reverts with a toast when closing ≤ opening. */
-function HourInput({ i, which, label }: { i: number; which: 0 | 1; label: string }) {
-  const { t } = useFmt();
-  const d = useData();
-  const ui = useUi();
-  const save = useSaveBusiness();
-  const hr = d.business.hours[i]!;
-  const [v, setV] = useState(hm(hr[which]));
-  return (
-    <input
-      type="time"
-      step={3600}
-      aria-label={label}
-      value={v}
-      onChange={(e) => {
-        const val = e.target.value;
-        setV(val);
-        if (!val) return;
-        const m = Math.round(toMin(val) / 60) * 60;
-        const next: [number, number] = which === 0 ? [m, hr[1]] : [hr[0], m];
-        if (next[0] >= next[1]) {
-          setV(hm(hr[which]));
-          ui.showToast(t('settings.errOrder'));
-          return;
-        }
-        const hours = [...d.business.hours] as typeof d.business.hours;
-        hours[i] = next;
-        setV(hm(m));
-        void save({ hours }).then((ok) => ok && ui.showToast(t('settings.hoursSaved')));
-      }}
-    />
-  );
-}
-
 function Rules() {
   const { t } = useFmt();
   const d = useData();
   const ui = useUi();
   const save = useSaveBusiness();
   const b = d.business;
+  const saved = (ok: boolean) => ok && ui.showToast(t('settings.saved'));
   const toggle = (key: Toggle, label: string, hint: string) => (
     <label className={k('swr')}>
       <span>
@@ -444,59 +261,152 @@ function Rules() {
         <input
           type="checkbox"
           checked={b[key]}
-          onChange={(e) => {
-            const on = e.target.checked;
-            void save({ [key]: on }).then((ok) => ok && ui.showToast(t('settings.saved')));
-          }}
+          onChange={(e) => void save({ [key]: e.target.checked }).then(saved)}
         />
         <span />
       </span>
     </label>
   );
-  const select = (key: Sel, id: string, label: string, opts: [number, string][]) => (
+  /** A choice list that always contains the current value (set earlier or elsewhere). */
+  const select = (
+    key: Sel,
+    id: string,
+    label: string,
+    values: number[],
+    name: (n: number) => string,
+  ) => (
     <Field id={id} label={label}>
       <select
         id={id}
         value={b[key]}
-        onChange={(e) => {
-          const v = Number(e.target.value);
-          void save({ [key]: v }).then((ok) => ok && ui.showToast(t('settings.saved')));
-        }}
+        onChange={(e) => void save({ [key]: Number(e.target.value) }).then(saved)}
       >
-        {opts.map(([v, l]) => (
-          <option key={v} value={v}>
-            {l}
-          </option>
-        ))}
+        {[...new Set([...values, b[key]])]
+          .sort((x, y) => x - y)
+          .map((v) => (
+            <option key={v} value={v}>
+              {name(v)}
+            </option>
+          ))}
       </select>
     </Field>
   );
+  const before = (n: number) => (n ? t('settings.hBefore', { n }) : t('settings.none'));
+  return (
+    <>
+      <section className={k('panel')}>
+        <div className={k('panel-b')}>
+          {toggle('online', t('settings.ruleOnline'), t('settings.ruleOnlineHint'))}
+          {toggle('autoConfirm', t('settings.ruleAuto'), t('settings.ruleAutoHint'))}
+          <div className={k('g3')}>
+            {select('minNoticeHours', 'r1', t('settings.notice'), [0, 1, 2, 4, 12, 24, 48], (n) =>
+              n ? t('settings.hAhead', { n }) : t('settings.none'),
+            )}
+            {select(
+              'freeCancelHours',
+              'r2',
+              t('settings.cancelUntil'),
+              [0, 2, 4, 12, 24, 48],
+              before,
+            )}
+            {select('bufferMinutes', 'r3', t('settings.gap'), [0, 5, 10, 15, 20, 30], (n) =>
+              n ? t('settings.gapMin', { n }) : t('settings.none'),
+            )}
+          </div>
+          <div className={k('g3')}>
+            {select('slotMinutes', 'r4', t('settings.slot'), [5, 10, 15, 20, 30, 45, 60], (n) =>
+              t('settings.everyMin', { n }),
+            )}
+            {select('maxDaysAhead', 'r5', t('settings.ahead'), [7, 14, 30, 60, 90, 180], (n) =>
+              t('settings.upToDays', { n }),
+            )}
+            {select(
+              'reminderHours',
+              'r6',
+              t('settings.reminderWhen'),
+              [0, 2, 4, 12, 24, 48],
+              (n) => (n ? t('settings.hBefore', { n }) : t('settings.reminderOff')),
+            )}
+          </div>
+        </div>
+      </section>
+      <TipPresets />
+    </>
+  );
+}
+
+/** Tip choices offered at checkout (percent, up to 5). */
+function TipPresets() {
+  const { t } = useFmt();
+  const ui = useUi();
+  const save = useSaveBusiness();
+  const b = useData().business;
+  const [vals, setVals] = useState(b.tipPresets.map(String));
+  const [err, setErr] = useState('');
+  const commit = (next: string[]) => {
+    const nums = next.map(Number);
+    if (nums.some((n) => !Number.isInteger(n) || n < 0 || n > 50)) {
+      setErr(t('settings.errTip'));
+      return;
+    }
+    setErr('');
+    const clean = [...new Set(nums)].sort((x, y) => x - y);
+    if (JSON.stringify(clean) === JSON.stringify(b.tipPresets)) return;
+    void save({ tipPresets: clean }).then((ok) => ok && ui.showToast(t('settings.saved')));
+  };
   return (
     <section className={k('panel')}>
+      <div className={k('panel-h')}>
+        <h2>{t('settings.tips')}</h2>
+      </div>
       <div className={k('panel-b')}>
-        {toggle('online', t('settings.ruleOnline'), t('settings.ruleOnlineHint'))}
-        {toggle('autoConfirm', t('settings.ruleAuto'), t('settings.ruleAutoHint'))}
-        {toggle('reminder', t('settings.ruleReminder'), t('settings.ruleReminderHint'))}
-        <div className={k('g3')}>
-          {select('minNoticeHours', 'r1', t('settings.notice'), [
-            [0, t('settings.none')],
-            [1, t('settings.h1')],
-            [2, t('settings.h2')],
-            [24, t('settings.d1')],
-          ])}
-          {select(
-            'freeCancelHours',
-            'r2',
-            t('settings.cancelUntil'),
-            [2, 12, 24].map((n) => [n, t('settings.hBefore', { n })]),
-          )}
-          {select(
-            'bufferMinutes',
-            'r3',
-            t('settings.gap'),
-            [0, 10, 15].map((n) => [n, n ? t('settings.gapMin', { n }) : t('settings.none')]),
+        <span className={k('hint')}>{t('settings.tipsHint')}</span>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+          {vals.map((v, i) => (
+            <span key={i} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              <input
+                aria-label={t('settings.tipN', { n: i + 1 })}
+                inputMode="numeric"
+                value={v}
+                style={{
+                  width: 64,
+                  height: 36,
+                  border: '1px solid var(--line)',
+                  borderRadius: 'var(--r-sm)',
+                  padding: '0 10px',
+                  textAlign: 'right',
+                }}
+                onChange={(e) =>
+                  setVals((x) => x.map((y, j) => (j === i ? e.target.value.replace(/\D/g, '') : y)))
+                }
+                onBlur={() => commit(vals.filter((x) => x !== ''))}
+              />
+              %
+              <button
+                type="button"
+                className={k('ibtn')}
+                aria-label={t('settings.tipRemove', { n: v || '?' })}
+                onClick={() => {
+                  const next = vals.filter((_, j) => j !== i);
+                  setVals(next);
+                  commit(next.filter((x) => x !== ''));
+                }}
+              >
+                <PIcon name="x" size={16} />
+              </button>
+            </span>
+          ))}
+          {vals.length < 5 && (
+            <button
+              type="button"
+              className={k('btn btn-ghost btn-sm')}
+              onClick={() => setVals((x) => [...x, ''])}
+            >
+              {t('settings.tipAdd')}
+            </button>
           )}
         </div>
+        {err && <span className={k('err')}>{err}</span>}
       </div>
     </section>
   );

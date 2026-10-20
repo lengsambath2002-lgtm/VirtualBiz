@@ -1,0 +1,234 @@
+/* Shared shop settings panels (seller and provider workspaces). */
+.panel {
+  background: var(--g-fill);
+  -webkit-backdrop-filter: var(--g-blur);
+  backdrop-filter: var(--g-blur);
+  border: 1px solid var(--g-brd);
+  box-shadow: var(--g-hi), var(--g-shadow);
+  border-radius: var(--r-md);
+  min-width: 0;
+}
+.head {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+}
+.head h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+.head p {
+  margin: 2px 0 0;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.body {
+  padding: 16px 18px;
+  display: grid;
+  gap: 14px;
+}
+.foot {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px;
+  border-top: 1px solid var(--line);
+}
+.status {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.statusOk {
+  color: var(--ok);
+}
+.statusBad {
+  color: var(--sale);
+}
+.g2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.field {
+  display: grid;
+  /* A hint under one field must not stretch the field beside it. */
+  align-content: start;
+  gap: 6px;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 500;
+}
+.field input:not([type='checkbox']):not([type='radio']),
+.field select,
+.field textarea {
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: 8px 12px;
+  background: var(--g-fill-strong);
+  font-size: 14px;
+  font-weight: 400;
+  width: 100%;
+}
+.field textarea {
+  min-height: 68px;
+  resize: vertical;
+}
+.field input:not([type='checkbox']):focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent);
+}
+.hint {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--muted);
+}
+.err {
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--sale);
+}
+.primary,
+.ghost {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.primary {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.ghost {
+  background: var(--g-fill-strong);
+  border-color: var(--line);
+  color: var(--ink);
+}
+.primary:disabled,
+.ghost:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 400;
+}
+.check input {
+  margin-top: 3px;
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+.check small {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+.row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.day {
+  display: grid;
+  grid-template-columns: 110px auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+.day:last-child {
+  border-bottom: 0;
+}
+.times {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.times input {
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 4px 8px;
+  background: var(--g-fill-strong);
+}
+.muted {
+  color: var(--muted);
+  font-size: 13px;
+}
+.zone {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.zoneTop {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px auto;
+  gap: 10px;
+  align-items: end;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.chip {
+  border: 1px solid var(--line);
+  background: var(--g-fill-strong);
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 12.5px;
+  cursor: pointer;
+}
+.chipOn {
+  background: var(--primary);
+  color: var(--on-primary);
+  border-color: transparent;
+}
+.chipTaken {
+  opacity: 0.4;
+}
+.icon {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--sale);
+  cursor: pointer;
+  font-size: 18px;
+}
+.icon:hover {
+  background: var(--sunk);
+}
+@media (max-width: 560px) {
+  .g2 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .day {
+    grid-template-columns: 1fr auto;
+  }
+  .day .times {
+    grid-column: 1 / -1;
+  }
+  .zoneTop {
+    grid-template-columns: minmax(0, 1fr) 100px auto;
+  }
+}

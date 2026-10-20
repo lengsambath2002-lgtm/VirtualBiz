@@ -323,7 +323,9 @@
     "sms": "Send by SMS",
     "bookNext": "Book next visit",
     "done": "Done",
-    "sent": "Receipt sent to {phone}"
+    "sent": "Receipt sent to {phone}",
+    "vatIncluded": "VAT {pct}% included",
+    "vatTin": "VAT TIN {tin}"
   },
   "home": {
     "morning": "Good morning, {name}",
@@ -646,7 +648,20 @@
     "payments": "Payments",
     "bakong": "Bakong ID for payouts",
     "bakongHint": "Open ABA, ACLEDA or Wing → Receive; it looks like name@bank. Leave empty to add later.",
-    "errBakong": "Use the name@bank form, e.g. glowbeauty@aba."
+    "errBakong": "Use the name@bank form, e.g. glowbeauty@aba.",
+    "hAhead": "{n, plural, one {# hour} other {# hours}} ahead",
+    "slot": "Start times",
+    "everyMin": "Every {n} min",
+    "ahead": "Clients book up to",
+    "upToDays": "{n} days ahead",
+    "reminderWhen": "Reminder to clients",
+    "reminderOff": "No reminder",
+    "tips": "Tips at checkout",
+    "tipsHint": "The tip choices your checkout offers, in percent (up to 5). 0 means no tip.",
+    "tipN": "Tip choice {n}",
+    "tipRemove": "Remove the {n}% tip",
+    "tipAdd": "Add a choice",
+    "errTip": "Tips are whole numbers from 0 to 50."
   },
   "requests": {
     "title": "Online requests",

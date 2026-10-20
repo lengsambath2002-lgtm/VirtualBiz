@@ -295,8 +295,11 @@ public class OrderService {
         Workspace w = access.member();
         Order o = lock(shopOrderOf(w, ref).getId());
         Instant now = clock.instant();
+        // The shop's own return window (product settings), else the platform default.
+        java.time.Duration window = w.business().getProductSettings() == null ? props.returnWindow()
+                : java.time.Duration.ofDays(w.business().getProductSettings().returnDaysOrDefault());
         if (o.getStatus().isFulfilled() && (o.getFulfilledAt() == null
-                || now.isAfter(o.getFulfilledAt().plus(props.returnWindow())))) {
+                || now.isAfter(o.getFulfilledAt().plus(window)))) {
             throw new BusinessException(StatusCode.RETURN_WINDOW_PASSED);
         }
         move(o, OrderStatus.RETURNED, w.userId(), null);

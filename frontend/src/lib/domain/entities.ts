@@ -100,6 +100,27 @@ export interface ProductSettings {
   cod: boolean;
   freeDeliveryOver?: Usd;
   zones: DeliveryZone[];
+  /** Days after delivery or pickup a return is accepted (default 7). */
+  returnDays?: number;
+}
+
+/**
+ * A shop's receipt text, VAT, counter payment methods and links (docs/api/phase11). Prices are
+ * VAT-inclusive; `taxPct` shows the VAT inside a total on receipts.
+ */
+export interface ShopPolicy {
+  receiptHeader?: string | null;
+  receiptFooter?: string | null;
+  taxPct: number;
+  taxId?: string | null;
+  payCash: boolean;
+  payKhqr: boolean;
+  payCard: boolean;
+  facebook?: string | null;
+  telegram?: string | null;
+  instagram?: string | null;
+  tiktok?: string | null;
+  website?: string | null;
 }
 
 export interface BookingSettings {
@@ -109,6 +130,12 @@ export interface BookingSettings {
   minNoticeHours: number;
   freeCancelHours: number;
   bufferMinutes: number;
+  /** Start times every N minutes (default 30). */
+  slotMinutes?: number;
+  /** How many days ahead clients can book online (default 90). */
+  maxDaysAhead?: number;
+  /** Tip choices at checkout, percent (default 0, 5, 10, 15). */
+  tipPresets?: number[];
 }
 
 interface BusinessBase {
@@ -141,6 +168,8 @@ interface BusinessBase {
   rating: number;
   reviewCount: number;
   since: Instant;
+  /** Always complete from the API (defaults filled in). */
+  policy?: ShopPolicy;
 }
 
 export interface ProductBusiness extends BusinessBase {

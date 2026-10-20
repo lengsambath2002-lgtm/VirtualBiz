@@ -52,8 +52,6 @@ import {
   weekStart,
 } from '@/features/provider-shared/util/time';
 
-const COL_H = (H1 - H0) * 48;
-
 interface Drag {
   id: string;
   sx: number;
@@ -286,9 +284,14 @@ export function CalendarPage() {
     const bls = d.blocks.filter((b) => b.date === day && staffs.includes(b.staffId));
     const nm = nowMin();
     return (
-      <div key={colKey + i} className={k('col')} data-colkey={colKey} style={{ height: COL_H }}>
+      <div
+        key={colKey + i}
+        className={k('col')}
+        data-colkey={colKey}
+        style={{ height: (H1 - H0) * 48 }}
+      >
         {!sh ? (
-          <div className={k('off')} style={{ top: 0, height: COL_H }} />
+          <div className={k('off')} style={{ top: 0, height: (H1 - H0) * 48 }} />
         ) : (
           <>
             <div className={k('off')} style={{ top: 0, height: topOf(sh[0]) }} />

@@ -35,6 +35,8 @@ public record UpdateBusinessRequest(
         @Size(max = 500) String coverUrl,
         JsonNode productSettings,
         JsonNode bookingSettings,
+        /** Merged field by field into the shop policy (receipt, VAT, payment methods, links). */
+        JsonNode policy,
         /** A new ID photo (data URL) while the shop is not verified: it goes back to PENDING. */
         String idPhoto) {
 }

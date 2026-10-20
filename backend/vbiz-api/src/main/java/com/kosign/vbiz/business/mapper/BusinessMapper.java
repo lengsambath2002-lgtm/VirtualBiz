@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import com.kosign.vbiz.business.domain.Business;
 import com.kosign.vbiz.business.domain.BusinessMember;
+import com.kosign.vbiz.business.domain.ShopPolicy;
 import com.kosign.vbiz.business.domain.VerificationStatus;
 import com.kosign.vbiz.business.payload.BusinessResponse;
 import com.kosign.vbiz.business.payload.MemberResponse;
@@ -24,7 +25,7 @@ public final class BusinessMapper {
                 b.getVerification() == VerificationStatus.REJECTED ? b.getVerificationNote() : null,
                 b.getSuspendedAt(), b.getSuspendedReason(),
                 b.getRating() == null ? 0 : b.getRating().doubleValue(), b.getReviewCount(), b.getSince(),
-                b.getProductSettings(), b.getBookingSettings());
+                b.getProductSettings(), b.getBookingSettings(), ShopPolicy.of(b.getPolicy()));
     }
 
     public static MyBusinessResponse toMine(BusinessMember m, Business b) {

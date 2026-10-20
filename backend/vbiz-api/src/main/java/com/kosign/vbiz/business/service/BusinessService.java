@@ -25,6 +25,7 @@ import com.kosign.vbiz.business.domain.BusinessType;
 import com.kosign.vbiz.business.domain.DeliveryZone;
 import com.kosign.vbiz.business.domain.MemberRole;
 import com.kosign.vbiz.business.domain.ProductSettings;
+import com.kosign.vbiz.business.domain.ShopPolicy;
 import com.kosign.vbiz.business.domain.VerificationStatus;
 import com.kosign.vbiz.business.mapper.BusinessMapper;
 import com.kosign.vbiz.business.payload.BusinessResponse;
@@ -295,6 +296,9 @@ public class BusinessService {
             b.setBookingSettings(validate(merge(b.getBookingSettings(), req.bookingSettings(),
                     BookingSettings.class, "bookingSettings")));
         }
+        if (req.policy() != null && !req.policy().isNull()) {
+            b.setPolicy(validate(merge(b.getPolicy(), req.policy(), ShopPolicy.class, "policy")));
+        }
         return BusinessMapper.toResponse(businesses.saveAndFlush(b));
     }
 
@@ -399,8 +403,11 @@ public class BusinessService {
             }
             return new DeliveryZone(z.label().trim(), List.copyOf(z.districts()), Money.usd(z.fee()));
         }).toList();
+        if (s.returnDays() != null) {
+            range("productSettings.returnDays", s.returnDays(), 0, 30);
+        }
         return new ProductSettings(s.autoAccept(), s.prepMinutes(), s.lowStockDefault(), s.pickup(), s.cod(),
-                free, zones);
+                free, zones, s.returnDays());
     }
 
     private static BookingSettings validate(BookingSettings s) {
@@ -411,7 +418,55 @@ public class BusinessService {
         range("bookingSettings.minNoticeHours", s.minNoticeHours(), 0, 168);
         range("bookingSettings.freeCancelHours", s.freeCancelHours(), 0, 168);
         range("bookingSettings.bufferMinutes", s.bufferMinutes(), 0, 240);
+        if (s.slotMinutes() != null && !List.of(5, 10, 15, 20, 30, 45, 60).contains(s.slotMinutes())) {
+            throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "bookingSettings.slotMinutes",
+                    "5, 10, 15, 20, 30, 45 or 60");
+        }
+        if (s.maxDaysAhead() != null) {
+            range("bookingSettings.maxDaysAhead", s.maxDaysAhead(), 1, 180);
+        }
+        if (s.tipPresets() != null) {
+            if (s.tipPresets().size() > 5 || s.tipPresets().stream().anyMatch(p -> p == null || p < 0 || p > 50)) {
+                throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "bookingSettings.tipPresets",
+                        "Up to 5 percentages, each 0–50");
+            }
+        }
         return s;
+    }
+
+    private static final java.util.regex.Pattern TAX_ID = java.util.regex.Pattern.compile("^[A-Za-z0-9-]{4,20}$");
+
+    /** Receipt text up to 120 / 300 characters, VAT 0–20 %, links up to 200 characters. */
+    private static ShopPolicy validate(ShopPolicy p) {
+        String header = text(p.receiptHeader(), 120, "policy.receiptHeader");
+        String footer = text(p.receiptFooter(), 300, "policy.receiptFooter");
+        BigDecimal tax = p.taxPct() == null ? BigDecimal.ZERO : p.taxPct();
+        if (tax.signum() < 0 || tax.compareTo(BigDecimal.valueOf(20)) > 0 || tax.stripTrailingZeros().scale() > 2) {
+            throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "policy.taxPct", "0–20, up to 2 decimals");
+        }
+        String taxId = text(p.taxId(), 20, "policy.taxId");
+        if (taxId != null && !TAX_ID.matcher(taxId).matches()) {
+            throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "policy.taxId", "Letters, digits and -");
+        }
+        if (Boolean.FALSE.equals(p.payCash()) && Boolean.FALSE.equals(p.payKhqr()) && Boolean.FALSE.equals(p.payCard())) {
+            throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "policy.payCash",
+                    "Accept at least one payment method");
+        }
+        return new ShopPolicy(header, footer, tax, taxId, p.payCash(), p.payKhqr(), p.payCard(),
+                text(p.facebook(), 200, "policy.facebook"), text(p.telegram(), 200, "policy.telegram"),
+                text(p.instagram(), 200, "policy.instagram"), text(p.tiktok(), 200, "policy.tiktok"),
+                text(p.website(), 200, "policy.website"));
+    }
+
+    private static String text(String v, int max, String field) {
+        if (v == null || v.isBlank()) {
+            return null;
+        }
+        String t = v.trim();
+        if (t.length() > max) {
+            throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, field, "Up to " + max + " characters");
+        }
+        return t;
     }
 
     /** {@code keyValues} = name, value, name, value, … */

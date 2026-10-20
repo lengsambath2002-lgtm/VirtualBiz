@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
 import type { Block, BusinessMember, Client } from '@/lib/domain';
+import { policyOf } from '@/lib/shop';
 
 import type { ProviderAppointment, ProviderData } from '../types';
 import {
@@ -77,6 +78,12 @@ function data(over: Partial<ProviderData> = {}): ProviderData {
       freeCancelHours: 2,
       bufferMinutes: 0,
       reminder: true,
+      reminderHours: 24,
+      slotMinutes: 30,
+      maxDaysAhead: 90,
+      tipPresets: [0, 5, 10, 15],
+      district: 'Toul Kork',
+      policy: policyOf(null),
     },
     staff,
     services: [

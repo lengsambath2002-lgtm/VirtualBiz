@@ -7,6 +7,7 @@ import com.kosign.vbiz.business.domain.BookingSettings;
 import com.kosign.vbiz.business.domain.BusinessType;
 import com.kosign.vbiz.business.domain.Closure;
 import com.kosign.vbiz.business.domain.ProductSettings;
+import com.kosign.vbiz.business.domain.ShopPolicy;
 import com.kosign.vbiz.business.domain.VerificationStatus;
 
 /** {@code Business} on the wire (docs/db/domain-model.md). One of the two settings is set, by type. */
@@ -40,5 +41,7 @@ public record BusinessResponse(
         int reviewCount,
         Instant since,
         ProductSettings productSettings,
-        BookingSettings bookingSettings) {
+        BookingSettings bookingSettings,
+        /** Always complete (defaults filled in). */
+        ShopPolicy policy) {
 }

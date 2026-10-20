@@ -1,14 +1,24 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useQueryClient } from '@tanstack/react-query';
 import { useState, type FormEvent } from 'react';
 
 import { ShopPhotos } from '@/components/media';
 import { PayoutsPanel, VerificationPanel } from '@/features/business-status';
 import { cx, s, SwitchRow, useDb, useSellerStore, useUi } from '@/features/seller-shared';
-import { round2 } from '@/lib/money';
 import { usePlatformSettings } from '@/lib/platform';
-import { useMyRole } from '@/features/account-switcher';
+import { useMyRole, useWorkspaceBusiness } from '@/features/account-switcher';
+import { patchBusinessApi } from '@/features/seller-shared/api';
+import {
+  DeliveryZonesPanel,
+  HoursPanel,
+  LocationPanel,
+  PolicyPanel,
+  ReturnWindow,
+  type SaveBusiness,
+} from '@/features/shop-settings';
+import type { Business } from '@/lib/domain';
 import { formatPhone, isValidPhone, normalizePhone } from '@/lib/utils/phone';
 
 type Toggle = 'online' | 'autoAccept' | 'pickup' | 'cod';
@@ -24,13 +34,25 @@ export function SettingsPage() {
   const [name, setName] = useState(shop.name);
   const [about, setAbout] = useState(shop.about);
   const [phone, setPhone] = useState(formatPhone(shop.phone));
-  const [addr, setAddr] = useState(shop.addr);
   const [errs, setErrs] = useState<{ sn?: string; sp?: string }>({});
-  const [zones, setZones] = useState(shop.zones.map((z) => String(z.fee)));
   const [freeOver, setFreeOver] = useState(String(shop.freeDeliveryOver));
+  const [low, setLow] = useState(String(shop.lowStockDefault));
   const [khqr, setKhqr] = useState(shop.bakongId);
   // What this member's role may change (docs/api/phase10-shop-team.md); the API enforces it.
   const role = useMyRole(shop.id);
+  // Location, hours, zones, returns and policy save straight to the API; the cached business
+  // then refreshes the workspace (useSellerBootstrap applies it).
+  const { business } = useWorkspaceBusiness('PRODUCT');
+  const qc = useQueryClient();
+  const saveBusiness: SaveBusiness = async (patch) => {
+    try {
+      const b = (await patchBusinessApi(shop.id, patch)) as Business;
+      qc.setQueryData(['business', shop.id], b);
+      return true;
+    } catch {
+      return false;
+    }
+  };
   const tt = useTranslations('team');
 
   const saveShop = (e: FormEvent) => {
@@ -46,7 +68,6 @@ export function SettingsPage() {
       name: n,
       about: about.trim(),
       phone: normalizePhone(phone),
-      addr: addr.trim(),
     }).then((ok) => ok && toast(t('shopSaved')));
   };
   const toggle = (k: Toggle) => (v: boolean) => {
@@ -117,10 +138,6 @@ export function SettingsPage() {
                   />
                   <div className={s.err}>{errs.sp}</div>
                 </div>
-                <div className={s.field}>
-                  <label htmlFor="st-addr">{t('pickupAddr')}</label>
-                  <input id="st-addr" value={addr} onChange={(e) => setAddr(e.target.value)} />
-                </div>
               </div>
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                 <button type="submit" className={cx(s.btn, s.btnPrimary)}>
@@ -129,6 +146,12 @@ export function SettingsPage() {
               </div>
             </div>
           </form>
+          {business && (
+            <>
+              <LocationPanel business={business} save={saveBusiness} canEdit={role !== 'STAFF'} />
+              <HoursPanel business={business} save={saveBusiness} canEdit={role !== 'STAFF'} />
+            </>
+          )}
           <section className={s.panel}>
             <div className={s.panelH}>
               <h2>{t('orders')}</h2>
@@ -152,34 +175,38 @@ export function SettingsPage() {
                       );
                     }}
                   >
-                    {[10, 20, 30, 60].map((v) => (
-                      <option key={v} value={v}>
-                        {t('minutes', { n: v })}
-                      </option>
-                    ))}
+                    {[...new Set([5, 10, 15, 20, 30, 45, 60, 90, 120, shop.prepMinutes])]
+                      .sort((a, b) => a - b)
+                      .map((v) => (
+                        <option key={v} value={v}>
+                          {t('minutes', { n: v })}
+                        </option>
+                      ))}
                   </select>
                 </div>
                 <div className={s.field}>
                   <label htmlFor="st-low">{t('lowDefault')}</label>
-                  <select
+                  <input
                     id="st-low"
-                    value={shop.lowStockDefault}
-                    onChange={(e) => {
-                      void update({ lowStockDefault: +e.target.value }).then(
-                        (ok) => ok && toast(t('saved')),
-                      );
+                    type="number"
+                    min={0}
+                    max={100000}
+                    value={low}
+                    onChange={(e) => setLow(e.target.value)}
+                    onBlur={() => {
+                      const v = Math.round(Number(low));
+                      if (!(v >= 0) || v === shop.lowStockDefault)
+                        return setLow(String(shop.lowStockDefault));
+                      void update({ lowStockDefault: v }).then((ok) => ok && toast(t('saved')));
                     }}
-                  >
-                    {[2, 3, 5, 10].map((v) => (
-                      <option key={v} value={v}>
-                        {v}
-                      </option>
-                    ))}
-                  </select>
+                  />
                 </div>
               </div>
             </div>
           </section>
+          {business?.type === 'PRODUCT' && (
+            <ReturnWindow business={business} save={saveBusiness} canEdit={role !== 'STAFF'} />
+          )}
           <section className={s.panel}>
             <div className={s.panelH}>
               <h2>{t('delivery')}</h2>
@@ -191,57 +218,6 @@ export function SettingsPage() {
                 checked={shop.pickup}
                 onChange={toggle('pickup')}
               />
-              <div className={s.tblWrap}>
-                <table style={{ minWidth: 420 }}>
-                  <thead>
-                    <tr>
-                      <th>{t('zone')}</th>
-                      <th className={s.r}>{t('fee')}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {shop.zones.map((z, i) => (
-                      <tr key={z.label}>
-                        <td>{z.label}</td>
-                        <td className={s.r}>
-                          <div className={s.prefix} style={{ width: 100, marginLeft: 'auto' }}>
-                            <span>$</span>
-                            <input
-                              value={zones[i] ?? ''}
-                              inputMode="decimal"
-                              aria-label={t('feeFor', { zone: z.label })}
-                              style={{
-                                width: '100%',
-                                height: 34,
-                                border: '1px solid var(--line)',
-                                padding: '0 8px',
-                                textAlign: 'right',
-                              }}
-                              onChange={(e) =>
-                                setZones((x) => x.map((y, j) => (j === i ? e.target.value : y)))
-                              }
-                              onBlur={() => {
-                                const v = parseFloat(zones[i] ?? '');
-                                if (!(v >= 0)) {
-                                  setZones((x) => x.map((y, j) => (j === i ? String(z.fee) : y)));
-                                  toast(t('errFee'));
-                                  return;
-                                }
-                                if (round2(v) === z.fee) return;
-                                void update({
-                                  zones: shop.zones.map((zz, j) =>
-                                    j === i ? { ...zz, fee: round2(v) } : zz,
-                                  ),
-                                }).then((ok) => ok && toast(t('feeSaved')));
-                              }}
-                            />
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
               <div className={s.field}>
                 <label htmlFor="st-free">{t('freeOver')}</label>
                 <div className={s.prefix} style={{ maxWidth: 160 }}>
@@ -271,6 +247,16 @@ export function SettingsPage() {
             btn={cx(s.btn, s.btnGhost, s.btnSm)}
             onToast={toast}
           />
+          {business?.type === 'PRODUCT' && (
+            <DeliveryZonesPanel
+              business={business}
+              save={saveBusiness}
+              canEdit={role !== 'STAFF'}
+            />
+          )}
+          {business && (
+            <PolicyPanel business={business} save={saveBusiness} canEdit={role !== 'STAFF'} />
+          )}
           <PayoutsPanel businessId={shop.id} panel={s.panel} head={s.panelH} body={s.panelB} />
           <section className={s.panel}>
             <div className={s.panelH}>

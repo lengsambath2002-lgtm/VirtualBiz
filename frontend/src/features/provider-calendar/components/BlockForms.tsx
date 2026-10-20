@@ -19,9 +19,8 @@ import {
   firstName,
   pending,
 } from '@/features/provider-shared/util/logic';
-import { H0, H1, hm, isIsoDate, todayIso } from '@/features/provider-shared/util/time';
+import { calendarStarts, hm, isIsoDate, todayIso } from '@/features/provider-shared/util/time';
 
-const STARTS = Array.from({ length: (H1 - H0) * 4 }, (_, i) => H0 * 60 + i * 15);
 const DURS = [15, 30, 45, 60, 90, 120, 240];
 
 /** Click on an empty slot in a staff column: new appointment or block. */
@@ -142,7 +141,7 @@ export function BlockForm(p: { date?: string; start?: number; staffId?: string }
         <div className={k('g3')}>
           <Field id="bt0" label={t('block.from')}>
             <select id="bt0" value={start} onChange={(e) => setStart(Number(e.target.value))}>
-              {STARTS.map((m) => (
+              {calendarStarts().map((m) => (
                 <option key={m} value={m}>
                   {hm(m)}
                 </option>

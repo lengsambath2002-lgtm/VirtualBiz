@@ -307,6 +307,7 @@ export const toPosSale = (s: ApiPosSale, businessId: string): SellerPosSale => (
     : {}),
   ...(s.customerName ? { customerName: s.customerName } : {}),
   refunds: s.refunds.map((r) => ({ at: r.at, amount: r.amount, method: r.method, lines: r.lines })),
+  ...(s.byName ? { byName: s.byName } : {}),
   at: s.at,
 });
 

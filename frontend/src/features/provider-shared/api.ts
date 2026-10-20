@@ -43,6 +43,7 @@ import type {
   ProviderReview,
   ProviderSale,
 } from './types';
+import { policyOf } from '@/lib/shop';
 import { STAFF_COLORS } from './types';
 
 // ---- Mappers ------------------------------------------------------------------------------
@@ -200,6 +201,9 @@ const DEFAULT_BOOKING: BookingSettings = {
   minNoticeHours: 2,
   freeCancelHours: 2,
   bufferMinutes: 0,
+  slotMinutes: 30,
+  maxDaysAhead: 90,
+  tipPresets: [0, 5, 10, 15],
 };
 
 /** The settings form's view of the API business. */
@@ -216,6 +220,9 @@ export function toBusinessState(b: Business, ownerName: string): ProviderBusines
     phone: b.phone,
     email: b.email,
     address: b.street,
+    district: b.district,
+    ...(b.lat != null && b.lng != null ? { lat: b.lat, lng: b.lng } : {}),
+    policy: policyOf(b.policy),
     hours: b.hours,
     closures: b.closures ?? [],
     online: bs.onlineBooking,
@@ -232,6 +239,10 @@ export function toBusinessState(b: Business, ownerName: string): ProviderBusines
     freeCancelHours: bs.freeCancelHours,
     bufferMinutes: bs.bufferMinutes,
     reminder: bs.reminderHours > 0,
+    reminderHours: bs.reminderHours,
+    slotMinutes: bs.slotMinutes ?? 30,
+    maxDaysAhead: bs.maxDaysAhead ?? 90,
+    tipPresets: bs.tipPresets ?? [0, 5, 10, 15],
   } as ProviderBusinessState;
 }
 
@@ -409,6 +420,10 @@ export function businessPatch(p: Partial<ProviderBusinessState>): Record<string,
   if (p.phone !== undefined) out.phone = p.phone;
   if (p.email !== undefined) out.email = p.email;
   if (p.address !== undefined) out.street = p.address;
+  if (p.district !== undefined) out.district = p.district;
+  if (p.lat !== undefined) out.lat = p.lat;
+  if (p.lng !== undefined) out.lng = p.lng;
+  if (p.policy !== undefined) out.policy = p.policy;
   if (p.hours !== undefined) out.hours = p.hours;
   if (p.closures !== undefined) out.closures = p.closures;
   // '' removes the photo; '' clears the Bakong ID too.
@@ -421,7 +436,11 @@ export function businessPatch(p: Partial<ProviderBusinessState>): Record<string,
   if (p.minNoticeHours !== undefined) bs.minNoticeHours = p.minNoticeHours;
   if (p.freeCancelHours !== undefined) bs.freeCancelHours = p.freeCancelHours;
   if (p.bufferMinutes !== undefined) bs.bufferMinutes = p.bufferMinutes;
-  if (p.reminder !== undefined) bs.reminderHours = p.reminder ? 24 : 0;
+  if (p.reminderHours !== undefined) bs.reminderHours = p.reminderHours;
+  else if (p.reminder !== undefined) bs.reminderHours = p.reminder ? 24 : 0;
+  if (p.slotMinutes !== undefined) bs.slotMinutes = p.slotMinutes;
+  if (p.maxDaysAhead !== undefined) bs.maxDaysAhead = p.maxDaysAhead;
+  if (p.tipPresets !== undefined) bs.tipPresets = p.tipPresets;
   if (Object.keys(bs).length) out.bookingSettings = bs;
   return out;
 }

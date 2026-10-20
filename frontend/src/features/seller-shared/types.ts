@@ -17,6 +17,7 @@ import type {
   StockMovement,
   StockReason,
   Usd,
+  ShopPolicy,
 } from '@/lib/domain';
 
 /**
@@ -70,6 +71,8 @@ export interface SellerShop {
   cod: boolean;
   freeDeliveryOver: number;
   zones: DeliveryZone[];
+  /** Receipt text, VAT, counter payment methods, links (defaults filled in). */
+  policy: ShopPolicy;
 }
 
 /**
@@ -99,6 +102,8 @@ export interface SellerPosSale extends Omit<PosSale, 'lines' | 'refunds'> {
   customerName?: string;
   /** Why the counter discount was given (`loyal`, `bundle`, …). */
   discountReason?: string;
+  /** Who rang it up (from the API; a sale still being sent was the signed-in member). */
+  byName?: string;
 }
 
 export interface CartLine {

@@ -23,7 +23,9 @@ import {
   useMethodName,
 } from '@/features/seller-shared';
 import type { PaymentMethod } from '@/lib/domain';
+import { useSession } from '@/lib/auth';
 import { cashChange, formatCashChange, khrRate, round2 } from '@/lib/money';
+import { acceptedMethods, policyOf, vatIncluded } from '@/lib/shop';
 
 import { focusPosSearch, usePosActions } from '../hooks/usePosActions';
 
@@ -130,7 +132,13 @@ export function ChargeDialog() {
   const db = useDb();
   const f = useFmt();
   const { total } = posTotals(db.pos);
-  const [mode, setMode] = useState<Mode>('CASH');
+  // Only what this shop takes at the counter; split is cash + KHQR.
+  const accepted = acceptedMethods(db.shop.policy ?? policyOf(null));
+  const modes: Mode[] = [
+    ...accepted,
+    ...(accepted.includes('CASH') && accepted.includes('KHQR') ? (['SPLIT'] as const) : []),
+  ];
+  const [mode, setMode] = useState<Mode>(modes[0] ?? 'CASH');
   const [usd, setUsd] = useState('');
   const [khr, setKhr] = useState('');
   const [split, setSplit] = useState('');
@@ -365,7 +373,7 @@ export function ChargeDialog() {
         </span>
       </h2>
       <div className={s.seg} style={{ justifySelf: 'start' }}>
-        {(['CASH', 'KHQR', 'CARD', 'SPLIT'] as Mode[]).map((m) => (
+        {modes.map((m) => (
           <button
             key={m}
             type="button"
@@ -386,10 +394,13 @@ export function ReceiptDialog({ saleId, fresh }: { saleId: string; fresh: boolea
   const tm = useMethodName();
   const db = useDb();
   const f = useFmt();
+  const me = useSession().user;
   const sale = db.pos.sales.find((x) => x.id === saleId);
   if (!sale) return null;
   const refunded = sale.refunds.reduce((x, r) => x + r.amount, 0);
-  const cashier = db.shop.ownerName.split(' ')[1] ?? db.shop.ownerName;
+  const policy = db.shop.policy ?? policyOf(null);
+  const cashier = sale.byName ?? me?.name ?? db.shop.ownerName;
+  const vat = vatIncluded(sale.total - refunded, Number(policy.taxPct));
   const change = sale.cash?.change ?? 0;
   const give = cashChange({ totalUsd: 0, tenderedUsd: change, tenderedKhr: 0 });
   const ui = useUi.getState();
@@ -413,6 +424,11 @@ export function ReceiptDialog({ saleId, fresh }: { saleId: string; fresh: boolea
           <b>{db.shop.name}</b>
           <span>{sale.number || t('sending')}</span>
         </div>
+        {policy.receiptHeader && (
+          <div>
+            <span>{policy.receiptHeader}</span>
+          </div>
+        )}
         <div>
           <span>{f.dateTimeMedium(sale.at)}</span>
           <span>{cashier}</span>
@@ -467,9 +483,20 @@ export function ReceiptDialog({ saleId, fresh }: { saleId: string; fresh: boolea
             </div>
           </>
         )}
+        {vat > 0 && (
+          <div>
+            <span>{t('vatIncluded', { pct: Number(policy.taxPct) })}</span>
+            <span>{f.money(vat)}</span>
+          </div>
+        )}
+        {policy.taxId && (
+          <div>
+            <span>{t('vatTin', { tin: policy.taxId })}</span>
+          </div>
+        )}
         <hr />
         <div>
-          <span>{t('warranty')}</span>
+          <span style={{ whiteSpace: 'pre-line' }}>{policy.receiptFooter || t('warranty')}</span>
         </div>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: `repeat(${fresh ? 3 : 2},1fr)`, gap: 8 }}>

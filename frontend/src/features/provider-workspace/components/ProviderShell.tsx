@@ -15,6 +15,7 @@ import { pageHref, type ProviderPage } from '@/features/provider-shared/hooks/us
 import { useProviderData } from '@/features/provider-shared/queries';
 import { StatusBanner } from '@/features/business-status';
 import { useData, useUi } from '@/features/provider-shared/store';
+import { setCalendarRange } from '@/features/provider-shared/util/time';
 import { pending } from '@/features/provider-shared/util/logic';
 
 import { OverlayHost } from './OverlayHost';
@@ -95,7 +96,13 @@ export function ProviderShell({ children }: { children: ReactNode }) {
 
 function Workspace({ children }: { children: ReactNode }) {
   const close = useUi((s) => s.close);
-  const businessId = useData().business.id;
+  const data = useData();
+  const businessId = data.business.id;
+  // The calendar spans the shop's opening hours and staff shifts (set before pages render).
+  setCalendarRange(
+    data.business.hours,
+    data.staff.filter((m) => m.active).map((m) => m.shifts),
+  );
   // Escape closes the overlay, else an open menu (prototype keydown handler).
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {

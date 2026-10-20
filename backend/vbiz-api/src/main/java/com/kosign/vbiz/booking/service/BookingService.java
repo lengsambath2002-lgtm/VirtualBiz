@@ -93,7 +93,7 @@ public class BookingService {
                             x.staffIds().stream().map(UUID::toString).toList()))
                     .toList()));
         }
-        return new AvailabilityResponse(s.getId().toString(), s.getDurationMin(), Availability.STEP, out);
+        return new AvailabilityResponse(s.getId().toString(), s.getDurationMin(), rules.shop(b).slotMinutes(), out);
     }
 
     // ── Bookings (signed in) ──────────────────────────────────────────────────────────

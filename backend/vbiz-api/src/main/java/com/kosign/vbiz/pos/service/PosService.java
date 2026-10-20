@@ -23,8 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.kosign.vbiz.booking.service.Availability;
 import com.kosign.vbiz.business.domain.BusinessType;
-import com.kosign.vbiz.business.service.WorkspaceAccess;
+import com.kosign.vbiz.business.domain.ShopPolicy;
 import com.kosign.vbiz.business.service.WorkspaceAccess.Workspace;
+import com.kosign.vbiz.business.service.WorkspaceAccess;
 import com.kosign.vbiz.catalog.domain.Product;
 import com.kosign.vbiz.catalog.domain.ProductVariant;
 import com.kosign.vbiz.catalog.mapper.CatalogMapper;
@@ -210,6 +211,14 @@ public class PosService {
             throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "discount", "More than the subtotal");
         }
         BigDecimal total = Money.usd(subtotal.subtract(discount));
+        // Only the methods this shop takes at the counter (its policy).
+        ShopPolicy policy = ShopPolicy.of(w.business().getPolicy());
+        for (int i = 0; i < in.payments().size(); i++) {
+            if (!policy.accepts(in.payments().get(i).method().name())) {
+                throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "payments[" + i + "].method",
+                        "This shop doesn't take this payment method");
+            }
+        }
         BigDecimal paid = in.payments().stream().map(p -> Money.usd(p.amount())).reduce(Money.ZERO, BigDecimal::add);
         if (paid.compareTo(total) != 0) {
             throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "payments",

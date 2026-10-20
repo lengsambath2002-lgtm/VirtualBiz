@@ -9,6 +9,7 @@ import { fallbackErrorKey, isApiError, metaNumber } from '@/lib/api';
 import { useSession } from '@/lib/auth';
 import type { Business } from '@/lib/domain';
 import { DEFAULT_ZONES } from '@/lib/pricing';
+import { policyOf } from '@/lib/shop';
 import { workspaceKey } from '@/lib/workspace';
 
 import {
@@ -49,6 +50,7 @@ function shopFromBusiness(b: Business, ownerName: string): SellerDb['shop'] {
     cod: ps?.cod ?? true,
     freeDeliveryOver: ps?.freeDeliveryOver ?? 0,
     zones: ps?.zones?.length ? ps.zones : DEFAULT_ZONES,
+    policy: policyOf(b.policy),
   };
 }
 

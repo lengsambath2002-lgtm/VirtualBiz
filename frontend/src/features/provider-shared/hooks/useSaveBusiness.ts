@@ -3,7 +3,9 @@
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback } from 'react';
 
-import { businessPatch, patchBusiness } from '../api';
+import type { ServiceBusiness } from '@/lib/domain';
+
+import { businessPatch, patchBusiness, toBusinessState } from '../api';
 import { useProviderStore, useUi } from '../store';
 import type { ProviderBusinessState } from '../types';
 import { failMessage } from './useActions';
@@ -41,4 +43,49 @@ export function useSaveBusiness() {
     },
     [t, qc],
   );
+}
+
+/**
+ * Saves a raw `PATCH /api/businesses/{id}` body (shared settings panels) and takes the API's
+ * answer as the workspace's business. Resolves true when saved.
+ */
+export function useSaveBusinessRaw() {
+  const qc = useQueryClient();
+  return useCallback(
+    async (patch: Record<string, unknown>) => {
+      const store = useProviderStore.getState();
+      const before = store.data?.business;
+      if (!before) return false;
+      try {
+        const b = await patchBusiness(before.id, patch);
+        store.update((d) => {
+          d.business = toBusinessState(b, before.ownerName);
+        });
+        void qc.invalidateQueries({ queryKey: ['business', before.id] });
+        return true;
+      } catch {
+        return false;
+      }
+    },
+    [qc],
+  );
+}
+
+/** The API shape of the workspace business (for the shared settings panels). */
+export function toApiBusiness(b: ProviderBusinessState): ServiceBusiness {
+  return {
+    ...b,
+    street: b.address,
+    bookingSettings: {
+      onlineBooking: b.online,
+      autoConfirm: b.autoConfirm,
+      reminderHours: b.reminderHours,
+      minNoticeHours: b.minNoticeHours,
+      freeCancelHours: b.freeCancelHours,
+      bufferMinutes: b.bufferMinutes,
+      slotMinutes: b.slotMinutes,
+      maxDaysAhead: b.maxDaysAhead,
+      tipPresets: b.tipPresets,
+    },
+  } as ServiceBusiness;
 }

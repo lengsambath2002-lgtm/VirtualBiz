@@ -19,9 +19,10 @@ import com.kosign.vbiz.booking.domain.Appointment;
 import com.kosign.vbiz.booking.service.AppointmentService;
 import com.kosign.vbiz.booking.service.Availability;
 import com.kosign.vbiz.business.domain.BusinessType;
+import com.kosign.vbiz.business.domain.ShopPolicy;
 import com.kosign.vbiz.business.repository.BusinessMemberRepository;
-import com.kosign.vbiz.business.service.WorkspaceAccess;
 import com.kosign.vbiz.business.service.WorkspaceAccess.Workspace;
+import com.kosign.vbiz.business.service.WorkspaceAccess;
 import com.kosign.vbiz.catalog.domain.ServiceItem;
 import com.kosign.vbiz.catalog.repository.ProductVariantRepository;
 import com.kosign.vbiz.catalog.repository.ServiceItemRepository;
@@ -118,6 +119,14 @@ public class SaleService {
             throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "discount", "More than the subtotal");
         }
         BigDecimal total = Money.usd(subtotal.subtract(discount).add(tip));
+        // Only the methods this shop takes at the counter (its policy).
+        ShopPolicy policy = ShopPolicy.of(w.business().getPolicy());
+        for (int i = 0; i < in.payments().size(); i++) {
+            if (!policy.accepts(in.payments().get(i).method().name())) {
+                throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "payments[" + i + "].method",
+                        "This shop doesn't take this payment method");
+            }
+        }
         BigDecimal paid = in.payments().stream().map(p -> Money.usd(p.amount())).reduce(Money.ZERO, BigDecimal::add);
         if (paid.compareTo(total) != 0) {
             throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "payments",

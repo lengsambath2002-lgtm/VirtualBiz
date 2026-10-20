@@ -138,6 +138,11 @@ public class Business extends BaseEntity {
     @Column(name = "booking_settings")
     private BookingSettings bookingSettings;
 
+    /** Receipt text, VAT, counter payment methods and links (null = defaults). */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "policy")
+    private ShopPolicy policy;
+
     public boolean isSuspended() {
         return suspendedAt != null;
     }

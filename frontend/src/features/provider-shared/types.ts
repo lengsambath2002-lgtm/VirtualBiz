@@ -16,6 +16,7 @@ import type {
   Product,
   Review,
   Service,
+  ShopPolicy,
   ServiceBusiness,
   Block,
 } from '@/lib/domain';
@@ -69,7 +70,7 @@ export interface ProviderDeal extends Omit<Deal, 'startsAt' | 'endsAt'> {
 
 export interface ProviderBusinessState extends Omit<
   ServiceBusiness,
-  'bookingSettings' | 'street' | 'district'
+  'bookingSettings' | 'street' | 'policy'
 > {
   /** One-line address as the settings form edits it. */
   address: string;
@@ -80,8 +81,18 @@ export interface ProviderBusinessState extends Omit<
   /** Free cancellation until N hours before. */
   freeCancelHours: number;
   bufferMinutes: number;
-  /** SMS reminder 24 h before. */
+  /** SMS reminder before the visit. */
   reminder: boolean;
+  /** Hours before the visit the reminder goes (0 = off). */
+  reminderHours: number;
+  /** Start times every N minutes. */
+  slotMinutes: number;
+  /** How many days ahead clients can book online. */
+  maxDaysAhead: number;
+  /** Tip choices at checkout, percent. */
+  tipPresets: number[];
+  /** Receipt, VAT, counter payment methods, links (defaults filled in). */
+  policy: ShopPolicy;
 }
 
 /** The shop's inbox entry from the API (`BOOKING_REQUESTED`, `BOOKING_CANCELLED`, `NEW_REVIEW`, …). */

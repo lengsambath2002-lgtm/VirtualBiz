@@ -885,7 +885,9 @@
       "newSale": "ការលក់ថ្មី",
       "refund": "សងប្រាក់",
       "sent": "បានផ្ញើបង្កាន់ដៃតាម {via}",
-      "sending": "កំពុងផ្ញើ…"
+      "sending": "កំពុងផ្ញើ…",
+      "vatIncluded": "រួមបញ្ចូលអាករ {pct}%",
+      "vatTin": "លេខ TIN {tin}"
     },
     "refund": {
       "title": "សងប្រាក់ {no}",

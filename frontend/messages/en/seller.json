@@ -885,7 +885,9 @@
       "newSale": "New sale",
       "refund": "Refund",
       "sent": "Receipt sent by {via}",
-      "sending": "Sending…"
+      "sending": "Sending…",
+      "vatIncluded": "VAT {pct}% included",
+      "vatTin": "VAT TIN {tin}"
     },
     "refund": {
       "title": "Refund {no}",

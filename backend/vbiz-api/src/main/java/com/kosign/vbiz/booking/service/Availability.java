@@ -21,11 +21,12 @@ import java.util.UUID;
 public final class Availability {
 
     public static final ZoneId PHNOM_PENH = ZoneId.of("Asia/Phnom_Penh");
+    /** The default start-time step (a shop sets its own: {@code BookingSettings.slotMinutes}). */
     public static final int STEP = 30;
 
     /** Why a requested time cannot be booked ({@code SLOT_UNAVAILABLE} {@code meta.reason}). */
     public enum Reason {
-        TAKEN, NOTICE, CLOSED, OUTSIDE;
+        TAKEN, NOTICE, CLOSED, OUTSIDE, FAR;
 
         public String code() {
             return name().toLowerCase(java.util.Locale.ROOT);
@@ -37,7 +38,13 @@ public final class Availability {
     }
 
     /** The shop side: opening hours (Monday first, {@code [open, close]} or null) and closure dates. */
-    public record Shop(List<List<Integer>> hours, Set<LocalDate> closures, int bufferMinutes, int minNoticeHours) {
+    public record Shop(List<List<Integer>> hours, Set<LocalDate> closures, int bufferMinutes, int minNoticeHours,
+            int slotMinutes, int maxDaysAhead) {
+
+        /** 30-minute starts, no booking horizon. */
+        public Shop(List<List<Integer>> hours, Set<LocalDate> closures, int bufferMinutes, int minNoticeHours) {
+            this(hours, closures, bufferMinutes, minNoticeHours, STEP, Integer.MAX_VALUE);
+        }
     }
 
     public record Slot(int start, List<UUID> staffIds) {
@@ -59,14 +66,17 @@ public final class Availability {
         this.now = now;
     }
 
-    /** Every {@link #STEP}-minute start of the day that fits opening hours, with the members free then. */
+    /**
+     * Every {@code slotMinutes} start of the day that fits opening hours, with the members free
+     * then. A day past the booking horizon ({@code maxDaysAhead}) is not open for booking.
+     */
     public Day day(LocalDate date, int durationMin) {
         int[] open = openOn(date);
-        if (open == null) {
+        if (open == null || beyondHorizon(date)) {
             return new Day(date, false, List.of());
         }
         List<Slot> slots = new ArrayList<>();
-        for (int m = open[0]; m + durationMin <= open[1]; m += STEP) {
+        for (int m = open[0]; m + durationMin <= open[1]; m += shop.slotMinutes()) {
             List<UUID> free = new ArrayList<>();
             for (UUID id : staff.keySet()) {
                 if (reason(id, date, m, durationMin) == null) {
@@ -78,8 +88,16 @@ public final class Availability {
         return new Day(date, true, slots);
     }
 
+    private boolean beyondHorizon(LocalDate date) {
+        return shop.maxDaysAhead() != Integer.MAX_VALUE
+                && date.isAfter(LocalDate.ofInstant(now, PHNOM_PENH).plusDays(shop.maxDaysAhead()));
+    }
+
     /** Null when {@code staffId} can take the time, else why not. */
     public Reason reason(UUID staffId, LocalDate date, int start, int durationMin) {
+        if (beyondHorizon(date)) {
+            return Reason.FAR;
+        }
         int[] open = openOn(date);
         if (open == null) {
             return Reason.CLOSED;

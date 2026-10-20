@@ -16,7 +16,7 @@ import { useFmt } from '@/features/provider-shared/hooks/useFmt';
 import { useData, useProviderStore, useUi } from '@/features/provider-shared/store';
 import { STAFF_COLORS } from '@/features/provider-shared/types';
 import { firstName } from '@/features/provider-shared/util/logic';
-import { addDays, hm, todayIso, toMin } from '@/features/provider-shared/util/time';
+import { addDays, H0, H1, hm, todayIso, toMin } from '@/features/provider-shared/util/time';
 import type { BusinessMember } from '@/lib/domain';
 
 const DAYS = [0, 1, 2, 3, 4, 5, 6] as const;
@@ -108,15 +108,15 @@ export function TeamPage() {
                             {s && (
                               <b
                                 style={{
-                                  left: `${((s[0] / 60 - 7) / 14) * 100}%`,
-                                  width: `${((s[1] - s[0]) / 60 / 14) * 100}%`,
+                                  left: `${((s[0] / 60 - H0) / (H1 - H0)) * 100}%`,
+                                  width: `${((s[1] - s[0]) / 60 / (H1 - H0)) * 100}%`,
                                   background: st.color,
                                 }}
                               />
                             )}
                           </span>
                           <span className={k('num tiny')} style={{ width: 72, textAlign: 'right' }}>
-                            {s ? `${s[0] / 60}:00–${s[1] / 60}:00` : t('team.off')}
+                            {s ? `${hm(s[0])}–${hm(s[1])}` : t('team.off')}
                           </span>
                         </span>
                       </Fragment>
@@ -165,7 +165,7 @@ export function StaffForm({ id }: { id?: string }) {
     }
     const shifts = DAYS.map((i): DayRange => {
       if (!on[i]) return null;
-      const [a, b] = times[i]!.map((x) => Math.round(toMin(x) / 60) * 60) as [number, number];
+      const [a, b] = times[i]!.map((x) => Math.round(toMin(x) / 15) * 15) as [number, number];
       return [a, b];
     }) as WeekRanges;
     if (shifts.some((s) => s && s[1] <= s[0])) {
@@ -269,7 +269,7 @@ export function StaffForm({ id }: { id?: string }) {
                         {p === 1 && ' – '}
                         <input
                           type="time"
-                          step={3600}
+                          step={900}
                           value={times[i]![p]}
                           disabled={!on[i]}
                           aria-label={p ? t('team.endOf', { day }) : t('team.startOf', { day })}

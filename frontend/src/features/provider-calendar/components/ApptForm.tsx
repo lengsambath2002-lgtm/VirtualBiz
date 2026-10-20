@@ -22,8 +22,7 @@ import { SERVICE_CATEGORIES, type ProviderAppointment } from '@/features/provide
 import { conflicts, firstName, pickStaff } from '@/features/provider-shared/util/logic';
 import {
   fmtD,
-  H0,
-  H1,
+  calendarStarts,
   hm,
   isIsoDate,
   nowMin,
@@ -31,8 +30,6 @@ import {
 } from '@/features/provider-shared/util/time';
 import { usePathname, useRouter } from '@/lib/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
-
-const STARTS = Array.from({ length: (H1 - H0) * 4 }, (_, i) => H0 * 60 + i * 15);
 
 /** New / edit / walk-in appointment (prototype `apptForm`). */
 export function ApptForm({ opts }: { opts: ApptFormOpts }) {
@@ -50,7 +47,8 @@ export function ApptForm({ opts }: { opts: ApptFormOpts }) {
   const initStart = () => {
     if (opts.walkin) return Math.round(nowMin() / 15) * 15;
     const m = a ? a.start : (opts.start ?? Math.max(9 * 60, Math.ceil((nowMin() + 15) / 15) * 15));
-    return STARTS.includes(m) ? m : STARTS[0]!;
+    const starts = calendarStarts();
+    return starts.includes(m) ? m : starts[0]!;
   };
   const [clientText, setClientText] = useState(
     dr?.clientText ?? (a ? nameOf(a.clientId) : opts.clientId ? nameOf(opts.clientId) : ''),
@@ -330,7 +328,7 @@ export function ApptForm({ opts }: { opts: ApptFormOpts }) {
           </Field>
           <Field id="tm" label={t('form.start')}>
             <select id="tm" value={start} onChange={(e) => setStart(Number(e.target.value))}>
-              {STARTS.map((m) => (
+              {calendarStarts().map((m) => (
                 <option key={m} value={m}>
                   {hm(m)}
                 </option>

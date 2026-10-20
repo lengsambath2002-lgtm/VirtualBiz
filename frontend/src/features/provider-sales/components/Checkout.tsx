@@ -20,6 +20,7 @@ import {
   type CheckoutLine,
 } from '@/features/provider-shared/util/logic';
 import { fmtStamp } from '@/features/provider-shared/util/time';
+import { acceptedMethods, vatIncluded } from '@/lib/shop';
 
 const PAY: [PaymentMethod, PIconName][] = [
   ['CASH', 'cash'],
@@ -61,7 +62,9 @@ export function Checkout({ id }: { id?: string }) {
   const [tipPct, setTipPct] = useState(0);
   const [tipCustom, setTipCustom] = useState<number | null>(null);
   const [tipText, setTipText] = useState('');
-  const [pay, setPay] = useState<PaymentMethod>('CASH');
+  // What this shop takes at the counter, and its own tip choices (settings).
+  const payOptions = PAY.filter(([m]) => acceptedMethods(d.business.policy).includes(m));
+  const [pay, setPay] = useState<PaymentMethod>(payOptions[0]?.[0] ?? 'CASH');
   const [given, setGiven] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -260,7 +263,7 @@ export function Checkout({ id }: { id?: string }) {
               )}
             </span>
             <div className={k('chips')}>
-              {[0, 5, 10, 15].map((p) => (
+              {d.business.tipPresets.map((p) => (
                 <button
                   key={p}
                   type="button"
@@ -323,7 +326,7 @@ export function Checkout({ id }: { id?: string }) {
             </div>
           </div>
           <div className={k('paym')} role="radiogroup" aria-label={t('checkout.payMethod')}>
-            {PAY.map(([p, ic]) => (
+            {payOptions.map(([p, ic]) => (
               <label key={p}>
                 <input
                   type="radio"
@@ -437,6 +440,11 @@ export function Receipt({ saleId, change }: { saleId: string; change?: number | 
           <b>{d.business.name}</b>
           <span>#{s.number}</span>
         </div>
+        {d.business.policy.receiptHeader && (
+          <div>
+            <span>{d.business.policy.receiptHeader}</span>
+          </div>
+        )}
         <div>
           <span>{fmtStamp(s.at, locale)}</span>
           <span>{c ? c.name : t('receipt.walkinSale')}</span>
@@ -478,6 +486,25 @@ export function Receipt({ saleId, change }: { saleId: string; change?: number | 
           <span>{t('receipt.khr')}</span>
           <span>{f.khr(s.total)}</span>
         </div>
+        {vatIncluded(s.total, Number(d.business.policy.taxPct)) > 0 && (
+          <div>
+            <span>{t('receipt.vatIncluded', { pct: Number(d.business.policy.taxPct) })}</span>
+            <span>{f.money(vatIncluded(s.total, Number(d.business.policy.taxPct)))}</span>
+          </div>
+        )}
+        {d.business.policy.taxId && (
+          <div>
+            <span>{t('receipt.vatTin', { tin: d.business.policy.taxId })}</span>
+          </div>
+        )}
+        {d.business.policy.receiptFooter && (
+          <>
+            <hr />
+            <div>
+              <span style={{ whiteSpace: 'pre-line' }}>{d.business.policy.receiptFooter}</span>
+            </div>
+          </>
+        )}
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
         {c ? (

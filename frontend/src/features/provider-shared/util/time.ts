@@ -5,8 +5,35 @@ import type { IsoDate, Minutes } from '@/lib/domain';
 import { DISPLAY_TIME_ZONE } from '@/lib/i18n/config';
 
 export const DAY_MS = 86_400_000;
-export const H0 = 7;
-export const H1 = 21;
+/**
+ * The calendar's first and last hour: the shop's opening hours and staff shifts, rounded out to
+ * whole hours (07–21 until a shop sets hours). Live bindings: {@link setCalendarRange} updates them.
+ */
+// eslint-disable-next-line import/no-mutable-exports
+export let H0 = 7;
+// eslint-disable-next-line import/no-mutable-exports
+export let H1 = 21;
+
+/** Fit the calendar to the earliest opening / start and latest closing / end of the week. */
+export function setCalendarRange(
+  hours: readonly (readonly [number, number] | null | undefined)[],
+  shifts: readonly (
+    | readonly (readonly [number, number] | null | undefined)[]
+    | null
+    | undefined
+  )[] = [],
+) {
+  const ranges = [...hours, ...shifts.flatMap((s) => s ?? [])].filter(
+    (r): r is readonly [number, number] => !!r,
+  );
+  if (!ranges.length) return;
+  H0 = Math.max(0, Math.floor(Math.min(...ranges.map((r) => r[0])) / 60));
+  H1 = Math.min(24, Math.max(H0 + 1, Math.ceil(Math.max(...ranges.map((r) => r[1])) / 60)));
+}
+
+/** Every quarter-hour start the calendar shows. */
+export const calendarStarts = () =>
+  Array.from({ length: (H1 - H0) * 4 }, (_, i) => H0 * 60 + i * 15);
 /** 48 px per hour. */
 export const PXM = 48 / 60;
 /** Pixel offset of a time inside a calendar column. */

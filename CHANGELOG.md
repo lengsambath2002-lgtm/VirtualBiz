@@ -13,6 +13,12 @@ All notable changes are recorded here. Format: [Keep a Changelog](https://keepac
 
 ### Added
 
+- Staff security (docs/api/phase9-staff-security.md):
+  - **Two-step sign-in (TOTP) for staff**: required before the console opens, checked again every 12 hours and on every new sign-in. Set-up shows a QR code and the key, then 10 one-time recovery codes. Keys are encrypted at rest (AES-256-GCM, `VBIZ_DATA_KEY`), codes can't be replayed, and 5 wrong codes sign the session out.
+  - **Staff invites**: a super-admin invites by email with a role; the single-use link (7 days) lets a new person join with a 12+ character password, or an existing account confirm itself with its password.
+  - **Settings → Staff**: your own two-step status and new recovery codes, the staff list (role, two-step, last active), changing roles, removing staff, resetting two-step sign-in for a lost phone (reason required, signs them out), and pending invites to withdraw.
+  - **First super-admin**: a new environment creates it on start from `VBIZ_BOOTSTRAP_ADMIN_*`, with a password that must be changed at first sign-in. No demo accounts outside the local profile.
+  - The last active super-admin can't be demoted or suspended. Staff passwords need 12+ characters. Every step is in the audit log.
 - Super-admin console:
   - **Settings**: commission %, payout delay and the riel exchange rate are database settings a super-admin changes from the console (other staff see them read-only). Saving asks first and the audit log records old → new values. They replace `vbiz.payment.commission-pct`, `vbiz.payouts.release-after` and the frontend's fixed 4,100 rate.
   - **Categories**: add, rename (English and Khmer), pick icon and colour, show or hide in the marketplace, reorder. The storefront reads names from the API, so a new category needs no deploy.

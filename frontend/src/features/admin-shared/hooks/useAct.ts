@@ -66,6 +66,7 @@ export function useAct() {
           'PAYOUT_ACCOUNT_MISSING',
           'NOTHING_TO_PAY',
           'VALIDATION_FAILED',
+          'LAST_SUPER_ADMIN',
         ];
         ui.showToast(
           known.includes(code) ? t(`errors.${code}` as 'errors.CONFLICT') : tc(fallbackErrorKey(e)),

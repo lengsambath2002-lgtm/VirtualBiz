@@ -95,12 +95,13 @@ public class AccountService {
             throw BusinessException.withDetail(StatusCode.INVALID_CREDENTIALS, "currentPassword",
                     "Current password is incorrect");
         }
-        passwordPolicy.check(req.newPassword(), user.getEmail(), "newPassword");
+        passwordPolicy.check(req.newPassword(), user.getEmail(), "newPassword", user.isStaff());
         if (user.hasPassword() && passwordEncoder.matches(req.newPassword(), user.getPasswordHash())) {
             throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "newPassword",
                     "Password was used before");
         }
         user.setPasswordHash(passwordEncoder.encode(req.newPassword()));
+        user.setMustChangePassword(false);
         user.addSignInMethod(SignInMethod.PASSWORD);
     }
 

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,6 +35,9 @@ import com.kosign.vbiz.admin.payload.ReasonInput;
 import com.kosign.vbiz.admin.payload.RefundInput;
 import com.kosign.vbiz.admin.payload.RoleInput;
 import com.kosign.vbiz.admin.payload.SettingsInput;
+import com.kosign.vbiz.admin.payload.StaffInviteInput;
+import com.kosign.vbiz.admin.payload.StaffInviteResponse;
+import com.kosign.vbiz.admin.payload.StaffMemberRow;
 import com.kosign.vbiz.admin.service.AdminAuditService;
 import com.kosign.vbiz.admin.service.AdminBusinessService;
 import com.kosign.vbiz.admin.service.AdminCategoryService;
@@ -43,7 +47,9 @@ import com.kosign.vbiz.admin.service.AdminPayoutService;
 import com.kosign.vbiz.admin.service.AdminPromotionService;
 import com.kosign.vbiz.admin.service.AdminReviewService;
 import com.kosign.vbiz.admin.service.AdminSettingsService;
+import com.kosign.vbiz.admin.service.AdminStaffService;
 import com.kosign.vbiz.admin.service.AdminUserService;
+import com.kosign.vbiz.admin.service.StaffInviteService;
 import com.kosign.vbiz.business.domain.BusinessType;
 import com.kosign.vbiz.business.domain.VerificationStatus;
 import com.kosign.vbiz.common.api.ApiResponse;
@@ -76,6 +82,8 @@ public class AdminController extends BaseController {
     private final AdminAuditService audit;
     private final AdminSettingsService settings;
     private final AdminCategoryService categories;
+    private final AdminStaffService staff;
+    private final StaffInviteService invites;
 
     @GetMapping("/overview")
     public ResponseEntity<ApiResponse<OverviewResponse>> overview(@RequestParam(required = false) Integer days) {
@@ -286,6 +294,36 @@ public class AdminController extends BaseController {
     @PutMapping("/categories/order")
     public ResponseEntity<ApiResponse<List<AdminCategoryRow>>> reorderCategories(@RequestBody List<String> ids) {
         return ok(categories.reorder(ids));
+    }
+
+    // ── Staff ──
+
+    @GetMapping("/staff")
+    public ResponseEntity<ApiResponse<List<StaffMemberRow>>> staff() {
+        return ok(staff.list());
+    }
+
+    @PostMapping("/staff/{id}/mfa/reset")
+    public ResponseEntity<ApiResponse<List<StaffMemberRow>>> resetMfa(@PathVariable UUID id,
+            @RequestBody(required = false) ReasonInput in) {
+        staff.resetMfa(id, reason(in));
+        return ok(staff.list());
+    }
+
+    @GetMapping("/staff/invites")
+    public ResponseEntity<ApiResponse<List<StaffInviteResponse>>> invites() {
+        return ok(invites.open());
+    }
+
+    @PostMapping("/staff/invites")
+    public ResponseEntity<ApiResponse<StaffInviteResponse>> invite(@Valid @RequestBody StaffInviteInput in) {
+        return created(invites.invite(in));
+    }
+
+    @DeleteMapping("/staff/invites/{id}")
+    public ResponseEntity<ApiResponse<List<StaffInviteResponse>>> revokeInvite(@PathVariable UUID id) {
+        invites.revoke(id);
+        return ok(invites.open());
     }
 
     // ── Audit log ──

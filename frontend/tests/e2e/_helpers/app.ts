@@ -1,5 +1,7 @@
 import { expect, type APIRequestContext, type Page } from '@playwright/test';
 
+import { DEMO_TOTP, freshTotp } from './totp';
+
 /**
  * Seeded demo users of the local API profile (`db/seed-local`), all with password Demo@1234.
  * Kry Sonita owns Nita Gadget Store (seller); Try Dana owns Glow Beauty Salon (provider).
@@ -32,6 +34,18 @@ export async function signIn(page: Page, next = '/home', account: Account = DEMO
   await expect(page).toHaveURL(new RegExp(`/en${next.replace(/[/?]/g, '\\$&')}`), {
     timeout: 20_000,
   });
+  // Staff: the console asks for this sign-in's two-step code first.
+  const key = DEMO_TOTP[account.email];
+  if (key && next.startsWith('/admin')) await passTwoStep(page, key);
+}
+
+/** Enter a fresh authenticator code at the console's "Two-step sign-in" step. */
+export async function passTwoStep(page: Page, secret: string) {
+  const gate = page.getByRole('heading', { name: 'Two-step sign-in' });
+  await expect(gate).toBeVisible({ timeout: 20_000 });
+  await page.getByLabel('6-digit code from the app').fill(await freshTotp(secret));
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await expect(gate).toBeHidden();
 }
 
 export const uniqueEmail = (tag: string) =>

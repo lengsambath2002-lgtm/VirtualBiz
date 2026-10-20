@@ -73,6 +73,21 @@ public class User extends BaseEntity {
     @Column(name = "suspended_reason", length = 300)
     private String suspendedReason;
 
+    /** The console asks for a new password first (a bootstrapped super-admin). */
+    @Column(name = "must_change_password", nullable = false)
+    private boolean mustChangePassword;
+
+    /** Two-step sign-in key, sealed by {@code SecretBox}; live once {@link #mfaEnabledAt} is set. */
+    @Column(name = "mfa_secret", length = 200)
+    private String mfaSecret;
+
+    @Column(name = "mfa_enabled_at")
+    private Instant mfaEnabledAt;
+
+    /** The last TOTP step accepted, so a code can't be used twice. */
+    @Column(name = "mfa_last_step")
+    private Long mfaLastStep;
+
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_sign_in_method", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "method", length = 20, nullable = false)
@@ -97,5 +112,13 @@ public class User extends BaseEntity {
 
     public boolean hasPassword() {
         return passwordHash != null;
+    }
+
+    public boolean isStaff() {
+        return platformRole != null;
+    }
+
+    public boolean hasMfa() {
+        return mfaEnabledAt != null;
     }
 }

@@ -15,6 +15,12 @@ spring:
 vbiz:
   jwt:
     secret: test-only-secret-0123456789abcdef0123456789abcdef
+  security:
+    data-key: dGVzdC1vbmx5LWRhdGEta2V5LTAxMjM0NTY3ODlhYiE=
+  staff:
+    # Most tests sign staff in with a password only; StaffSecurityIntegrationTest turns it on.
+    mfa-required: false
+    expose-dev-links: true
   auth:
     cookie-secure: false
     google-dev-enabled: true

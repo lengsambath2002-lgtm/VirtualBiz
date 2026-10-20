@@ -16,6 +16,12 @@ vbiz:
   jwt:
     # Local-only default. Every other environment must set VBIZ_JWT_SECRET.
     secret: ${VBIZ_JWT_SECRET:local-dev-only-secret-change-me-0123456789abcdef}
+  security:
+    # Local-only default. Every other environment must set VBIZ_DATA_KEY.
+    data-key: ${VBIZ_DATA_KEY:bG9jYWwtZGV2LW9ubHktZGF0YS1rZXktMzJieXRlcyE=}
+  staff:
+    app-url: ${VBIZ_APP_URL:http://localhost:3001}
+    expose-dev-links: true
   auth:
     cookie-secure: false
     google-dev-enabled: true

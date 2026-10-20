@@ -254,6 +254,72 @@
   color: var(--muted);
 }
 
+/* Staff */
+.secRow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+}
+.secIc {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+}
+.secOn {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+.secOff {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+.warnText {
+  color: var(--accent-ink);
+}
+.staffTable {
+  table-layout: fixed;
+  min-width: 720px;
+}
+.invite {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--line);
+}
+.invite:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.devLink {
+  font-family: var(--f-mono);
+  font-size: 12px;
+  word-break: break-all;
+  background: var(--sunk);
+  border-radius: 8px;
+  padding: 8px 10px;
+}
+.roleOpt {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+}
+.roleOpt input {
+  margin-top: 3px;
+}
+.roleOn {
+  border-color: var(--ink);
+  box-shadow: 0 0 0 1px var(--ink) inset;
+}
+
 @media (max-width: 760px) {
   .row {
     grid-template-columns: minmax(0, 1fr);

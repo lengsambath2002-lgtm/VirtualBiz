@@ -20,6 +20,8 @@ import com.kosign.vbiz.common.helper.Emails;
 public class PasswordPolicy {
 
     public static final int MIN_LENGTH = 8;
+    /** Staff (console) passwords are longer: rule key {@code staffLen}. */
+    public static final int STAFF_MIN_LENGTH = 12;
     public static final int MAX_LENGTH = 72; // BCrypt only reads 72 bytes
 
     /** Rule keys the client already translates: len, case, num, sym, email. */
@@ -47,7 +49,15 @@ public class PasswordPolicy {
 
     /** Throws {@code VALIDATION_FAILED} on {@code field} with {@code meta.rules} listing the failed rules. */
     public void check(String password, String email, String field) {
+        check(password, email, field, false);
+    }
+
+    /** As {@link #check(String, String, String)}, plus 12+ characters for staff accounts. */
+    public void check(String password, String email, String field, boolean staff) {
         List<String> failed = violations(password, email);
+        if (staff && (password == null || password.length() < STAFF_MIN_LENGTH)) {
+            failed.add("staffLen");
+        }
         if (!failed.isEmpty()) {
             throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, field,
                     "Password does not meet the rules", Map.of("rules", failed));

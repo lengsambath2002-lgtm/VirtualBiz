@@ -17,6 +17,7 @@ import { formatKhr, usdToKhr } from '@/lib/money';
 import type { BusinessType } from '@/lib/domain';
 
 import c from './settings.module.css';
+import { StaffTab } from './StaffTab';
 
 const KEYS = ['tab'] as const;
 const DELAYS = [0, 1, 2, 3, 5, 7, 10, 14];
@@ -54,12 +55,13 @@ const useIsSuper = () => useSession().user?.platformRole === 'SUPER_ADMIN';
 export function SettingsPage() {
   const t = useTranslations('admin.settings');
   const { values, set } = useListParams(KEYS);
-  const tab = values.tab === 'categories' ? 'categories' : 'platform';
+  const tab =
+    values.tab === 'categories' || values.tab === 'staff' ? values.tab : ('platform' as const);
   return (
     <>
       <PageHead title={t('title')} sub={t('sub')} />
       <div className={cx(s.tabs, c.tabs)} role="tablist">
-        {(['platform', 'categories'] as const).map((k) => (
+        {(['platform', 'categories', 'staff'] as const).map((k) => (
           <button
             key={k}
             type="button"
@@ -72,7 +74,13 @@ export function SettingsPage() {
           </button>
         ))}
       </div>
-      {tab === 'platform' ? <PlatformTab /> : <CategoriesTab />}
+      {tab === 'platform' ? (
+        <PlatformTab />
+      ) : tab === 'categories' ? (
+        <CategoriesTab />
+      ) : (
+        <StaffTab />
+      )}
     </>
   );
 }

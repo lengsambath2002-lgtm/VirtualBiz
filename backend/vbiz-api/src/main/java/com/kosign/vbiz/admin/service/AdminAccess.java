@@ -14,14 +14,16 @@ import com.kosign.vbiz.common.security.CurrentUser;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Who may use {@code /api/admin/**}: signed-in staff ({@code ADMIN} or {@code SUPER_ADMIN}). Every
- * admin service method starts here; anyone else gets {@code ADMIN_ONLY}.
+ * Who may use {@code /api/admin/**}: signed-in staff ({@code ADMIN} or {@code SUPER_ADMIN}) whose
+ * session passed the {@link StaffGate} (password change, two-step sign-in). Every admin service
+ * method starts here; anyone else gets {@code ADMIN_ONLY}.
  */
 @Component
 @RequiredArgsConstructor
 public class AdminAccess {
 
     private final UserRepository users;
+    private final StaffGate gate;
 
     /** The acting admin. */
     public record Admin(UUID id, String name, PlatformRole role) {
@@ -36,6 +38,7 @@ public class AdminAccess {
         if (u.getPlatformRole() == null || u.isSuspended()) {
             throw new BusinessException(StatusCode.ADMIN_ONLY);
         }
+        gate.check(u);
         return new Admin(u.getId(), u.getName(), u.getPlatformRole());
     }
 

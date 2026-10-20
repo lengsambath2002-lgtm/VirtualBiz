@@ -158,7 +158,7 @@ public class AuthService {
     public AuthResult resetPassword(String resetToken, String password, ClientInfo client) {
         AuthTicket ticket = tickets.consume(TicketKind.RESET, resetToken, "resetToken");
         User current = users.require(ticket.getUserId());
-        passwordPolicy.check(password, current.getEmail(), "password");
+        passwordPolicy.check(password, current.getEmail(), "password", current.isStaff());
         if (current.hasPassword() && passwordEncoder.matches(password, current.getPasswordHash())) {
             throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "password",
                     "Password was used before");
@@ -167,6 +167,7 @@ public class AuthService {
         sessions.revokeAll(ticket.getUserId());
         User user = users.require(ticket.getUserId());
         user.setPasswordHash(passwordEncoder.encode(password));
+        user.setMustChangePassword(false);
         loginAttempts.reset(user);
         return signIn(user, SignInMethod.PASSWORD, client);
     }
@@ -247,6 +248,12 @@ public class AuthService {
 
     public void logoutAll(UUID userId) {
         sessions.revokeAll(userId);
+    }
+
+    /** Signs in an account that just accepted a staff invite (its password was checked or set there). */
+    @Transactional
+    public AuthResult signInStaff(User user, ClientInfo client) {
+        return signIn(user, SignInMethod.PASSWORD, client);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────────────

@@ -60,6 +60,7 @@ public class AdminUserService {
         if (u.isSuspended()) {
             throw new BusinessException(StatusCode.CONFLICT);
         }
+        keepOneSuperAdmin(u);
         u.setSuspendedAt(clock.instant());
         u.setSuspendedReason(reason);
         users.saveAndFlush(u);
@@ -103,6 +104,9 @@ public class AdminUserService {
         if (u.getPlatformRole() == role) {
             return detail(id);
         }
+        if (role != PlatformRole.SUPER_ADMIN) {
+            keepOneSuperAdmin(u);
+        }
         Map<String, Object> change = new HashMap<>();
         change.put("from", u.getPlatformRole() == null ? null : u.getPlatformRole().name());
         change.put("to", role == null ? null : role.name());
@@ -113,6 +117,14 @@ public class AdminUserService {
     }
 
     /** The account another admin may change: not their own; a staff account needs a super-admin. */
+    /** {@code LAST_SUPER_ADMIN} when {@code u} is the only active super-admin left. */
+    private void keepOneSuperAdmin(User u) {
+        if (u.getPlatformRole() == PlatformRole.SUPER_ADMIN && !u.isSuspended()
+                && users.countByPlatformRoleAndSuspendedAtIsNull(PlatformRole.SUPER_ADMIN) <= 1) {
+            throw new BusinessException(StatusCode.LAST_SUPER_ADMIN);
+        }
+    }
+
     private User changeable(AdminAccess.Admin admin, UUID id) {
         User u = users.findById(id).orElseThrow(() -> new BusinessException(StatusCode.USER_NOT_FOUND));
         if (u.getId().equals(admin.id())) {

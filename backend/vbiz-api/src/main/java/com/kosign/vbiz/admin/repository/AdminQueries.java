@@ -135,6 +135,19 @@ public class AdminQueries {
                 rs.getString("name"), rs.getString("name_kh"), rs.getBigDecimal("gmv"), rs.getLong("orders")));
     }
 
+    /** When each account last signed in or refreshed a session. */
+    public java.util.Map<java.util.UUID, java.time.Instant> lastSeen(java.util.Collection<java.util.UUID> ids) {
+        java.util.Map<java.util.UUID, java.time.Instant> m = new java.util.HashMap<>();
+        if (ids.isEmpty()) {
+            return m;
+        }
+        jdbc.query("SELECT user_id, max(created_at) at FROM user_session WHERE user_id IN (:ids) GROUP BY user_id",
+                new MapSqlParameterSource("ids", ids), rs -> {
+                    m.put(rs.getObject("user_id", java.util.UUID.class), rs.getTimestamp("at").toInstant());
+                });
+        return m;
+    }
+
     /** Shops in each category (the console's Categories tab). */
     public java.util.Map<String, Long> shopsPerCategory() {
         java.util.Map<String, Long> m = new java.util.HashMap<>();

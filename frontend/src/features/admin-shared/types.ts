@@ -93,7 +93,8 @@ export interface AuditEntry {
     | 'PROMOTION'
     | 'PAYOUT'
     | 'SETTINGS'
-    | 'CATEGORY';
+    | 'CATEGORY'
+    | 'STAFF_INVITE';
   targetId: string;
   targetLabel?: string;
   reason?: string;
@@ -154,6 +155,35 @@ export interface ShopDetail {
   }[];
   recentOrders: OrderRow[];
   history: AuditEntry[];
+}
+
+/** `GET /api/admin/staff`. */
+export interface StaffMember {
+  id: string;
+  name: string;
+  email?: string;
+  avatarUrl?: string;
+  role: PlatformRole;
+  suspended: boolean;
+  mfaEnabled: boolean;
+  mfaEnabledAt?: string;
+  mustChangePassword: boolean;
+  lastSeenAt?: string;
+  joinedAt: string;
+  you: boolean;
+}
+
+/** An open staff invite (`devLink` only right after creating it, where the server exposes it). */
+export interface StaffInvite {
+  id: string;
+  email: string;
+  name: string;
+  role: PlatformRole;
+  invitedByName: string;
+  createdAt: string;
+  expiresAt: string;
+  expired: boolean;
+  devLink?: string;
 }
 
 export interface UserRow {

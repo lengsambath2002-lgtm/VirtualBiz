@@ -94,6 +94,27 @@ vbiz:
     # Where uploaded images are kept (local disk; an S3 / MinIO backend can replace it).
     dir: ${VBIZ_STORAGE_DIR:./data/uploads}
     max-bytes: 8388608
+  security:
+    # Required everywhere but local / test: 32 random bytes, Base64 (openssl rand -base64 32).
+    # Encrypts staff two-step sign-in keys at rest. Changing it disables every enrolled key.
+    data-key: ${VBIZ_DATA_KEY:}
+  # docs/api/phase9-staff-security.md
+  staff:
+    # Staff must use two-step sign-in (TOTP) to open the console.
+    mfa-required: true
+    # How long a two-step check lasts before the console asks again.
+    mfa-ttl: PT12H
+    invite-ttl: P7D
+    # Where invite links point (the web app).
+    app-url: ${VBIZ_APP_URL:http://localhost:3000}
+    # Return invite links in API responses (no email provider locally).
+    expose-dev-links: false
+    # First start with no super-admin: create one from these (password must be changed at
+    # first sign-in). Ignored once any active super-admin exists.
+    bootstrap:
+      email: ${VBIZ_BOOTSTRAP_ADMIN_EMAIL:}
+      name: ${VBIZ_BOOTSTRAP_ADMIN_NAME:VirtualBiz Admin}
+      password: ${VBIZ_BOOTSTRAP_ADMIN_PASSWORD:}
   # Commission, payout delay and the riel rate are platform settings (table platform_settings),
   # changed by a super-admin from the console.
   payment:

@@ -39,10 +39,18 @@ public enum StatusCode {
     FORBIDDEN(HttpStatus.FORBIDDEN, ErrorType.AUTH, "Access denied"),
     ADMIN_ONLY(HttpStatus.FORBIDDEN, ErrorType.AUTH, "Only VirtualBiz staff can do this"),
     SUPER_ADMIN_ONLY(HttpStatus.FORBIDDEN, ErrorType.AUTH, "Only a super-admin can do this"),
+    PASSWORD_CHANGE_REQUIRED(HttpStatus.FORBIDDEN, ErrorType.AUTH, "Set a new password before using the console"),
+    MFA_SETUP_REQUIRED(HttpStatus.FORBIDDEN, ErrorType.AUTH, "Staff must turn on two-step sign-in first"),
+    MFA_REQUIRED(HttpStatus.FORBIDDEN, ErrorType.AUTH, "Enter the code from your authenticator app"),
+    MFA_CODE_INVALID(HttpStatus.UNPROCESSABLE_ENTITY, ErrorType.AUTH, "The two-step code is incorrect"),
+    MFA_LOCKED(HttpStatus.TOO_MANY_REQUESTS, ErrorType.AUTH, "Too many wrong codes; this session was signed out"),
+    LAST_SUPER_ADMIN(HttpStatus.CONFLICT, ErrorType.BUSINESS, "VirtualBiz must keep at least one active super-admin"),
     FORBIDDEN_TENANT(HttpStatus.FORBIDDEN, ErrorType.AUTH, "Not a member of this business"),
     BUSINESS_CONTEXT_REQUIRED(HttpStatus.BAD_REQUEST, ErrorType.AUTH, "This request must be made on behalf of a business"),
 
     // ── Not found ──────────────────────────────────────────────────────────────────────
+    INVITE_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorType.BUSINESS, "Staff invite not found"),
+    INVITE_EXPIRED(HttpStatus.GONE, ErrorType.BUSINESS, "This staff invite has expired, been used or been withdrawn"),
     NOT_FOUND(HttpStatus.NOT_FOUND, ErrorType.BUSINESS, "Resource not found"),
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorType.BUSINESS, "User not found"),
     ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, ErrorType.BUSINESS, "Address not found"),

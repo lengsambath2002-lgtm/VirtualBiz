@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { Suspense, useEffect, type ReactNode } from 'react';
 
+import { StaffGate } from '@/features/admin-security';
 import { ConfirmDialog, cx, s, ToastHost, useUi } from '@/features/seller-shared';
 import { useSession } from '@/lib/auth';
 import { Link, usePathname, useRouter } from '@/lib/i18n/navigation';
@@ -73,8 +74,9 @@ function Denied() {
 }
 
 /**
- * The super-admin console frame (docs/api/phase7-admin.md): signed-in VirtualBiz staff only.
- * Anyone else signed in sees "no access"; signed-out visitors go to sign-in first.
+ * The super-admin console frame (docs/api/phase7-admin.md): signed-in VirtualBiz staff only, once
+ * their session passed the staff gate (docs/api/phase9-staff-security.md). Anyone else signed in
+ * sees "no access"; signed-out visitors go to sign-in first.
  */
 export function AdminShell({ children }: { children: ReactNode }) {
   const session = useSession();
@@ -89,7 +91,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
       {!session.ready || !session.user ? (
         <div className={shell.loading} aria-busy="true" />
       ) : session.user.platformRole ? (
-        <Console>{children}</Console>
+        <StaffGate>
+          <Console>{children}</Console>
+        </StaffGate>
       ) : !session.validated ? (
         // A user saved before they became staff: wait for the server's copy before saying no.
         <div className={shell.loading} aria-busy="true" />

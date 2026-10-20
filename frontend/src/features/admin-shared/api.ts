@@ -30,6 +30,8 @@ import type {
   ReviewRow,
   ShopDetail,
   ShopRow,
+  StaffInvite,
+  StaffMember,
   UserDetail,
   UserRow,
 } from './types';
@@ -66,6 +68,9 @@ export const useOverview = (days: OverviewRange = 30) =>
   useAdminQuery<Overview>(['overview', days], `/overview?days=${days}`, true, 60_000);
 
 export const useSettings = () => useAdminQuery<PlatformSettings>(['settings'], '/settings');
+export const useStaff = () => useAdminQuery<StaffMember[]>(['staff'], '/staff');
+export const useStaffInvites = () =>
+  useAdminQuery<StaffInvite[]>(['staffInvites'], '/staff/invites');
 export const useCategories = () => useAdminQuery<AdminCategory[]>(['categories'], '/categories');
 
 export const useShops = (p: Params) =>
@@ -144,6 +149,11 @@ export const adminApi = {
   updateCategory: (id: string, input: CategoryInput) =>
     api.patch<AdminCategory>(`/admin/categories/${encodeURIComponent(id)}`, input),
   reorderCategories: (ids: string[]) => api.put<AdminCategory[]>('/admin/categories/order', ids),
+  inviteStaff: (input: { email: string; name: string; role: PlatformRole }) =>
+    api.post<StaffInvite>('/admin/staff/invites', input),
+  revokeInvite: (id: string) => api.delete<StaffInvite[]>(`/admin/staff/invites/${id}`),
+  resetMfa: (id: string, reason: string) =>
+    api.post<StaffMember[]>(`/admin/staff/${id}/mfa/reset`, { reason }),
   pay: (businessId: string, reference: string, note?: string) =>
     api.post<Payout>('/admin/payouts', { businessId, reference, ...(note ? { note } : {}) }),
 };

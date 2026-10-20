@@ -9,5 +9,6 @@ public enum AuditTarget {
     PROMOTION,
     PAYOUT,
     SETTINGS,
-    CATEGORY
+    CATEGORY,
+    STAFF_INVITE
 }

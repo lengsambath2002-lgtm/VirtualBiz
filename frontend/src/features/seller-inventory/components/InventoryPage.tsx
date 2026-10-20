@@ -4,15 +4,12 @@ import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 
-import { EmptyRow } from '@/components/feedback';
 import {
   cx,
-  findVariant,
   Ic,
   s,
   stockOf,
   stockState,
-  SYSTEM_USER,
   Thumb,
   useDb,
   useFmt,
@@ -25,6 +22,7 @@ import type { Variant } from '@/lib/domain';
 import { Link, useRouter } from '@/lib/i18n/navigation';
 
 import { ScanResult } from './InventoryDialogs';
+import { RecentChanges } from './RecentChanges';
 
 type InvFilter = 'all' | 'low' | 'out';
 const FILTERS: InvFilter[] = ['all', 'low', 'out'];
@@ -32,7 +30,6 @@ const FILTERS: InvFilter[] = ['all', 'low', 'out'];
 export function InventoryPage() {
   const t = useTranslations('seller.inventory');
   const tc = useTranslations('seller.common');
-  const tr = useTranslations('seller.stockReasons');
   const db = useDb();
   const f = useFmt();
   const router = useRouter();
@@ -64,7 +61,6 @@ export function InventoryPage() {
   );
   const value = pairs.reduce((x, [, v]) => x + v.stock * (v.cost || 0), 0);
   const units = db.products.reduce((x, p) => x + stockOf(p), 0);
-  const recent = [...db.log].sort((a, b) => b.at.localeCompare(a.at)).slice(0, 8);
   const quick = useSellerStore((st) => st.quickAdjust);
 
   return (
@@ -211,63 +207,7 @@ export function InventoryPage() {
           </div>
         )}
       </section>
-      <section className={s.panel}>
-        <div className={s.panelH}>
-          <h2>{t('recent')}</h2>
-        </div>
-        <div className={s.tblWrap}>
-          <table>
-            <thead>
-              <tr>
-                <th>{t('col.when')}</th>
-                <th>{t('col.item')}</th>
-                <th>{t('col.reason')}</th>
-                <th>{t('col.by')}</th>
-                <th className={s.r}>{t('col.change')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {!recent.length && (
-                <EmptyRow cols={5} title={t('noMovesTitle')} body={t('noMovesBody')} />
-              )}
-              {recent.map((l) => {
-                const [p, v] = findVariant(db.products, l.variantId);
-                if (!p || !v) return null;
-                return (
-                  <tr key={l.id}>
-                    <td className={cx(s.num, s.small)}>{f.fmtDT(l.at)}</td>
-                    <td>
-                      {p.title} <span className={cx(s.tiny, s.muted)}>{vname(v)}</span>
-                    </td>
-                    <td>
-                      {tr(l.reason)}
-                      {l.note && (
-                        <span className={cx(s.tiny, s.muted)}>
-                          {' '}
-                          {l.note === 'newVariant' ? t('newVariant') : l.note}
-                        </span>
-                      )}
-                    </td>
-                    <td className={s.small}>
-                      {l.byUserId === SYSTEM_USER ? t('system') : (l.byName ?? db.shop.ownerName)}
-                    </td>
-                    <td
-                      className={cx(s.r, s.num)}
-                      style={{
-                        color: l.delta > 0 ? 'var(--ok)' : 'var(--danger)',
-                        fontWeight: 600,
-                      }}
-                    >
-                      {l.delta > 0 ? '+' : ''}
-                      {l.delta}
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </section>
+      <RecentChanges />
     </>
   );
 }

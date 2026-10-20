@@ -564,7 +564,11 @@
     "notEnough": "Only {n} in stock, so that change wasn't saved. Stock was reloaded.",
     "syncFailed": "Couldn't save the stock change. Stock was reloaded.",
     "noMovesTitle": "No stock changes yet",
-    "noMovesBody": "Sales, deliveries and counts you record appear here."
+    "noMovesBody": "Sales, deliveries and counts you record appear here.",
+    "recentSub": "Newest first: sales, deliveries, counts and returns.",
+    "openOrder": "Open this order",
+    "showMore": "Show {n} more",
+    "showLess": "Show less"
   },
   "promotions": {
     "title": "Promotions",

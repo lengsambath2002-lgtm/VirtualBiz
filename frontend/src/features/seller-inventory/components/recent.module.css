@@ -1,0 +1,192 @@
+/* "Recent stock changes": a compact activity table. */
+.table {
+  table-layout: fixed;
+}
+.item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.itemText {
+  min-width: 0;
+}
+.itemText strong {
+  display: block;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sub {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.reason {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px 3px 7px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.sale {
+  background: var(--info-soft);
+  color: var(--info);
+}
+.in {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+.loss {
+  background: var(--sale-soft);
+  color: var(--sale);
+}
+.back {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+.adjust {
+  background: var(--sunk);
+  color: var(--ink-2);
+}
+.ref {
+  border: 1px solid var(--line);
+  background: transparent;
+  border-radius: 6px;
+  padding: 1px 6px;
+  font: inherit;
+  font-family: var(--f-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+button.ref {
+  cursor: pointer;
+}
+button.ref:hover {
+  color: var(--ink);
+  border-color: var(--line-h);
+}
+.note {
+  font-size: 12px;
+  color: var(--muted);
+}
+.who {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  font-size: 13px;
+}
+.who span:last-child {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.av {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex: none;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--sunk);
+  color: var(--ink-2);
+}
+.sys {
+  background: var(--info-soft);
+  color: var(--info);
+}
+.when {
+  font-size: 13px;
+  white-space: nowrap;
+}
+.delta {
+  display: inline-block;
+  min-width: 44px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.up {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+.down {
+  background: var(--sale-soft);
+  color: var(--sale);
+}
+.more {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  border-top: 1px solid var(--line);
+}
+
+/* Phone: each change is a small card (item and change on top, then why, who and when). */
+@media (max-width: 640px) {
+  .table {
+    min-width: 0 !important;
+  }
+  .table colgroup,
+  .table thead {
+    display: none;
+  }
+  .table tbody {
+    display: block;
+  }
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      'item delta'
+      'reason reason'
+      'who when';
+    gap: 8px 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+  .row > td {
+    display: block;
+    padding: 0 !important;
+    border: 0 !important;
+  }
+  .cItem {
+    grid-area: item;
+  }
+  .cDelta {
+    grid-area: delta;
+    align-self: center;
+  }
+  .cReason {
+    grid-area: reason;
+  }
+  .cWho {
+    grid-area: who;
+  }
+  .cWhen {
+    grid-area: when;
+    text-align: right;
+  }
+  .cWhen .sub {
+    display: inline;
+    margin-left: 6px;
+  }
+}

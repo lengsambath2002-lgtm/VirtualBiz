@@ -39,6 +39,7 @@ export type Overlay =
   | { kind: 'confirm'; spec: ConfirmSpec; resolve: (v: ConfirmValues | null) => void }
   | { kind: 'order'; id: string }
   | { kind: 'manual' }
+  | { kind: 'productAdd' }
   | { kind: 'customer'; id: string }
   | { kind: 'pack'; id: string }
   | { kind: 'ship'; id: string }

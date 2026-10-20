@@ -15,12 +15,17 @@ import {
   useDb,
   useFmt,
   useGo,
+  useSellerStore,
+  useUi,
   type SellerProduct,
   useCollectionName,
 } from '@/features/seller-shared';
-import { Link } from '@/lib/i18n/navigation';
+import { EmptyView } from '@/components/feedback';
+
+import r from './products.module.css';
 
 type ProdFilter = 'all' | 'active' | 'draft' | 'low';
+type SortKey = 'title' | 'stock' | 'price' | 'sold';
 const FILTERS: Record<ProdFilter, (p: SellerProduct) => boolean> = {
   all: () => true,
   active: (p) => p.status === 'ACTIVE',
@@ -64,6 +69,46 @@ export function ProductsPage() {
       .filter((l) => p.variants.some((v) => v.id === l.variantId))
       .reduce((x, l) => x + l.qty, 0);
 
+  const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 } | null>(null);
+  const sortedList = sort
+    ? [...list].sort((x, y) => {
+        const val = (p: SellerProduct) =>
+          sort.key === 'title'
+            ? p.title.toLowerCase()
+            : sort.key === 'stock'
+              ? pStock(p).s
+              : sort.key === 'price'
+                ? Math.min(...p.variants.map((v) => v.price))
+                : sold(p);
+        const a = val(x);
+        const b = val(y);
+        return (a < b ? -1 : a > b ? 1 : 0) * sort.dir;
+      })
+    : list;
+  const ariaSort = (k: SortKey) =>
+    sort?.key === k ? (sort.dir === 1 ? 'ascending' : 'descending') : undefined;
+  const sortHead = (k: SortKey, label: string) => (
+    <button
+      type="button"
+      className={r.th}
+      onClick={() =>
+        setSort((cur) =>
+          cur?.key !== k
+            ? { key: k, dir: k === 'title' ? 1 : -1 }
+            : cur.dir === (k === 'title' ? 1 : -1)
+              ? { key: k, dir: k === 'title' ? -1 : 1 }
+              : null,
+        )
+      }
+    >
+      {label}
+      <span className={r.arrow} aria-hidden="true">
+        {sort?.key === k ? (sort.dir === 1 ? '▲' : '▼') : '↕'}
+      </span>
+    </button>
+  );
+  const addProduct = () => useUi.getState().open({ kind: 'productAdd' });
+
   return (
     <>
       <div className={s.phH}>
@@ -76,10 +121,10 @@ export function ProductsPage() {
             })}
           </p>
         </div>
-        <Link className={cx(s.btn, s.btnPrimary)} href="/seller/products/new">
+        <button type="button" className={cx(s.btn, s.btnPrimary)} onClick={addProduct}>
           <Ic name="plus" size={18} />
           {t('add')}
-        </Link>
+        </button>
       </div>
       <div className={s.tabs}>
         {(Object.keys(FILTERS) as ProdFilter[]).map((k) => (
@@ -122,65 +167,143 @@ export function ProductsPage() {
       <section className={s.panel}>
         {list.length ? (
           <div className={s.tblWrap}>
-            <table>
+            <table className={r.table}>
+              <colgroup>
+                <col style={{ width: '34%' }} />
+                <col style={{ width: '10%' }} />
+                <col style={{ width: '17%' }} />
+                <col style={{ width: '13%' }} />
+                <col style={{ width: '10%' }} />
+                <col style={{ width: '7%' }} />
+                <col style={{ width: '9%' }} />
+              </colgroup>
               <thead>
                 <tr>
-                  <th>{t('col.product')}</th>
+                  <th aria-sort={ariaSort('title')}>{sortHead('title', t('col.product'))}</th>
                   <th>{t('col.status')}</th>
-                  <th>{t('col.stock')}</th>
+                  <th aria-sort={ariaSort('stock')}>{sortHead('stock', t('col.stock'))}</th>
                   <th>{t('col.category')}</th>
-                  <th className={s.r}>{t('col.price')}</th>
-                  <th className={s.r}>{t('col.sold')}</th>
+                  <th className={s.r} aria-sort={ariaSort('price')}>
+                    {sortHead('price', t('col.price'))}
+                  </th>
+                  <th className={s.r} aria-sort={ariaSort('sold')}>
+                    {sortHead('sold', t('col.sold'))}
+                  </th>
+                  <th>
+                    <span className="sr-only">{t('col.actions')}</span>
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {list.map((p) => {
+                {sortedList.map((p) => {
                   const st = pStock(p);
                   const open = () => void go(`/seller/products/${p.id}`);
+                  const v0 = p.variants[0];
+                  const onSale = p.variants.some((v) => v.compareAt && v.compareAt > v.price);
+                  // The bar: stock against twice the low-stock alert (full = comfortably stocked).
+                  const fill = Math.min(1, st.s / Math.max(1, p.lowStockAt * 2));
                   return (
                     <tr
                       key={p.id}
-                      className={s.clk}
+                      className={cx(s.clk, r.row)}
                       tabIndex={0}
                       onClick={open}
-                      onKeyDown={(e) => e.key === 'Enter' && open()}
+                      onKeyDown={(e) => e.key === 'Enter' && e.target === e.currentTarget && open()}
                     >
-                      <td>
-                        <div className={s.cw}>
-                          <Thumb p={p} size={40} />
-                          <div>
-                            <div className={s.who}>{p.title}</div>
-                            <span className={cx(s.tiny, s.muted)}>
+                      <td className={r.cProd}>
+                        <div className={r.prod}>
+                          <Thumb p={p} size={44} />
+                          <div className={r.prodText}>
+                            <strong title={p.title}>{p.title}</strong>
+                            <span className={r.sub}>
                               {p.variants.length > 1
                                 ? t('variantsN', { n: p.variants.length })
-                                : t('sku', { sku: p.variants[0]?.sku ?? '' })}
+                                : [v0?.sku, v0?.barcode].filter(Boolean).join(' · ') || t('noSku')}
                             </span>
                           </div>
                         </div>
                       </td>
-                      <td>
+                      <td className={r.cStatus}>
                         <span className={cx(s.pill, p.status === 'ACTIVE' ? s.ok : s.neutral)}>
                           {t(p.status === 'ACTIVE' ? 'active' : 'draft')}
                         </span>
                       </td>
-                      <td>
-                        <span className={cx(s.stockpill, s[st.cls])}>
-                          <i />
-                          <span className={s.num}>{t('inStock', { n: st.s })}</span>
-                        </span>
-                        {st.out ? (
-                          <div className={s.tiny} style={{ color: 'var(--danger)' }}>
-                            {t('soldOutN', { n: st.out })}
-                          </div>
-                        ) : st.low ? (
-                          <div className={s.tiny} style={{ color: 'var(--accent-ink)' }}>
-                            {t('lowN', { n: st.low })}
-                          </div>
+                      <td className={r.cStock}>
+                        <div className={r.stock}>
+                          <span className={r.stockTop}>
+                            <b>{st.s}</b>
+                            <span className={s.muted}>{t('inStockShort')}</span>
+                          </span>
+                          <span className={r.meter} aria-hidden="true">
+                            <i
+                              className={r[st.cls]}
+                              style={{ width: `${Math.max(st.s ? 6 : 0, fill * 100)}%` }}
+                            />
+                          </span>
+                          {st.out ? (
+                            <span className={r.bad}>{t('soldOutN', { n: st.out })}</span>
+                          ) : st.low ? (
+                            <span className={r.warn}>{t('lowN', { n: st.low })}</span>
+                          ) : null}
+                        </div>
+                      </td>
+                      <td className={r.cCat}>
+                        {p.collection ? <span className={r.cat}>{tcol(p.collection)}</span> : '—'}
+                      </td>
+                      <td className={cx(s.r, r.cPrice)}>
+                        <span className={r.price}>{priceRange(p, f.money)}</span>
+                        {onSale && p.variants.length === 1 && v0?.compareAt ? (
+                          <span className={r.was}>{f.money(v0.compareAt)}</span>
+                        ) : onSale ? (
+                          <span className={r.sub}>{t('onSale')}</span>
                         ) : null}
                       </td>
-                      <td>{p.collection ? tcol(p.collection) : ''}</td>
-                      <td className={cx(s.r, s.num)}>{priceRange(p, f.money)}</td>
-                      <td className={cx(s.r, s.num)}>{sold(p)}</td>
+                      <td className={cx(s.r, r.cSold, r.sold)}>
+                        <b>{sold(p)}</b>
+                      </td>
+                      <td className={r.cActs} onClick={(e) => e.stopPropagation()}>
+                        <div className={r.acts}>
+                          <button
+                            type="button"
+                            className={r.act}
+                            title={t('actEdit')}
+                            aria-label={t('actEdit')}
+                            onClick={open}
+                          >
+                            <Ic name="edit" size={16} />
+                          </button>
+                          {p.variants.length === 1 && v0 && (
+                            <button
+                              type="button"
+                              className={r.act}
+                              title={t('actStock')}
+                              aria-label={t('actStock')}
+                              onClick={() =>
+                                useUi.getState().open({ kind: 'adjust', variantId: v0.id })
+                              }
+                            >
+                              <Ic name="stock" size={16} />
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            className={r.act}
+                            title={t('actDuplicate')}
+                            aria-label={t('actDuplicate')}
+                            onClick={() =>
+                              void useSellerStore
+                                .getState()
+                                .duplicateProduct(p.id)
+                                .then(() =>
+                                  useUi.getState().showToast(t('duplicated', { title: p.title })),
+                                )
+                                .catch(() => useUi.getState().showToast(t('duplicateFailed')))
+                            }
+                          >
+                            <Ic name="copy" size={16} />
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   );
                 })}
@@ -188,13 +311,20 @@ export function ProductsPage() {
             </table>
           </div>
         ) : (
-          <div className={s.empty}>
-            <Ic name="box" size={30} />
-            <strong>{t('noMatch')}</strong>
-            <Link className={cx(s.btn, s.btnPrimary, s.btnSm)} href="/seller/products/new">
-              {t('add')}
-            </Link>
-          </div>
+          <EmptyView
+            title={db.products.length ? t('noMatch') : t('emptyTitle')}
+            body={db.products.length ? undefined : t('emptyBody')}
+            action={
+              <button
+                type="button"
+                className={cx(s.btn, s.btnPrimary, s.btnSm)}
+                onClick={addProduct}
+              >
+                <Ic name="plus" size={16} />
+                {t('add')}
+              </button>
+            }
+          />
         )}
       </section>
     </>

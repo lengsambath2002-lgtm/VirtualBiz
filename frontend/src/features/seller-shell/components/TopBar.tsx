@@ -81,7 +81,7 @@ export function TopBar() {
 
   const runNew = (k: (typeof NEW_MENU)[number]['key']) => {
     setMenu(null);
-    if (k === 'product') void go('/seller/products/new');
+    if (k === 'product') open({ kind: 'productAdd' });
     else if (k === 'receive') open({ kind: 'receive' });
     else if (k === 'promo') open({ kind: 'promo' });
     else open({ kind: 'manual' });

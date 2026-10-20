@@ -20,6 +20,7 @@ import {
 } from '@/features/seller-shared';
 import type { StockReason } from '@/lib/domain';
 import { Link } from '@/lib/i18n/navigation';
+import a from './adjust.module.css';
 
 const REASON: Record<AdjustReason, StockReason> = {
   recv: 'RECEIVED',
@@ -149,16 +150,57 @@ export function AdjustDialog({ variantId, preset }: { variantId: string; preset?
         <div className={s.g2}>
           <div className={cx(s.field, err && s.bad)}>
             <label htmlFor="adj-q">{t(`q.${k}`)}</label>
-            <input
-              id="adj-q"
-              inputMode="numeric"
-              placeholder="0"
-              value={qty}
-              onChange={(e) => {
-                setQty(e.target.value);
-                setErr('');
-              }}
-            />
+            <div className={a.stepper}>
+              <button
+                type="button"
+                aria-label={t('less')}
+                disabled={n <= 0}
+                onClick={() => {
+                  setQty(String(Math.max(0, n - 1)));
+                  setErr('');
+                }}
+              >
+                <Ic name="minus" size={16} />
+              </button>
+              <input
+                id="adj-q"
+                inputMode="numeric"
+                placeholder="0"
+                autoFocus
+                value={qty}
+                onChange={(e) => {
+                  // Whole numbers only: anything else typed is dropped.
+                  setQty(e.target.value.replace(/\D/g, '').slice(0, 5));
+                  setErr('');
+                }}
+              />
+              <button
+                type="button"
+                aria-label={t('more')}
+                onClick={() => {
+                  setQty(String(n + 1));
+                  setErr('');
+                }}
+              >
+                <Ic name="plus" size={16} />
+              </button>
+            </div>
+            {(k === 'recv' || k === 'ret') && (
+              <div className={a.quick}>
+                {[1, 5, 10, 50].map((x) => (
+                  <button
+                    key={x}
+                    type="button"
+                    onClick={() => {
+                      setQty(String(n + x));
+                      setErr('');
+                    }}
+                  >
+                    +{x}
+                  </button>
+                ))}
+              </div>
+            )}
             <div className={s.err}>{err}</div>
           </div>
           <div className={s.field}>

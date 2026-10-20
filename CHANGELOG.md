@@ -6,10 +6,13 @@ All notable changes are recorded here. Format: [Keep a Changelog](https://keepac
 
 ### Fixed
 
+- Signed out while moving between pages: a sign-in renewal cut off by navigation (or lost to a network blip or a server error) was treated as a rejected session and cleared it. Only a 401 / 403 from the server signs the user out now.
+- Seller forms: a field next to one showing an error no longer stretches and drops out of line. Adjust stock's quantity has −/+ and quick amounts (+1, +5, +10, +50) and takes digits only.
 - Create Business: a second shop could not be created, and another account on the same browser could not create one. The wizard's draft was shared by everyone on the browser and stayed on the "open" screen after a shop opened (and kept that shop's id, so the next "Open my shop" created nothing). The draft now belongs to the account that started it, and a finished draft starts a new shop unless the done screen was just reached (e2e "One account, many shops").
 
 ### Added
 
+- Seller products: **Add product** opens a quick-add popup (photos, name, category, description, price / compare-at / cost with the margin, opening stock, SKU, barcode, live or draft); the full editor stays for sizes, colours and editing. The products table is redesigned: product with variant / SKU / barcode, stock with a level bar against the low-stock alert, category chip, price with the compare-at struck through, sortable columns, row actions (edit, adjust stock, duplicate) and cards on phones. The recent stock changes table is redesigned the same way (e2e `products.spec.ts`).
 - Manual orders (`docs/api/phase8-manual-orders.md`): Seller **New → Manual order** for orders taken by phone, Facebook, Telegram or at the counter. Items by search or barcode, customer and address, delivery fee from the shop's zones, discount, cash on delivery or paid up front (cash / KHQR to the shop). The order starts accepted, takes stock through the stock writer, links the customer to the shop's clients, carries no commission and is never paid out; a "Phone" / "Facebook" … badge marks it in the order list. Flyway `V20261020_120000__manual_orders.sql`, `ManualOrderIntegrationTest`, e2e `manual-order.spec.ts`.
 - Load errors with a retry for booking times, the store's reviews tab and the Create Business district list.
 

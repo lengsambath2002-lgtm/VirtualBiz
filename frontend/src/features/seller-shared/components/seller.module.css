@@ -804,6 +804,8 @@ button.row:hover {
 }
 .field {
   display: grid;
+  /* Fields sharing a row keep their own height: an error under one must not stretch the other. */
+  align-content: start;
   gap: 6px;
   min-width: 0;
   position: relative;

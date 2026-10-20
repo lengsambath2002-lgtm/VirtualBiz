@@ -361,7 +361,8 @@
       "stock": "Stock",
       "category": "Category",
       "price": "Price",
-      "sold": "Sold, 30 d"
+      "sold": "Sold, 30 d",
+      "actions": "Actions"
     },
     "variantsN": "{n} variants",
     "sku": "SKU {sku}",
@@ -370,7 +371,17 @@
     "inStock": "{n} in stock",
     "soldOutN": "{n, plural, one {# variant} other {# variants}} sold out",
     "lowN": "{n} running low",
-    "noMatch": "No products match"
+    "noMatch": "No products match",
+    "noSku": "No SKU",
+    "inStockShort": "in stock",
+    "onSale": "On sale",
+    "actEdit": "Edit",
+    "actStock": "Adjust stock",
+    "actDuplicate": "Duplicate",
+    "duplicated": "{title} duplicated as a draft",
+    "duplicateFailed": "Couldn’t duplicate it. Try again.",
+    "emptyTitle": "No products yet",
+    "emptyBody": "Add your first product so customers can find it."
   },
   "editor": {
     "leaveTitle": "Leave without saving?",
@@ -544,7 +555,9 @@
       "errOnly": "Only {n} in stock.",
       "errZero": "Enter more than 0.",
       "noChange": "No change",
-      "done": "{item}: {n} in stock"
+      "done": "{item}: {n} in stock",
+      "less": "One less",
+      "more": "One more"
     },
     "receiveDlg": {
       "title": "Receive stock",
@@ -970,5 +983,37 @@
       "stockServer": "Not enough stock for one of the items. Check the quantities.",
       "check": "Check this field."
     }
+  },
+  "quickAdd": {
+    "title": "Add product",
+    "hint": "A product with one price and stock. For sizes or colours, use the full editor.",
+    "photos": "Photos",
+    "addPhoto": "Add photo",
+    "cover": "Cover",
+    "name": "Product name",
+    "namePh": "e.g. USB-C charging cable 1 m",
+    "category": "Category",
+    "chooseCategory": "Choose a category",
+    "description": "Description",
+    "descriptionPh": "What it is, what is in the box, warranty…",
+    "price": "Price (USD)",
+    "compareAt": "Compare-at price",
+    "compareHint": "Shown crossed out for a sale",
+    "cost": "Cost per item",
+    "costHint": "Only you see it",
+    "margin": "{pct}% margin",
+    "stock": "Opening stock",
+    "sku": "SKU",
+    "barcode": "Barcode",
+    "barcodeHint": "Leave empty to get one automatically",
+    "liveTitle": "Sell it now",
+    "liveOn": "Customers can find and buy it right away.",
+    "liveOff": "Saved as a draft; only your team sees it.",
+    "fullEditor": "Sizes or colours? Open the full editor",
+    "cancel": "Cancel",
+    "saving": "Saving…",
+    "addLive": "Add product",
+    "addDraft": "Save draft",
+    "errStock": "A whole number, 0 or more."
   }
 }

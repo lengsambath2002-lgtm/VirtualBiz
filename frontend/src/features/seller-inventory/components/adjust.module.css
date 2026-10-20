@@ -1,0 +1,60 @@
+/* Adjust stock: a quantity with −/+ and quick amounts. */
+.stepper {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr) 40px;
+  align-items: stretch;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--g-fill-strong);
+  overflow: hidden;
+}
+.stepper:focus-within {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent);
+}
+.stepper button {
+  border: 0;
+  background: none;
+  color: var(--ink-2);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.stepper button:hover:not(:disabled) {
+  background: var(--sunk);
+}
+.stepper button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+/* The input sits inside the stepper's own border. */
+.stepper input {
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  min-width: 0;
+}
+.quick {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.quick button {
+  border: 1px solid var(--line);
+  background: transparent;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.quick button:hover {
+  border-color: var(--line-h);
+  background: var(--sunk);
+}

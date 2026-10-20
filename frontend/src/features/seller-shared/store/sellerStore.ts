@@ -68,6 +68,12 @@ const newId = () =>
       );
 
 /** Shown when the API refused a stock change or a sync failed (set by the workspace shell). */
+/** Told the business the API returned after a settings save (the workspace caches it). */
+let onBusinessSaved: ((b: unknown) => void) | null = null;
+export function setBusinessSavedHandler(fn: ((b: unknown) => void) | null) {
+  onBusinessSaved = fn;
+}
+
 let onStockError: ((e: unknown) => void) | null = null;
 export function setStockErrorHandler(fn: ((e: unknown) => void) | null) {
   onStockError = fn;
@@ -564,7 +570,7 @@ export const useSellerStore = create<SellerState>()(
             d.shop = { ...d.shop, ...p };
           });
           try {
-            await patchBusinessApi(before.id, shopPatch(p));
+            onBusinessSaved?.(await patchBusinessApi(before.id, shopPatch(p)));
             return true;
           } catch (e) {
             patch((d) => {

@@ -376,6 +376,8 @@ export interface ApiMember {
   color?: string | null;
   shifts?: WeekRanges | null;
   active: boolean;
+  /** The login's email, when the member has an account. */
+  email?: string | null;
 }
 
 // ---- Phase 3 (docs/api/phase3-orders-checkout.md) -------------------------------------

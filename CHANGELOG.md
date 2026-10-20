@@ -6,6 +6,7 @@ All notable changes are recorded here. Format: [Keep a Changelog](https://keepac
 
 ### Fixed
 
+- Product shop settings changed on another device or by another team member now show up when the workspace opens (they were kept from the browser's saved copy).
 - Team members with no colour (the owner added when a shop opens) showed as an empty ring in the provider workspace. They now get a steady colour from the team palette.
 - Signed out while moving between pages: a sign-in renewal cut off by navigation (or lost to a network blip or a server error) was treated as a rejected session and cleared it. Only a 401 / 403 from the server signs the user out now.
 - Seller forms: a field next to one showing an error no longer stretches and drops out of line. Adjust stock's quantity has −/+ and quick amounts (+1, +5, +10, +50) and takes digits only.
@@ -13,6 +14,7 @@ All notable changes are recorded here. Format: [Keep a Changelog](https://keepac
 
 ### Added
 
+- Shop teams (docs/api/phase10-shop-team.md): owners invite managers and staff by email; each person signs in with their own account. A new **Team** page in the product shop workspace and a **People and access** panel in the provider team page show who has access, change roles (owner only), give an existing calendar member a login, remove or restore access, and withdraw invites. Roles are enforced by the API: managers run the shop and invite staff but can't change the payout account or roles; staff see settings read-only.
 - Staff security (docs/api/phase9-staff-security.md):
   - **Two-step sign-in (TOTP) for staff**: required before the console opens, checked again every 12 hours and on every new sign-in. Set-up shows a QR code and the key, then 10 one-time recovery codes. Keys are encrypted at rest (AES-256-GCM, `VBIZ_DATA_KEY`), codes can't be replayed, and 5 wrong codes sign the session out.
   - **Staff invites**: a super-admin invites by email with a role; the single-use link (7 days) lets a new person join with a 12+ character password, or an existing account confirm itself with its password.

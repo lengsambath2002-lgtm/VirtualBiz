@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { createElement as h, useState } from 'react';
 
 import { ShopPhotos } from '@/components/media';
+import { useMyRole } from '@/features/account-switcher';
 import { PayoutsPanel, VerificationPanel } from '@/features/business-status';
 import { formatPhone, isValidPhone, normalizePhone } from '@/lib/utils/phone';
 
@@ -32,6 +33,9 @@ export function SettingsPage() {
   const { t } = useFmt();
   const ui = useUi();
   const tab = ui.setTab;
+  // What this member's role may change (docs/api/phase10-shop-team.md); the API enforces it.
+  const role = useMyRole(useData().business.id);
+  const tt = useTranslations('team');
   return (
     <>
       <div className={k('ph-h')}>
@@ -55,19 +59,25 @@ export function SettingsPage() {
           </button>
         ))}
       </div>
-      <div style={{ display: 'grid', gap: 16, maxWidth: 760 }}>
-        {tab === 'business' ? (
-          <>
-            <BusinessPhotos />
-            <BusinessForm />
-            <BusinessPayments />
-          </>
-        ) : tab === 'hours' ? (
-          <Hours />
-        ) : (
-          <Rules />
-        )}
-      </div>
+      {role === 'STAFF' && <p className={k('small muted')}>{tt('readOnlySettings')}</p>}
+      <fieldset
+        disabled={role === 'STAFF'}
+        style={{ border: 0, margin: 0, padding: 0, minWidth: 0, display: 'contents' }}
+      >
+        <div style={{ display: 'grid', gap: 16, maxWidth: 760 }}>
+          {tab === 'business' ? (
+            <>
+              <BusinessPhotos />
+              <BusinessForm />
+              <BusinessPayments />
+            </>
+          ) : tab === 'hours' ? (
+            <Hours />
+          ) : (
+            <Rules />
+          )}
+        </div>
+      </fieldset>
     </>
   );
 }
@@ -103,6 +113,8 @@ function BusinessPhotos() {
 function BusinessPayments() {
   const { t } = useFmt();
   const b = useData().business;
+  const owner = useMyRole(b.id);
+  const tt = useTranslations('team');
   const ui = useUi();
   const save = useSaveBusiness();
   const [bakong, setBakong] = useState(b.bakongId ?? '');
@@ -130,6 +142,7 @@ function BusinessPayments() {
             <input
               id="bk"
               value={bakong}
+              disabled={!!owner && owner !== 'OWNER'}
               placeholder="name@bank"
               autoCapitalize="none"
               spellCheck={false}
@@ -138,7 +151,9 @@ function BusinessPayments() {
               onBlur={commit}
             />
           </Field>
-          <span className={k('hint')}>{t('settings.bakongHint')}</span>
+          <span className={k('hint')}>
+            {owner && owner !== 'OWNER' ? tt('ownerOnlyPayout') : t('settings.bakongHint')}
+          </span>
         </div>
       </section>
       <VerificationPanel

@@ -3,6 +3,7 @@
 import { Fragment, useState } from 'react';
 
 import { EmptyView } from '@/components/feedback';
+import { TeamAccess } from '@/features/business-team';
 import type { DayRange, WeekRanges } from '@/lib/domain';
 
 import { StaffAvatar } from '@/features/provider-shared/components/Bits';
@@ -129,6 +130,9 @@ export function TeamPage() {
             </section>
           );
         })}
+      </div>
+      <div style={{ marginTop: 16 }}>
+        <TeamAccess businessId={d.business.id} />
       </div>
     </>
   );

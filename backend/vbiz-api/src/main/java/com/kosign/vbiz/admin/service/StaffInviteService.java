@@ -156,7 +156,7 @@ public class StaffInviteService {
         audit.record(new AdminAccess.Admin(u.getId(), u.getName(), u.getPlatformRole()), AuditLog.STAFF_JOINED,
                 AuditTarget.USER, u.getId(), u.getName(), null,
                 Map.of("role", i.getRole().name(), "invitedBy", i.getInvitedByName()));
-        return auth.signInStaff(u, client);
+        return auth.signInAfterInvite(u, client);
     }
 
     private StaffInvite openInvite(String token) {

@@ -13,7 +13,8 @@
     "customers": "Customers",
     "reviews": "Reviews",
     "settings": "Settings",
-    "logout": "Log out"
+    "logout": "Log out",
+    "team": "Team"
   },
   "common": {
     "close": "Close",

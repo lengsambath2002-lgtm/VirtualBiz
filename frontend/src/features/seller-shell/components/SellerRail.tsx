@@ -17,6 +17,7 @@ export const NAV: { key: string; href: string; icon: IcName; hideM?: boolean }[]
   { key: 'promotions', href: '/seller/promotions', icon: 'tag', hideM: true },
   { key: 'customers', href: '/seller/customers', icon: 'users', hideM: true },
   { key: 'reviews', href: '/seller/reviews', icon: 'star', hideM: true },
+  { key: 'team', href: '/seller/team', icon: 'team', hideM: true },
   { key: 'settings', href: '/seller/settings', icon: 'gear' },
 ];
 

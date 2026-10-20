@@ -20,7 +20,7 @@ interface DoneScreenProps {
 /** Where each "Get ready" item opens in the business's workspace. */
 function todoHref(key: Exclude<TodoKey, 'share'>, service: boolean): string {
   if (key === 'first') return service ? '/provider/services' : '/seller/products/new';
-  if (key === 'team') return service ? '/provider/team' : '/seller/settings';
+  if (key === 'team') return service ? '/provider/team' : '/seller/team';
   return service ? '/provider/settings' : '/seller/settings';
 }
 

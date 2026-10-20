@@ -1,5 +1,6 @@
 package com.kosign.vbiz.account.service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -43,6 +44,12 @@ public class UserService {
     @Transactional(readOnly = true)
     public boolean phoneTaken(String phone) {
         return phone != null && users.existsByPhone(phone);
+    }
+
+    /** These accounts (missing ids are skipped). */
+    @Transactional(readOnly = true)
+    public List<User> findAllById(java.util.Collection<UUID> ids) {
+        return ids.isEmpty() ? List.of() : users.findAllById(ids);
     }
 
     @Transactional

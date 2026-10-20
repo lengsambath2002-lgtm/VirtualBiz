@@ -250,9 +250,9 @@ public class AuthService {
         sessions.revokeAll(userId);
     }
 
-    /** Signs in an account that just accepted a staff invite (its password was checked or set there). */
+    /** Signs in an account that just accepted an invite (staff or shop team; its password was checked or set there). */
     @Transactional
-    public AuthResult signInStaff(User user, ClientInfo client) {
+    public AuthResult signInAfterInvite(User user, ClientInfo client) {
         return signIn(user, SignInMethod.PASSWORD, client);
     }
 

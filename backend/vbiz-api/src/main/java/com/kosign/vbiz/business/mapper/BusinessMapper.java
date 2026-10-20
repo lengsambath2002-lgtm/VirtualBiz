@@ -33,9 +33,14 @@ public final class BusinessMapper {
     }
 
     public static MemberResponse toMember(BusinessMember m) {
+        return toMember(m, null);
+    }
+
+    /** With the login's email (team page). */
+    public static MemberResponse toMember(BusinessMember m, String email) {
         return new MemberResponse(m.getId().toString(), m.getBusinessId().toString(),
                 m.getUserId() == null ? null : m.getUserId().toString(), m.getName(), m.getRole(),
-                m.getTitle(), m.getColor(), m.getShifts(), m.isActive());
+                m.getTitle(), m.getColor(), m.getShifts(), m.isActive(), email);
     }
 
     private static Double toDouble(BigDecimal v) {

@@ -1,8 +1,8 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useWorkspaceBusiness } from '@/features/account-switcher';
 import { fallbackErrorKey, isApiError, metaNumber } from '@/lib/api';
@@ -18,6 +18,7 @@ import {
   type SellerExtras,
 } from '../api';
 import {
+  setBusinessSavedHandler,
   setStockErrorHandler,
   useSellerStore,
   type SellerCatalog,
@@ -205,11 +206,32 @@ export function useSellerBootstrap() {
     }
   }, [db, extras.data, target, extrasSynced]);
 
-  // The API owns the business name: keep a saved workspace in step with it.
+  // The API owns the shop's profile and settings (another device or team member may have
+  // changed them): a saved workspace takes every field that differs.
+  // Only a newly loaded business is applied (never a local save waiting for its refresh), and
+  // a save puts the API's answer in the cache, so a remount never applies an older copy.
+  const qc = useQueryClient();
+  useEffect(() => {
+    setBusinessSavedHandler((b) => {
+      if (b && typeof b === 'object' && 'id' in b)
+        qc.setQueryData(['business', (b as Business).id], b);
+    });
+    return () => setBusinessSavedHandler(null);
+  }, [qc]);
+  const applied = useRef<Business | null>(null);
   const updateShop = useSellerStore((s) => s.updateShop);
   useEffect(() => {
-    if (business && db && db.shop.id === business.id && db.shop.name !== business.name)
-      updateShop({ name: business.name });
+    if (!business || !db || db.shop.id !== business.id || applied.current === business) return;
+    applied.current = business;
+    const fresh = shopFromBusiness(business, db.shop.ownerName);
+    const patch = Object.fromEntries(
+      Object.entries(fresh).filter(
+        ([k, v]) =>
+          k !== 'ownerName' &&
+          JSON.stringify(v) !== JSON.stringify(db.shop[k as keyof typeof db.shop]),
+      ),
+    ) as Partial<SellerDb['shop']>;
+    if (Object.keys(patch).length) updateShop(patch);
   }, [business, db, updateShop]);
 
   return {

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Clock;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -149,12 +150,18 @@ public class BusinessService {
         return BusinessMapper.toResponse(b);
     }
 
-    /** Staff list of a business (any member). */
+    /** Staff list of a business (any member), with each login's email. */
     @Transactional(readOnly = true)
     public List<MemberResponse> members(UUID userId, UUID businessId) {
         require(businessId);
         requireMember(userId, businessId);
-        return membership.members(businessId).stream().map(BusinessMapper::toMember).toList();
+        List<BusinessMember> list = membership.members(businessId);
+        Map<UUID, String> emails = users.findAllById(list.stream().map(BusinessMember::getUserId)
+                .filter(java.util.Objects::nonNull).toList()).stream()
+                .filter(u -> u.getEmail() != null)
+                .collect(java.util.stream.Collectors.toMap(User::getId, User::getEmail));
+        return list.stream().map(m -> BusinessMapper.toMember(m, m.getUserId() == null ? null
+                : emails.get(m.getUserId()))).toList();
     }
 
     /** A staff member without an account (Team page). Owner or manager. */
@@ -170,18 +177,40 @@ public class BusinessService {
         return BusinessMapper.toMember(members.saveAndFlush(m));
     }
 
-    /** Name, title, colour, shifts, active. Owner or manager; the owner stays active. */
+    /**
+     * Name, title, colour, shifts, active, role (docs/api/phase10-shop-team.md § Permissions). The
+     * owner changes anyone but themself-as-owner; a manager changes staff only (and their own
+     * details); only the owner sets roles, never to OWNER. The owner stays active.
+     */
     @Transactional
     public MemberResponse updateMember(UUID userId, UUID businessId, UUID memberId, MemberInput in) {
         require(businessId);
-        requireManager(userId, businessId);
+        BusinessMember me = requireMember(userId, businessId);
+        if (me.getRole() == MemberRole.STAFF) {
+            throw new BusinessException(StatusCode.FORBIDDEN);
+        }
         BusinessMember m = members.findById(memberId).filter(x -> x.getBusinessId().equals(businessId))
                 .orElseThrow(() -> new BusinessException(StatusCode.NOT_FOUND));
+        boolean self = m.getId().equals(me.getId());
+        if (me.getRole() == MemberRole.MANAGER && m.getRole() != MemberRole.STAFF && !self) {
+            throw BusinessException.withDetail(StatusCode.FORBIDDEN, "memberId", "Managers change staff only");
+        }
+        if (in.role() != null && in.role() != m.getRole()) {
+            if (me.getRole() != MemberRole.OWNER) {
+                throw BusinessException.withDetail(StatusCode.FORBIDDEN, "role", "Only the owner sets roles");
+            }
+            if (in.role() == MemberRole.OWNER || m.getRole() == MemberRole.OWNER) {
+                throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "role",
+                        "A shop has one owner; roles are MANAGER or STAFF");
+            }
+            m.setRole(in.role());
+        }
         if (in.name() != null) {
             m.setName(memberName(in.name()));
         }
-        if (Boolean.FALSE.equals(in.active()) && m.getRole() == MemberRole.OWNER) {
-            throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "active", "The owner stays active");
+        if (Boolean.FALSE.equals(in.active()) && (m.getRole() == MemberRole.OWNER || self)) {
+            throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "active",
+                    m.getRole() == MemberRole.OWNER ? "The owner stays active" : "You can't remove yourself");
         }
         applyMember(m, in);
         return BusinessMapper.toMember(members.saveAndFlush(m));
@@ -233,7 +262,13 @@ public class BusinessService {
             b.setOnline(req.online());
         }
         if (req.bakongId() != null) {
-            b.setBakongId(req.bakongId().isBlank() ? null : BusinessRules.bakongId(req.bakongId()));
+            String next = req.bakongId().isBlank() ? null : BusinessRules.bakongId(req.bakongId());
+            // Where the shop's money goes: the owner's call only.
+            if (!java.util.Objects.equals(next, b.getBakongId()) && m.getRole() != MemberRole.OWNER) {
+                throw BusinessException.withDetail(StatusCode.FORBIDDEN, "bakongId",
+                        "Only the owner changes the payout account");
+            }
+            b.setBakongId(next);
         }
         if (req.logoUrl() != null) {
             b.setLogoUrl(storage.requireOwnImage(req.logoUrl(), userId, "logoUrl", Set.of(FilePurpose.BUSINESS_LOGO)));

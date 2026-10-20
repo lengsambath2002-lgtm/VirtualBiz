@@ -115,6 +115,11 @@ vbiz:
       email: ${VBIZ_BOOTSTRAP_ADMIN_EMAIL:}
       name: ${VBIZ_BOOTSTRAP_ADMIN_NAME:VirtualBiz Admin}
       password: ${VBIZ_BOOTSTRAP_ADMIN_PASSWORD:}
+  # docs/api/phase10-shop-team.md: shop owners invite their team.
+  team:
+    invite-ttl: P7D
+    app-url: ${vbiz.staff.app-url}
+    expose-dev-links: ${vbiz.staff.expose-dev-links}
   # Commission, payout delay and the riel rate are platform settings (table platform_settings),
   # changed by a super-admin from the console.
   payment:

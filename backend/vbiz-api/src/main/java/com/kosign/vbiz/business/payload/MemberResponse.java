@@ -14,5 +14,7 @@ public record MemberResponse(
         String title,
         String color,
         List<List<Integer>> shifts,
-        boolean active) {
+        boolean active,
+        /** The login's email when the member has an account. */
+        String email) {
 }

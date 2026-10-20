@@ -9,6 +9,7 @@ import seller from './seller.json';
 import provider from './provider.json';
 import order from './order.json';
 import admin from './admin.json';
+import team from './team.json';
 
 const messages = {
   meta,
@@ -21,5 +22,6 @@ const messages = {
   provider,
   order,
   admin,
+  team,
 };
 export default messages;

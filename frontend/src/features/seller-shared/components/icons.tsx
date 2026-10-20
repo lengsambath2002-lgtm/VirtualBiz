@@ -28,6 +28,13 @@ const IC = {
       <circle cx="7.5" cy="8.5" r="1.3" />
     </>
   ),
+  team: (
+    <>
+      <rect x="4" y="3" width="16" height="18" rx="2.5" />
+      <circle cx="12" cy="10" r="2.6" />
+      <path d="M8 17c.8-1.8 2.2-2.8 4-2.8s3.2 1 4 2.8" />
+    </>
+  ),
   users: (
     <>
       <circle cx="9" cy="8" r="3.5" />

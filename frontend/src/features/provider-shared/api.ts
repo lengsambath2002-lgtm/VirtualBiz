@@ -109,6 +109,7 @@ export const toClient = (c: ApiClient): Client => ({
   phone: c.phone,
   ...(c.email ? { email: c.email } : {}),
   ...(c.note ? { note: c.note } : {}),
+  ...(c.district ? { district: c.district } : {}),
   since: c.since,
   tags: [],
 });

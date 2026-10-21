@@ -345,6 +345,8 @@ export interface Block {
 /** Per-business CRM record. Order count, spend and last visit are derived. */
 export interface Client {
   id: Id;
+  /** The shop's client record when `id` is the customer's account (seller workspace). */
+  clientId?: Id;
   businessId: Id;
   name: string;
   phone: string;

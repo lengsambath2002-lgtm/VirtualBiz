@@ -12,6 +12,7 @@ import { useMyRole, useWorkspaceBusiness } from '@/features/account-switcher';
 import { patchBusinessApi } from '@/features/seller-shared/api';
 import {
   DeliveryZonesPanel,
+  ExportPanel,
   HoursPanel,
   LocationPanel,
   PolicyPanel,
@@ -258,6 +259,11 @@ export function SettingsPage() {
             <PolicyPanel business={business} save={saveBusiness} canEdit={role !== 'STAFF'} />
           )}
           <PayoutsPanel businessId={shop.id} panel={s.panel} head={s.panelH} body={s.panelB} />
+          <ExportPanel
+            businessId={shop.id}
+            type="PRODUCT"
+            canExport={role === 'OWNER' || role === 'MANAGER'}
+          />
           <section className={s.panel}>
             <div className={s.panelH}>
               <h2>{t('payments')}</h2>

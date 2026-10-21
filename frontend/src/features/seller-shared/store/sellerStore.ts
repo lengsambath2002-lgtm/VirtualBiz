@@ -10,7 +10,7 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist, type StateStorage } from 'zustand/middleware';
 
-import { isApiError, type ProductInput } from '@/lib/api';
+import { isApiError, type ApiClient, type ProductInput } from '@/lib/api';
 import type { PaymentMethod, Promotion, StockReason } from '@/lib/domain';
 import { round2 } from '@/lib/money';
 
@@ -22,6 +22,7 @@ import {
   fetchSellerExtras,
   posApi,
   replyReviewApi,
+  toCustomer,
   savePromotion,
   setPromotionEnd,
   type SellerExtras,
@@ -200,6 +201,8 @@ interface SellerState {
   endPromo: (id: string) => Promise<string | null>;
   restorePromoEnd: (id: string, endsAt: string) => Promise<void>;
   replyReview: (id: string, text: string) => Promise<boolean>;
+  /** A customer record the API just saved (`PATCH /api/clients/{id}`). */
+  putCustomer: (c: ApiClient) => void;
   /** Local only (e.g. keeping a saved workspace's name in step with the API). */
   updateShop: (patch: Partial<SellerDb['shop']>) => void;
   /** Settings: shown at once, saved with `PATCH /api/businesses/{id}`, put back if refused. */
@@ -559,6 +562,13 @@ export const useSellerStore = create<SellerState>()(
             return false;
           }
         },
+        putCustomer: (c) =>
+          patch((d) => {
+            const next = toCustomer(c);
+            const i = d.customers.findIndex((x) => x.id === next.id);
+            if (i >= 0) d.customers[i] = next;
+            else d.customers.push(next);
+          }),
         updateShop: (patch) =>
           update((d) => {
             d.shop = { ...d.shop, ...patch };

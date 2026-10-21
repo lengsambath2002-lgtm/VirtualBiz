@@ -443,7 +443,8 @@
     "errPhone": "Enter a Cambodian number, like 012 345 678.",
     "errExists": "A client with this phone already exists.",
     "added": "{name} added",
-    "book": "Book"
+    "book": "Book",
+    "edit": "Edit"
   },
   "services": {
     "title": "Services",

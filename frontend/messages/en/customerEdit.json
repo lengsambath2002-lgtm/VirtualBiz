@@ -1,0 +1,20 @@
+{
+  "title": "Edit {name}",
+  "name": "Name",
+  "phone": "Phone",
+  "email": "Email (optional)",
+  "district": "District",
+  "noDistrict": "Not set",
+  "note": "Private note",
+  "notePh": "Only your team sees this, e.g. preferences or allergies",
+  "save": "Save changes",
+  "saving": "Saving…",
+  "cancel": "Cancel",
+  "errName": "Enter at least 2 characters.",
+  "errEmail": "Check the email address.",
+  "errPhone": "Enter a Cambodian phone number, e.g. 012 345 678.",
+  "errPhoneTaken": "Another customer already has this phone number.",
+  "errDistrict": "Pick a district from the list.",
+  "errCheck": "Some details aren't valid. Check them and try again.",
+  "failed": "Couldn't save. Check your connection and try again."
+}

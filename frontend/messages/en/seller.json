@@ -710,7 +710,10 @@
     "emptyTitle": "No customers yet",
     "emptyBody": "Everyone who orders from your shop appears here.",
     "noMatch": "No customers match",
-    "noOrders": "No orders yet."
+    "noOrders": "No orders yet.",
+    "edit": "Edit details",
+    "note": "Note:",
+    "saved": "Saved {name}'s details"
   },
   "reviews": {
     "title": "Reviews",

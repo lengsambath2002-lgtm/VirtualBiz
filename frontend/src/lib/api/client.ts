@@ -176,6 +176,39 @@ export async function apiFetch<T>(path: string, opts: RequestOptions = {}): Prom
   return read<T>(res);
 }
 
+/**
+ * Download a file the API makes (CSV exports): the body as a Blob, with the server's file name
+ * from `Content-Disposition`. Same token refresh as `apiFetch`; an error answer throws `ApiError`.
+ */
+export async function apiDownload(
+  path: string,
+  opts: Omit<RequestOptions, 'method' | 'body'> = {},
+): Promise<{ blob: Blob; filename: string | null }> {
+  if (!accessToken && (inflight || refresher)) await refreshAccessToken();
+  let res = await send(path, { ...opts, headers: { ...opts.headers, Accept: '*/*' } }, accessToken);
+  if (res.status === 401) {
+    const token = await refreshAccessToken();
+    if (token)
+      res = await send(path, { ...opts, headers: { ...opts.headers, Accept: '*/*' } }, token);
+  }
+  if (!res.ok) return read<never>(res);
+  const cd = res.headers.get('Content-Disposition') ?? '';
+  const filename = /filename\*?=(?:UTF-8'')?"?([^";]+)"?/i.exec(cd)?.[1] ?? null;
+  return { blob: await res.blob(), filename: filename && decodeURIComponent(filename) };
+}
+
+/** Hand a Blob to the browser as a download. */
+export function saveBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 export const api = {
   get: <T>(path: string, opts?: Omit<RequestOptions, 'method' | 'body'>) =>
     apiFetch<T>(path, { ...opts, method: 'GET' }),

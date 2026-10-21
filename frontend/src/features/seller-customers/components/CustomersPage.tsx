@@ -4,6 +4,7 @@ import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
 import { EmptyRow } from '@/components/feedback';
+import { EditCustomerDialog } from '@/features/business-customers';
 import { copyText } from '@/features/seller-orders';
 import {
   CloseButton,
@@ -16,6 +17,7 @@ import {
   s,
   useDb,
   useFmt,
+  useSellerStore,
   useUi,
 } from '@/features/seller-shared';
 import { formatPhone } from '@/lib/utils/phone';
@@ -107,6 +109,7 @@ export function CustomerDrawer({ id }: { id: string }) {
   const tc = useTranslations('seller.common');
   const db = useDb();
   const f = useFmt();
+  const [editing, setEditing] = useState(false);
   const c = db.customers.find((x) => x.id === id);
   if (!c) return null;
   const st = custStats(db.orders, id);
@@ -146,6 +149,16 @@ export function CustomerDrawer({ id }: { id: string }) {
             </div>
           ))}
         </div>
+        {(c.email || c.note) && (
+          <div className={s.small} style={{ display: 'grid', gap: 4 }}>
+            {c.email && <span>{c.email}</span>}
+            {c.note && (
+              <span>
+                <b style={{ fontWeight: 500 }}>{t('note')}</b> {c.note}
+              </span>
+            )}
+          </div>
+        )}
         <div className={s.small}>
           <b style={{ fontWeight: 500 }}>{t('defaultAddress')}</b>
           <br />
@@ -186,8 +199,28 @@ export function CustomerDrawer({ id }: { id: string }) {
           >
             {t('copyPhone')}
           </button>
+          {c.clientId && (
+            <button
+              type="button"
+              className={cx(s.btn, s.btnPrimary)}
+              onClick={() => setEditing(true)}
+            >
+              {t('edit')}
+            </button>
+          )}
         </div>
       </div>
+      {editing && c.clientId && (
+        <EditCustomerDialog
+          businessId={db.shop.id}
+          customer={{ ...c, clientId: c.clientId }}
+          onClose={() => setEditing(false)}
+          onSaved={(saved) => {
+            useSellerStore.getState().putCustomer(saved);
+            ui.showToast(t('saved', { name: saved.name }));
+          }}
+        />
+      )}
     </Drawer>
   );
 }

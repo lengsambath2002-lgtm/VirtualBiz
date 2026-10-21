@@ -33,6 +33,13 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
     @Query("select o from Order o where o.customerId = :customerId order by o.createdAt desc, o.number desc")
     List<Order> ofCustomer(@Param("customerId") UUID customerId, Pageable page);
 
+    /** Orders placed in [from, to), newest first (exports). */
+    @Query("""
+            select o from Order o where o.businessId = :businessId and o.placedAt >= :from and o.placedAt < :to
+            order by o.placedAt desc, o.number desc""")
+    List<Order> placedBetween(@Param("businessId") UUID businessId, @Param("from") Instant from,
+            @Param("to") Instant to);
+
     /** The shop's placed orders, newest first. */
     @Query("""
             select o from Order o where o.businessId = :businessId and o.placedAt is not null

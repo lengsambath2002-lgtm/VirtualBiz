@@ -107,5 +107,40 @@
     "none": "No returns",
     "days": "{n, plural, one {# day} other {# days}} after delivery or pickup",
     "hint": "After this, a delivered order can't be marked returned."
+  },
+  "export": {
+    "title": "Export data",
+    "sub": "Download your records as CSV files for a spreadsheet or your accountant. Amounts are in USD.",
+    "ownerOnly": "Only the owner or a manager can export, because the files include customers' details.",
+    "range": "Period",
+    "ranges": {
+      "last7": "Last 7 days",
+      "last30": "Last 30 days",
+      "last90": "Last 90 days",
+      "thisMonth": "This month",
+      "lastMonth": "Last month",
+      "last365": "Last 12 months"
+    },
+    "kind": {
+      "orders": "Online orders",
+      "sales": "Sales and receipts",
+      "products": "Products and stock",
+      "appointments": "Bookings",
+      "customers": "Customers"
+    },
+    "kindSub": {
+      "orders": "Every order placed in the period, with items, discounts and status.",
+      "sales": "Counter and checkout receipts with payments, tips and refunds.",
+      "products": "Each variant with price, cost, SKU and stock now.",
+      "appointments": "Every booking in the period with service, staff and status.",
+      "customers": "Names, phones, emails, districts and notes."
+    },
+    "allTime": "Full list, whatever the period.",
+    "download": "Download CSV",
+    "downloadOf": "Download {what} as CSV",
+    "preparing": "Preparing…",
+    "done": "Downloaded {file}",
+    "forbidden": "Only the owner or a manager can export.",
+    "failed": "Couldn't make the file. Try again."
   }
 }

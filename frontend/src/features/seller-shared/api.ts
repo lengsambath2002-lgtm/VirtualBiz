@@ -314,6 +314,7 @@ export const toPosSale = (s: ApiPosSale, businessId: string): SellerPosSale => (
 /** The Seller's customer list: keyed by the account id (orders name the account). */
 export const toCustomer = (c: ApiClient): Client => ({
   id: c.userId ?? c.id,
+  clientId: c.id,
   businessId: c.businessId,
   name: c.name,
   phone: c.phone,

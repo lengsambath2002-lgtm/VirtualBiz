@@ -24,6 +24,7 @@ import com.kosign.vbiz.account.repository.UserRepository;
 import com.kosign.vbiz.customer.domain.Client;
 import com.kosign.vbiz.customer.payload.ClientInput;
 import com.kosign.vbiz.customer.payload.ClientResponse;
+import com.kosign.vbiz.meta.service.ReferenceDataService;
 import com.kosign.vbiz.customer.repository.ClientRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class ClientService {
     private final ClientRepository clients;
     private final UserRepository users;
     private final WorkspaceAccess access;
+    private final ReferenceDataService reference;
     private final Clock clock;
 
     @Transactional(readOnly = true)
@@ -64,7 +66,8 @@ public class ClientService {
 
     @Transactional
     public ClientResponse update(UUID id, ClientInput in) {
-        Workspace w = workspace();
+        // Both kinds of shop keep customer records; any member may correct one.
+        Workspace w = access.member();
         Client c = clients.findByIdAndBusinessId(id, w.businessId())
                 .orElseThrow(() -> new BusinessException(StatusCode.CLIENT_NOT_FOUND));
         if (in.name() != null) {
@@ -84,6 +87,9 @@ public class ClientService {
         }
         if (in.note() != null) {
             c.setNote(blankToNull(in.note()));
+        }
+        if (in.district() != null) {
+            c.setDistrict(in.district().isBlank() ? null : reference.canonicalDistrict(in.district()));
         }
         return toResponse(clients.saveAndFlush(c));
     }

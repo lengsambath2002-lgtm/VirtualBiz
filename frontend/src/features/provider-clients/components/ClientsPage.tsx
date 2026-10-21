@@ -8,7 +8,8 @@ import { formatPhone, isValidPhone, normalizePhone } from '@/lib/utils/phone';
 import { ClientAvatar, StatusPill } from '@/features/provider-shared/components/Bits';
 import { PIcon } from '@/features/provider-shared/components/Icon';
 import { CloseButton, Drawer, Field, Modal } from '@/features/provider-shared/components/Overlay';
-import { createClient, patchClient } from '@/features/provider-shared/api';
+import { EditCustomerDialog } from '@/features/business-customers';
+import { createClient, patchClient, toClient } from '@/features/provider-shared/api';
 import { k } from '@/features/provider-shared/cx';
 import { useActions } from '@/features/provider-shared/hooks/useActions';
 import { useFmt } from '@/features/provider-shared/hooks/useFmt';
@@ -199,6 +200,7 @@ export function ClientDrawer({ id }: { id: string }) {
   const c = d.clients.find((x) => x.id === id);
   const [note, setNote] = useState(c?.note ?? '');
   const [noteState, setNoteState] = useState('');
+  const [editing, setEditing] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
   if (!c) return null;
@@ -216,10 +218,20 @@ export function ClientDrawer({ id }: { id: string }) {
             <div className={k('meta num')}>
               {formatPhone(c.phone)}
               {c.email ? ` · ${c.email}` : ''}
+              {c.district ? ` · ${c.district}` : ''}
             </div>
           </div>
         </div>
-        <CloseButton />
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          <button
+            type="button"
+            className={k('btn btn-ghost btn-sm')}
+            onClick={() => setEditing(true)}
+          >
+            {t('clients.edit')}
+          </button>
+          <CloseButton />
+        </div>
       </div>
       <div className={k('dr-b')}>
         <div className={k('g3')} style={{ textAlign: 'center' }}>
@@ -326,6 +338,23 @@ export function ClientDrawer({ id }: { id: string }) {
           </button>
         </div>
       </div>
+      {editing && (
+        <EditCustomerDialog
+          businessId={d.business.id}
+          customer={{ ...c, clientId: c.id }}
+          onClose={() => setEditing(false)}
+          onSaved={(saved) => {
+            clearTimeout(timer.current);
+            setNote(saved.note ?? '');
+            setNoteState('');
+            useProviderStore.getState().update((dd) => {
+              const i = dd.clients.findIndex((y) => y.id === saved.id);
+              if (i >= 0) dd.clients[i] = toClient(saved);
+            });
+            act.toast(t('clients.saved'));
+          }}
+        />
+      )}
     </Drawer>
   );
 }

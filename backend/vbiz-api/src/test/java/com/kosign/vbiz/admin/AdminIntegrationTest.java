@@ -67,7 +67,7 @@ class AdminIntegrationTest extends OrderTestSupport {
     @Test
     void verify_reject_and_resubmit_an_id() throws Exception {
         Session admin = login(ADMIN, DEMO_PASSWORD);
-        JsonNode queue = call(admin, "GET", "/api/admin/businesses?verification=PENDING&sort=pending", null)
+        JsonNode queue = call(admin, "GET", "/api/admin/businesses?verification=PENDING&sort=created", null)
                 .path("data");
         assertThat(queue.path("items").findValuesAsText("id")).contains(BAKERY_ID);
         JsonNode photo = call(admin, "GET", "/api/admin/businesses/" + BAKERY_ID + "/id-photo", null).path("data");
@@ -269,7 +269,8 @@ class AdminIntegrationTest extends OrderTestSupport {
     @Test
     void pay_out_a_shops_released_balance() throws Exception {
         Session admin = login(ADMIN, DEMO_PASSWORD);
-        JsonNode balances = call(admin, "GET", "/api/admin/payouts/balances", null).path("data");
+        JsonNode balances = call(admin, "GET", "/api/admin/payouts/balances?size=100", null).path("data")
+                .path("items");
         JsonNode nitaBal = null;
         for (JsonNode b : balances) {
             if (b.path("businessId").asText().equals(NITA_GADGET_ID)) {

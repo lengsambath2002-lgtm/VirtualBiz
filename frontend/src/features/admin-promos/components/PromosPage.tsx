@@ -6,13 +6,15 @@ import { useState, type FormEvent } from 'react';
 
 import { adminApi, useAdminAction, usePromos } from '@/features/admin-shared/api';
 import {
-  Empty,
-  Loading,
-  PanelError,
-  PageHead,
-  Pill,
-  type Tone,
-} from '@/features/admin-shared/components/ui';
+  DataTable,
+  dataStyles,
+  FilterBar,
+  Pagination,
+  SegmentFilter,
+  useListQuery,
+  type Column,
+} from '@/components/data';
+import { PageHead, Pill, type Tone } from '@/features/admin-shared/components/ui';
 import { useAct } from '@/features/admin-shared/hooks/useAct';
 import type {
   PlatformPromo,
@@ -23,6 +25,8 @@ import type {
 import { useAdminFmt } from '@/features/admin-shared/util/format';
 import { cx, Ic, s, useUi } from '@/features/seller-shared';
 import { api, isApiError } from '@/lib/api';
+
+const KEYS = ['q', 'state'] as const;
 
 const STATE_TONE: Record<PromoState, Tone> = {
   ACTIVE: 'ok',
@@ -266,8 +270,13 @@ function PromoForm({ promo, onClose }: { promo: PlatformPromo | null; onClose: (
 /** `/admin/promos`: VirtualBiz's own promo codes (any shop, or chosen categories). */
 export function PromosPage() {
   const t = useTranslations('admin.promos');
+  const tl = useTranslations('admin.lists');
   const f = useAdminFmt();
-  const { data, isPending, error, refetch } = usePromos();
+  const list = useListQuery(KEYS, { sort: '-starts' });
+  const { values: v } = list;
+  const { data, isPending, isFetching, error, refetch } = usePromos(
+    Object.fromEntries(new URLSearchParams(list.apiQuery())),
+  );
   const [editing, setEditing] = useState<PlatformPromo | null | undefined>(undefined);
   const act = useAct();
   const run = useAdminAction((fn: () => Promise<unknown>) => fn());
@@ -286,6 +295,87 @@ export function PromosPage() {
       : p.type === 'FIXED'
         ? f.money(p.value)
         : t('type.FREE_SHIPPING');
+  const columns: Column<PlatformPromo>[] = [
+    {
+      key: 'code',
+      header: t('col.code'),
+      sort: 'name',
+      cell: (p) => (
+        <>
+          <span className={s.codeTag}>{p.code}</span>
+          <span className={cx(s.tiny, s.muted, s.block)}>{p.name}</span>
+        </>
+      ),
+    },
+    {
+      key: 'offer',
+      header: t('col.offer'),
+      cell: (p) => (
+        <>
+          {value(p)}
+          <span className={cx(s.tiny, s.muted, s.block)}>
+            {p.scope === 'CATEGORY'
+              ? t('onCategories', { list: p.targetIds.join(', ') })
+              : t('scope.ALL')}
+            {p.minSpend ? ` · ${t('minSpend', { amount: f.money(p.minSpend) })}` : ''}
+          </span>
+        </>
+      ),
+    },
+    {
+      key: 'when',
+      header: t('col.when'),
+      sort: 'starts',
+      sortFirst: 'desc',
+      cell: (p) => (
+        <span className={s.num}>
+          {f.date(p.startsAt)} – {f.date(p.endsAt)}
+        </span>
+      ),
+    },
+    {
+      key: 'uses',
+      header: t('col.uses'),
+      sort: 'uses',
+      sortFirst: 'desc',
+      align: 'right',
+      cell: (p) => (
+        <span className={s.num}>
+          {p.uses}
+          {p.usageLimit ? ` / ${p.usageLimit}` : ''}
+        </span>
+      ),
+    },
+    {
+      key: 'state',
+      header: t('col.state'),
+      cell: (p) => <Pill tone={STATE_TONE[p.state]}>{t(`state.${p.state}`)}</Pill>,
+    },
+    {
+      key: 'act',
+      header: <span className={dataStyles.srOnly}>{tl('actions')}</span>,
+      align: 'right',
+      cell: (p) =>
+        p.state !== 'ENDED' && (
+          <span style={{ whiteSpace: 'nowrap' }}>
+            <button
+              type="button"
+              className={cx(s.btn, s.btnGhost, s.btnSm)}
+              onClick={() => setEditing(p)}
+            >
+              {t('edit')}
+            </button>{' '}
+            <button
+              type="button"
+              className={cx(s.btn, s.btnGhost, s.btnSm)}
+              onClick={() => void end(p)}
+            >
+              {t('end')}
+            </button>
+          </span>
+        ),
+    },
+  ];
   return (
     <>
       <PageHead
@@ -302,77 +392,47 @@ export function PromosPage() {
           </button>
         }
       />
+      <div style={{ display: 'grid', gap: 12, marginBottom: 12 }}>
+        <FilterBar q={v.q} onQ={(q) => list.set({ q })} placeholder={tl('promoSearch')}>
+          <SegmentFilter
+            label={t('col.state')}
+            value={v.state}
+            onChange={(state) => list.set({ state })}
+            options={[
+              { value: '', label: tl('due.all') },
+              ...(['ACTIVE', 'SCHEDULED', 'ENDED'] as const).map((x) => ({
+                value: x,
+                label: t(`state.${x}`),
+              })),
+            ]}
+          />
+        </FilterBar>
+      </div>
       <section className={s.panel}>
-        {isPending && !data ? (
-          <Loading />
-        ) : error && !data ? (
-          <PanelError error={error} retry={() => void refetch()} />
-        ) : !data?.length ? (
-          <Empty title={t('empty')} sub={t('emptySub')} />
-        ) : (
-          <div className={s.tblWrap}>
-            <table>
-              <thead>
-                <tr>
-                  <th>{t('col.code')}</th>
-                  <th>{t('col.offer')}</th>
-                  <th>{t('col.when')}</th>
-                  <th className={s.r}>{t('col.uses')}</th>
-                  <th>{t('col.state')}</th>
-                  <th />
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((p) => (
-                  <tr key={p.id}>
-                    <td>
-                      <span className={s.codeTag}>{p.code}</span>
-                      <span className={cx(s.tiny, s.muted, s.block)}>{p.name}</span>
-                    </td>
-                    <td>
-                      {value(p)}
-                      <span className={cx(s.tiny, s.muted, s.block)}>
-                        {p.scope === 'CATEGORY'
-                          ? t('onCategories', { list: p.targetIds.join(', ') })
-                          : t('scope.ALL')}
-                        {p.minSpend ? ` · ${t('minSpend', { amount: f.money(p.minSpend) })}` : ''}
-                      </span>
-                    </td>
-                    <td className={s.num}>
-                      {f.date(p.startsAt)} – {f.date(p.endsAt)}
-                    </td>
-                    <td className={cx(s.r, s.num)}>
-                      {p.uses}
-                      {p.usageLimit ? ` / ${p.usageLimit}` : ''}
-                    </td>
-                    <td>
-                      <Pill tone={STATE_TONE[p.state]}>{t(`state.${p.state}`)}</Pill>
-                    </td>
-                    <td className={s.r} style={{ whiteSpace: 'nowrap' }}>
-                      {p.state !== 'ENDED' && (
-                        <>
-                          <button
-                            type="button"
-                            className={cx(s.btn, s.btnGhost, s.btnSm)}
-                            onClick={() => setEditing(p)}
-                          >
-                            {t('edit')}
-                          </button>{' '}
-                          <button
-                            type="button"
-                            className={cx(s.btn, s.btnGhost, s.btnSm)}
-                            onClick={() => void end(p)}
-                          >
-                            {t('end')}
-                          </button>
-                        </>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <DataTable
+          label={t('title')}
+          columns={columns}
+          rows={data?.items}
+          rowKey={(p) => p.id}
+          loading={isFetching && !isPending}
+          error={error}
+          retry={() => void refetch()}
+          empty={
+            list.active.length
+              ? { title: tl('noMatch'), body: tl('emptyBody') }
+              : { title: t('empty'), body: t('emptySub') }
+          }
+          sort={list.sort}
+          onSort={list.toggleSort}
+        />
+        {data && (
+          <Pagination
+            page={list.page}
+            size={list.size}
+            total={data.total}
+            onPage={(page) => list.set({ page })}
+            onSize={(size) => list.set({ size })}
+          />
         )}
       </section>
       {editing !== undefined && <PromoForm promo={editing} onClose={() => setEditing(undefined)} />}

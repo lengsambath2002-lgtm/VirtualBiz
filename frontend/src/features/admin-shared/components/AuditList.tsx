@@ -31,6 +31,8 @@ export function auditHref(a: AuditEntry): string | null {
       return '/admin/settings?tab=categories';
     case 'STAFF_INVITE':
       return '/admin/settings?tab=staff';
+    case 'EXPORT':
+      return `/admin/audit?targetType=EXPORT`;
     default:
       return null;
   }
@@ -46,6 +48,7 @@ const ICON: Record<AuditEntry['targetType'], IcName> = {
   SETTINGS: 'gear',
   CATEGORY: 'box',
   STAFF_INVITE: 'chat',
+  EXPORT: 'receipt',
 };
 
 /** Red for actions against someone, green for ones in their favour. */

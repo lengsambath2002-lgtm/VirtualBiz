@@ -27,7 +27,7 @@ public class ShopPayoutService {
         var w = access.manager();
         return new ShopPayoutsResponse(
                 queries.balance(w.businessId(), clock.instant().minus(settings.payoutDelay())).orElse(null),
-                queries.payouts(w.businessId(), 0, 10).items(),
+                queries.payouts(AdminQueries.PayoutFilter.of(w.businessId()), 0, 10).items(),
                 (int) settings.payoutDelay().toDays(), settings.commissionPct());
     }
 }

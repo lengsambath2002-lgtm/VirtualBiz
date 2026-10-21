@@ -14,6 +14,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.common.list.PageResponse;
+import com.kosign.vbiz.admin.payload.ListParams;
 import com.kosign.vbiz.admin.domain.AuditTarget;
 import com.kosign.vbiz.common.api.StatusCode;
 import com.kosign.vbiz.common.error.BusinessException;
@@ -25,6 +27,7 @@ import com.kosign.vbiz.promotion.domain.PromotionScope;
 import com.kosign.vbiz.promotion.domain.PromotionType;
 import com.kosign.vbiz.promotion.payload.PromotionInput;
 import com.kosign.vbiz.promotion.payload.PromotionResponse;
+import com.kosign.vbiz.promotion.domain.PromotionState;
 import com.kosign.vbiz.promotion.repository.PromotionRepository;
 import com.kosign.vbiz.promotion.service.PromotionService;
 
@@ -48,11 +51,29 @@ public class AdminPromotionService {
     private final Clock clock;
 
     @Transactional(readOnly = true)
-    public List<PromotionResponse> list() {
+    public PageResponse<PromotionResponse> list(String q, PromotionState state, ListParams lp) {
         access.require();
         Instant now = clock.instant();
-        return promotions.findByBusinessIdIsNullOrderByStartsAtDescIdAsc().stream()
-                .map(p -> PromotionService.toResponse(p, now)).toList();
+        String needle = q == null ? "" : q.trim().toLowerCase(java.util.Locale.ROOT);
+        String sort = lp.sort() == null ? "-starts" : lp.sort();
+        java.util.Comparator<PromotionResponse> order = switch (sort.replaceFirst("^-", "")) {
+            case "starts" -> java.util.Comparator.comparing(PromotionResponse::startsAt);
+            case "ends" -> java.util.Comparator.comparing(PromotionResponse::endsAt);
+            case "uses" -> java.util.Comparator.comparingInt(PromotionResponse::uses);
+            case "name" -> java.util.Comparator.comparing(PromotionResponse::name, String.CASE_INSENSITIVE_ORDER);
+            default -> throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "sort",
+                    "one of starts, ends, uses, name");
+        };
+        if (sort.startsWith("-")) {
+            order = order.reversed();
+        }
+        List<PromotionResponse> all = promotions.findByBusinessIdIsNullOrderByStartsAtDescIdAsc().stream()
+                .map(p -> PromotionService.toResponse(p, now))
+                .filter(p -> state == null || p.state() == state)
+                .filter(p -> needle.isEmpty() || p.name().toLowerCase(java.util.Locale.ROOT).contains(needle)
+                        || (p.code() != null && p.code().toLowerCase(java.util.Locale.ROOT).contains(needle)))
+                .sorted(order).toList();
+        return PageResponse.slice(all, lp.pageNo(), lp.sizeNo());
     }
 
     @Transactional

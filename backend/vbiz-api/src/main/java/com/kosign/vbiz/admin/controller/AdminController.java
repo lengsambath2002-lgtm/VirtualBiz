@@ -3,9 +3,14 @@ package com.kosign.vbiz.admin.controller;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.CacheControl;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,10 +29,13 @@ import com.kosign.vbiz.admin.payload.AdminReviewRow;
 import com.kosign.vbiz.admin.payload.AdminUserDetail;
 import com.kosign.vbiz.admin.payload.AdminUserRow;
 import com.kosign.vbiz.admin.payload.AuditEntry;
+import com.kosign.vbiz.admin.payload.BulkInput;
+import com.kosign.vbiz.admin.payload.BulkResult;
+import com.kosign.vbiz.admin.payload.ListParams;
 import com.kosign.vbiz.admin.payload.CategoryInput;
 import com.kosign.vbiz.admin.payload.IdPhotoResponse;
 import com.kosign.vbiz.admin.payload.OverviewResponse;
-import com.kosign.vbiz.admin.payload.PageResponse;
+import com.kosign.vbiz.common.list.PageResponse;
 import com.kosign.vbiz.admin.payload.PayoutBalance;
 import com.kosign.vbiz.admin.payload.PayoutInput;
 import com.kosign.vbiz.admin.payload.PayoutResponse;
@@ -39,6 +47,8 @@ import com.kosign.vbiz.admin.payload.StaffInviteInput;
 import com.kosign.vbiz.admin.payload.StaffInviteResponse;
 import com.kosign.vbiz.admin.payload.StaffMemberRow;
 import com.kosign.vbiz.admin.service.AdminAuditService;
+import com.kosign.vbiz.admin.service.AdminBulkService;
+import com.kosign.vbiz.admin.service.AdminExportService;
 import com.kosign.vbiz.admin.service.AdminBusinessService;
 import com.kosign.vbiz.admin.service.AdminCategoryService;
 import com.kosign.vbiz.admin.service.AdminOrderService;
@@ -56,6 +66,7 @@ import com.kosign.vbiz.common.api.ApiResponse;
 import com.kosign.vbiz.common.api.BaseController;
 import com.kosign.vbiz.meta.payload.PlatformSettingsResponse;
 import com.kosign.vbiz.promotion.payload.PromotionInput;
+import com.kosign.vbiz.promotion.domain.PromotionState;
 import com.kosign.vbiz.promotion.payload.PromotionResponse;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -78,6 +89,8 @@ public class AdminController extends BaseController {
     private final AdminOrderService orders;
     private final AdminReviewService reviews;
     private final AdminPromotionService promotions;
+    private final AdminExportService exports;
+    private final AdminBulkService bulk;
     private final AdminPayoutService payouts;
     private final AdminAuditService audit;
     private final AdminSettingsService settings;
@@ -96,9 +109,23 @@ public class AdminController extends BaseController {
     public ResponseEntity<ApiResponse<PageResponse<AdminBusinessRow>>> businesses(
             @RequestParam(required = false) String q, @RequestParam(required = false) BusinessType type,
             @RequestParam(required = false) VerificationStatus verification,
-            @RequestParam(required = false) String status, @RequestParam(required = false) String sort,
-            @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
-        return ok(businesses.list(q, type, verification, status, sort, page, size));
+            @RequestParam(required = false) String status, @RequestParam(required = false) String category,
+            @RequestParam(required = false) String district, @ModelAttribute ListParams lp) {
+        return ok(businesses.list(q, type, verification, status, category, district, lp));
+    }
+
+    @GetMapping("/businesses/export")
+    public ResponseEntity<byte[]> exportBusinesses(@RequestParam(required = false) String q,
+            @RequestParam(required = false) BusinessType type,
+            @RequestParam(required = false) VerificationStatus verification,
+            @RequestParam(required = false) String status, @RequestParam(required = false) String category,
+            @RequestParam(required = false) String district, @ModelAttribute ListParams lp) {
+        return csv(exports.businesses(q, type, verification, status, category, district, lp));
+    }
+
+    @PostMapping("/businesses/bulk")
+    public ResponseEntity<ApiResponse<BulkResult>> bulkBusinesses(@Valid @RequestBody BulkInput in) {
+        return ok(bulk.businesses(in));
     }
 
     @GetMapping("/businesses/{id}")
@@ -140,8 +167,20 @@ public class AdminController extends BaseController {
     @GetMapping("/users")
     public ResponseEntity<ApiResponse<PageResponse<AdminUserRow>>> users(@RequestParam(required = false) String q,
             @RequestParam(required = false) String kind, @RequestParam(required = false) String status,
-            @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
-        return ok(users.list(q, kind, status, page, size));
+            @ModelAttribute ListParams lp) {
+        return ok(users.list(q, kind, status, lp));
+    }
+
+    @GetMapping("/users/export")
+    public ResponseEntity<byte[]> exportUsers(@RequestParam(required = false) String q,
+            @RequestParam(required = false) String kind, @RequestParam(required = false) String status,
+            @ModelAttribute ListParams lp) {
+        return csv(exports.users(q, kind, status, lp));
+    }
+
+    @PostMapping("/users/bulk")
+    public ResponseEntity<ApiResponse<BulkResult>> bulkUsers(@Valid @RequestBody BulkInput in) {
+        return ok(bulk.users(in));
     }
 
     @GetMapping("/users/{id}")
@@ -177,9 +216,17 @@ public class AdminController extends BaseController {
     @GetMapping("/orders")
     public ResponseEntity<ApiResponse<PageResponse<AdminOrderRow>>> orders(@RequestParam(required = false) String q,
             @RequestParam(required = false) String status, @RequestParam(required = false) UUID businessId,
-            @RequestParam(required = false) UUID customerId, @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        return ok(orders.list(q, status, businessId, customerId, page, size));
+            @RequestParam(required = false) UUID customerId, @RequestParam(required = false) String method,
+            @RequestParam(required = false) String pay, @ModelAttribute ListParams lp) {
+        return ok(orders.list(q, status, businessId, customerId, method, pay, lp));
+    }
+
+    @GetMapping("/orders/export")
+    public ResponseEntity<byte[]> exportOrders(@RequestParam(required = false) String q,
+            @RequestParam(required = false) String status, @RequestParam(required = false) UUID businessId,
+            @RequestParam(required = false) UUID customerId, @RequestParam(required = false) String method,
+            @RequestParam(required = false) String pay, @ModelAttribute ListParams lp) {
+        return csv(exports.orders(q, status, businessId, customerId, method, pay, lp));
     }
 
     @GetMapping("/orders/{number}")
@@ -205,8 +252,21 @@ public class AdminController extends BaseController {
     public ResponseEntity<ApiResponse<PageResponse<AdminReviewRow>>> reviews(
             @RequestParam(required = false) String q, @RequestParam(required = false) Integer stars,
             @RequestParam(required = false) String status, @RequestParam(required = false) UUID businessId,
-            @RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
-        return ok(reviews.list(q, stars, status, businessId, page, size));
+            @RequestParam(required = false) String replied, @ModelAttribute ListParams lp) {
+        return ok(reviews.list(q, stars, status, businessId, replied, lp));
+    }
+
+    @GetMapping("/reviews/export")
+    public ResponseEntity<byte[]> exportReviews(@RequestParam(required = false) String q,
+            @RequestParam(required = false) Integer stars, @RequestParam(required = false) String status,
+            @RequestParam(required = false) UUID businessId, @RequestParam(required = false) String replied,
+            @ModelAttribute ListParams lp) {
+        return csv(exports.reviews(q, stars, status, businessId, replied, lp));
+    }
+
+    @PostMapping("/reviews/bulk")
+    public ResponseEntity<ApiResponse<BulkResult>> bulkReviews(@Valid @RequestBody BulkInput in) {
+        return ok(bulk.reviews(in));
     }
 
     @PostMapping("/reviews/{id}/hide")
@@ -223,8 +283,10 @@ public class AdminController extends BaseController {
     // ── Promo codes ──
 
     @GetMapping("/promotions")
-    public ResponseEntity<ApiResponse<List<PromotionResponse>>> promotions() {
-        return ok(promotions.list());
+    public ResponseEntity<ApiResponse<PageResponse<PromotionResponse>>> promotions(
+            @RequestParam(required = false) String q, @RequestParam(required = false) PromotionState state,
+            @ModelAttribute ListParams lp) {
+        return ok(promotions.list(q, state, lp));
     }
 
     @PostMapping("/promotions")
@@ -246,15 +308,28 @@ public class AdminController extends BaseController {
     // ── Payouts ──
 
     @GetMapping("/payouts/balances")
-    public ResponseEntity<ApiResponse<List<PayoutBalance>>> balances() {
-        return ok(payouts.balances());
+    public ResponseEntity<ApiResponse<PageResponse<PayoutBalance>>> balances(
+            @RequestParam(required = false) String q, @RequestParam(required = false) String due,
+            @ModelAttribute ListParams lp) {
+        return ok(payouts.balances(q, due, lp));
+    }
+
+    @GetMapping("/payouts/summary")
+    public ResponseEntity<ApiResponse<AdminPayoutService.Summary>> payoutSummary() {
+        return ok(payouts.summary());
     }
 
     @GetMapping("/payouts")
     public ResponseEntity<ApiResponse<PageResponse<PayoutResponse>>> payoutHistory(
-            @RequestParam(required = false) UUID businessId, @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        return ok(payouts.history(businessId, page, size));
+            @RequestParam(required = false) String q, @RequestParam(required = false) UUID businessId,
+            @ModelAttribute ListParams lp) {
+        return ok(payouts.history(q, businessId, lp));
+    }
+
+    @GetMapping("/payouts/export")
+    public ResponseEntity<byte[]> exportPayouts(@RequestParam(required = false) String q,
+            @RequestParam(required = false) UUID businessId, @ModelAttribute ListParams lp) {
+        return csv(exports.payouts(q, businessId, lp));
     }
 
     @PostMapping("/payouts")
@@ -331,9 +406,25 @@ public class AdminController extends BaseController {
     @GetMapping("/audit")
     public ResponseEntity<ApiResponse<PageResponse<AuditEntry>>> audit(@RequestParam(required = false) String q,
             @RequestParam(required = false) String targetType, @RequestParam(required = false) String targetId,
-            @RequestParam(required = false) String action, @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        return ok(audit.list(q, targetType, targetId, action, page, size));
+            @RequestParam(required = false) String action, @ModelAttribute ListParams lp) {
+        return ok(audit.list(q, targetType, targetId, action, lp));
+    }
+
+    @GetMapping("/audit/export")
+    public ResponseEntity<byte[]> exportAudit(@RequestParam(required = false) String q,
+            @RequestParam(required = false) String targetType, @RequestParam(required = false) String targetId,
+            @RequestParam(required = false) String action, @ModelAttribute ListParams lp) {
+        return csv(exports.audit(q, targetType, targetId, action, lp));
+    }
+
+    private static ResponseEntity<byte[]> csv(AdminExportService.Csv f) {
+        return ResponseEntity.ok()
+                .contentType(new MediaType("text", "csv", java.nio.charset.StandardCharsets.UTF_8))
+                .cacheControl(CacheControl.noStore())
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        ContentDisposition.attachment().filename(f.filename()).build().toString())
+                .header("X-Row-Count", String.valueOf(f.rows()))
+                .body(f.bytes());
     }
 
     private static String reason(ReasonInput in) {

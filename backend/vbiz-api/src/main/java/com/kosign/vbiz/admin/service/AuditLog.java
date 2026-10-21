@@ -47,6 +47,7 @@ public class AuditLog {
     public static final String STAFF_JOINED = "STAFF_JOINED";
     public static final String STAFF_BOOTSTRAPPED = "STAFF_BOOTSTRAPPED";
     public static final String STAFF_MFA_RESET = "STAFF_MFA_RESET";
+    public static final String DATA_EXPORTED = "DATA_EXPORTED";
     public static final String MFA_ENABLED = "MFA_ENABLED";
     public static final String MFA_RECOVERY_USED = "MFA_RECOVERY_USED";
     public static final String MFA_RECOVERY_REGENERATED = "MFA_RECOVERY_REGENERATED";

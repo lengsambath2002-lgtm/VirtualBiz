@@ -12,10 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kosign.vbiz.account.domain.PlatformRole;
 import com.kosign.vbiz.account.domain.User;
 import com.kosign.vbiz.account.repository.UserRepository;
+import com.kosign.vbiz.admin.payload.ListParams;
 import com.kosign.vbiz.admin.domain.AuditTarget;
 import com.kosign.vbiz.admin.payload.AdminUserDetail;
 import com.kosign.vbiz.admin.payload.AdminUserRow;
-import com.kosign.vbiz.admin.payload.PageResponse;
+import com.kosign.vbiz.common.list.PageResponse;
 import com.kosign.vbiz.admin.repository.AdminQueries;
 import com.kosign.vbiz.auth.service.SessionService;
 import com.kosign.vbiz.common.api.StatusCode;
@@ -40,10 +41,10 @@ public class AdminUserService {
     private final Clock clock;
 
     @Transactional(readOnly = true)
-    public PageResponse<AdminUserRow> list(String q, String kind, String status, Integer page, Integer size) {
+    public PageResponse<AdminUserRow> list(String q, String kind, String status, ListParams lp) {
         access.require();
-        int[] p = AuditLog.paging(page, size);
-        return queries.users(new AdminQueries.UserFilter(q, kind, status), p[0], p[1]);
+        return queries.users(new AdminQueries.UserFilter(q, kind, status, lp.range(), lp.sort()), lp.pageNo(),
+                lp.sizeNo());
     }
 
     @Transactional(readOnly = true)
@@ -143,7 +144,7 @@ public class AdminUserService {
         Object[] act = queries.userActivity(id, now);
         return new AdminUserDetail(row, u.getSignInMethods().stream().map(Enum::name).sorted().toList(),
                 u.getSuspendedReason(), (Instant) act[0], (Long) act[1], (Long) act[2], (Long) act[3],
-                queries.memberships(id), queries.recentOrders(new AdminQueries.OrderFilter(null, null, null, id), 5),
+                queries.memberships(id), queries.recentOrders(AdminQueries.OrderFilter.of(null, id), 5),
                 audit.of(AuditTarget.USER, id));
     }
 }

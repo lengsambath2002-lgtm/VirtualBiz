@@ -11,11 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kosign.vbiz.account.repository.UserRepository;
+import com.kosign.vbiz.admin.payload.ListParams;
 import com.kosign.vbiz.admin.domain.AuditTarget;
 import com.kosign.vbiz.admin.payload.AdminBusinessDetail;
 import com.kosign.vbiz.admin.payload.AdminBusinessRow;
 import com.kosign.vbiz.admin.payload.IdPhotoResponse;
-import com.kosign.vbiz.admin.payload.PageResponse;
+import com.kosign.vbiz.common.list.PageResponse;
 import com.kosign.vbiz.admin.payload.PayoutBalance;
 import com.kosign.vbiz.admin.repository.AdminQueries;
 import com.kosign.vbiz.business.domain.Business;
@@ -54,11 +55,21 @@ public class AdminBusinessService {
 
     @Transactional(readOnly = true)
     public PageResponse<AdminBusinessRow> list(String q, BusinessType type, VerificationStatus verification,
-            String status, String sort, Integer page, Integer size) {
+            String status, String category, String district, ListParams lp) {
         access.require();
-        int[] p = AuditLog.paging(page, size);
-        return queries.businesses(new AdminQueries.BusinessFilter(q, type, verification, status, sort),
-                clock.instant().minus(RECENT), p[0], p[1]);
+        return queries.businesses(filter(q, type, verification, status, category, district, lp),
+                recentSince(), lp.pageNo(), lp.sizeNo());
+    }
+
+    public static AdminQueries.BusinessFilter filter(String q, BusinessType type, VerificationStatus verification,
+            String status, String category, String district, ListParams lp) {
+        return new AdminQueries.BusinessFilter(q, type, verification, status, category, district, lp.range(),
+                lp.sort());
+    }
+
+    /** Orders and GMV columns count the last 30 days. */
+    public Instant recentSince() {
+        return clock.instant().minus(RECENT);
     }
 
     @Transactional(readOnly = true)
@@ -78,7 +89,7 @@ public class AdminBusinessService {
                 new AdminBusinessDetail.Stats(s.orders(), s.gmv(), s.bookings(), s.products(), s.services(),
                         s.paidOut(), payable),
                 queries.members(id),
-                queries.recentOrders(new AdminQueries.OrderFilter(null, null, id, null), 5),
+                queries.recentOrders(AdminQueries.OrderFilter.of(id, null), 5),
                 audit.of(AuditTarget.BUSINESS, id));
     }
 

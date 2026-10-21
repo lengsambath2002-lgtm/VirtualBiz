@@ -31,7 +31,9 @@ import com.kosign.vbiz.admin.payload.AdminUserDetail;
 import com.kosign.vbiz.admin.payload.AdminUserRow;
 import com.kosign.vbiz.admin.payload.AuditEntry;
 import com.kosign.vbiz.admin.payload.OverviewResponse;
-import com.kosign.vbiz.admin.payload.PageResponse;
+import com.kosign.vbiz.common.list.DayRange;
+import com.kosign.vbiz.common.list.PageQuery;
+import com.kosign.vbiz.common.list.PageResponse;
 import com.kosign.vbiz.admin.payload.PayoutBalance;
 import com.kosign.vbiz.admin.payload.PayoutResponse;
 import com.kosign.vbiz.business.domain.BusinessType;
@@ -161,8 +163,12 @@ public class AdminQueries {
     // ── Businesses ─────────────────────────────────────────────────────────────────────
 
     public record BusinessFilter(String q, BusinessType type, VerificationStatus verification, String status,
-            String sort) {
+            String category, String district, DayRange joined, String sort) {
     }
+
+    /** Sort keys of the shop list (and its export) → SQL. */
+    public static final Map<String, String> BUSINESS_SORTS = Map.of("created", "b.created_at", "name", "b.name",
+            "gmv", "gmv30", "orders", "orders30", "rating", "b.rating");
 
     private static final String BUSINESS_ROW = """
             SELECT b.id, b.name, b.slug, b.type, b.category_id, b.district, b.logo_url, b.owner_id,
@@ -194,18 +200,18 @@ public class AdminQueries {
         } else if ("active".equals(f.status())) {
             w.and("b.online AND b.suspended_at IS NULL");
         }
-        String order = switch (f.sort() == null ? "" : f.sort()) {
-            case "gmv" -> "gmv30 DESC, b.name";
-            case "rating" -> "b.rating DESC, b.review_count DESC, b.name";
-            case "name" -> "b.name, b.id";
-            // The queue first: shops waiting for their ID check, oldest first.
-            case "pending" -> "(b.verification = 'PENDING') DESC, b.created_at ASC";
-            default -> "b.created_at DESC, b.id";
-        };
+        if (notBlank(f.category())) {
+            w.and("b.category_id = :cat", "cat", f.category());
+        }
+        if (notBlank(f.district())) {
+            w.and("b.district = :district", "district", f.district());
+        }
+        range(w, f.joined(), "b.created_at");
+        String order = order(f.sort(), BUSINESS_SORTS, "-created", "b.id");
         w.p.addValue("since", ts(since));
         long total = jdbc.queryForObject("SELECT count(*) FROM business b JOIN users u ON u.id = b.owner_id"
                 + w.sql, w.p, Long.class);
-        List<AdminBusinessRow> items = jdbc.query(BUSINESS_ROW + w.sql + " ORDER BY " + order + page(w, page, size),
+        List<AdminBusinessRow> items = jdbc.query(BUSINESS_ROW + w.sql + order + page(w, page, size),
                 w.p, this::businessRow);
         return new PageResponse<>(items, total, page, size);
     }
@@ -254,8 +260,11 @@ public class AdminQueries {
 
     // ── Users ──────────────────────────────────────────────────────────────────────────
 
-    public record UserFilter(String q, String kind, String status) {
+    public record UserFilter(String q, String kind, String status, DayRange joined, String sort) {
     }
+
+    public static final Map<String, String> USER_SORTS = Map.of("created", "u.created_at", "name", "u.name",
+            "orders", "orders", "spent", "spent");
 
     private static final String USER_ROW = """
             SELECT u.id, u.name, u.email, u.phone, u.avatar_url, u.platform_role, u.suspended_at, u.created_at,
@@ -284,8 +293,9 @@ public class AdminQueries {
         } else if ("active".equals(f.status())) {
             w.and("u.suspended_at IS NULL");
         }
+        range(w, f.joined(), "u.created_at");
         long total = jdbc.queryForObject("SELECT count(*) FROM users u" + w.sql, w.p, Long.class);
-        List<AdminUserRow> items = jdbc.query(USER_ROW + w.sql + " ORDER BY u.created_at DESC, u.id"
+        List<AdminUserRow> items = jdbc.query(USER_ROW + w.sql + order(f.sort(), USER_SORTS, "-created", "u.id")
                 + page(w, page, size), w.p, this::userRow);
         return new PageResponse<>(items, total, page, size);
     }
@@ -328,8 +338,17 @@ public class AdminQueries {
 
     // ── Orders ─────────────────────────────────────────────────────────────────────────
 
-    public record OrderFilter(String q, String status, UUID businessId, UUID customerId) {
+    public record OrderFilter(String q, String status, UUID businessId, UUID customerId, String method,
+            String payMethod, DayRange placed, String sort) {
+
+        /** A shop's or customer's latest orders (detail pages). */
+        public static OrderFilter of(UUID businessId, UUID customerId) {
+            return new OrderFilter(null, null, businessId, customerId, null, null, null, null);
+        }
     }
+
+    public static final Map<String, String> ORDER_SORTS = Map.of("placed", "at", "total", "o.total",
+            "number", "o.number");
 
     private static final String ORDER_ROW = """
             SELECT o.id, o.number, o.status, o.method, o.total, p.method pay_method, p.status pay_status,
@@ -344,8 +363,9 @@ public class AdminQueries {
         long total = jdbc.queryForObject("""
                 SELECT count(*) FROM orders o JOIN business b ON b.id = o.business_id
                   LEFT JOIN users u ON u.id = o.customer_id""" + w.sql, w.p, Long.class);
-        List<AdminOrderRow> items = jdbc.query(ORDER_ROW + w.sql + " ORDER BY at DESC, o.number DESC"
-                + page(w, page, size), w.p, AdminQueries::orderRow);
+        List<AdminOrderRow> items = jdbc.query(ORDER_ROW + w.sql
+                + order(f.sort(), ORDER_SORTS, "-placed", "o.number") + page(w, page, size), w.p,
+                AdminQueries::orderRow);
         return new PageResponse<>(items, total, page, size);
     }
 
@@ -375,6 +395,14 @@ public class AdminQueries {
         if (f.customerId() != null) {
             w.and("o.customer_id = :cust", "cust", f.customerId());
         }
+        if (notBlank(f.method())) {
+            w.and("o.method = :method", "method", f.method().toUpperCase(java.util.Locale.ROOT));
+        }
+        if (notBlank(f.payMethod())) {
+            w.and("EXISTS (SELECT 1 FROM payment pm WHERE pm.order_id = o.id AND pm.channel <> 'POS'"
+                    + " AND pm.method = :pay)", "pay", f.payMethod().toUpperCase(java.util.Locale.ROOT));
+        }
+        range(w, f.placed(), "COALESCE(o.placed_at, o.created_at)");
         return w;
     }
 
@@ -427,8 +455,15 @@ public class AdminQueries {
 
     // ── Reviews ────────────────────────────────────────────────────────────────────────
 
-    public record ReviewFilter(String q, Integer stars, String status, UUID businessId, UUID id) {
+    public record ReviewFilter(String q, Integer stars, String status, UUID businessId, UUID id, String replied,
+            DayRange at, String sort) {
+
+        public static ReviewFilter one(UUID id) {
+            return new ReviewFilter(null, null, null, null, id, null, null, null);
+        }
     }
+
+    public static final Map<String, String> REVIEW_SORTS = Map.of("at", "r.at", "stars", "r.stars");
 
     public PageResponse<AdminReviewRow> reviews(ReviewFilter f, int page, int size) {
         Where w = new Where();
@@ -451,6 +486,12 @@ public class AdminQueries {
         if (f.id() != null) {
             w.and("r.id = :id", "id", f.id());
         }
+        if ("yes".equals(f.replied())) {
+            w.and("r.reply IS NOT NULL");
+        } else if ("no".equals(f.replied())) {
+            w.and("r.reply IS NULL");
+        }
+        range(w, f.at(), "r.at");
         String from = " FROM review r JOIN business b ON b.id = r.business_id";
         long total = jdbc.queryForObject("SELECT count(*)" + from + w.sql, w.p, Long.class);
         List<AdminReviewRow> items = jdbc.query("""
@@ -460,7 +501,7 @@ public class AdminQueries {
                 """ + from + """
                  LEFT JOIN product pr ON r.target_type = 'PRODUCT' AND pr.id = r.target_id
                  LEFT JOIN service sv ON r.target_type = 'SERVICE' AND sv.id = r.target_id
-                """ + w.sql + " ORDER BY r.at DESC, r.id" + page(w, page, size), w.p,
+                """ + w.sql + order(f.sort(), REVIEW_SORTS, "-at", "r.id") + page(w, page, size), w.p,
                 (rs, i) -> new AdminReviewRow(rs.getString("id"), rs.getString("business_id"),
                         rs.getString("shop_name"), rs.getString("target_type"), rs.getString("item_name"),
                         rs.getString("author_id"), rs.getString("author_name"), rs.getInt("stars"),
@@ -553,16 +594,30 @@ public class AdminQueries {
         }
     }
 
-    public PageResponse<PayoutResponse> payouts(UUID businessId, int page, int size) {
-        Where w = new Where();
-        if (businessId != null) {
-            w.and("x.business_id = :biz", "biz", businessId);
+    public record PayoutFilter(String q, UUID businessId, DayRange paid, String sort) {
+
+        public static PayoutFilter of(UUID businessId) {
+            return new PayoutFilter(null, businessId, null, null);
         }
-        long total = jdbc.queryForObject("SELECT count(*) FROM payout x" + w.sql, w.p, Long.class);
+    }
+
+    public static final Map<String, String> PAYOUT_SORTS = Map.of("paid", "x.paid_at", "amount", "x.amount");
+
+    public PageResponse<PayoutResponse> payouts(PayoutFilter f, int page, int size) {
+        Where w = new Where();
+        if (f.businessId() != null) {
+            w.and("x.business_id = :biz", "biz", f.businessId());
+        }
+        if (notBlank(f.q())) {
+            w.and("(b.name ILIKE :q OR x.reference ILIKE :q OR x.bakong_id ILIKE :q)", "q", like(f.q()));
+        }
+        range(w, f.paid(), "x.paid_at");
+        long total = jdbc.queryForObject("SELECT count(*) FROM payout x JOIN business b ON b.id = x.business_id"
+                + w.sql, w.p, Long.class);
         List<PayoutResponse> items = jdbc.query("""
                 SELECT x.*, b.name shop_name, u.name paid_by_name
                   FROM payout x JOIN business b ON b.id = x.business_id LEFT JOIN users u ON u.id = x.paid_by
-                """ + w.sql + " ORDER BY x.paid_at DESC, x.id" + page(w, page, size), w.p,
+                """ + w.sql + order(f.sort(), PAYOUT_SORTS, "-paid", "x.id") + page(w, page, size), w.p,
                 (rs, i) -> new PayoutResponse(rs.getString("id"), rs.getString("business_id"),
                         rs.getString("shop_name"), rs.getBigDecimal("gross"), rs.getBigDecimal("commission"),
                         rs.getBigDecimal("amount"), rs.getInt("payments_count"), rs.getString("bakong_id"),
@@ -573,7 +628,7 @@ public class AdminQueries {
 
     // ── Audit ──────────────────────────────────────────────────────────────────────────
 
-    public record AuditFilter(String q, String targetType, String targetId, String action) {
+    public record AuditFilter(String q, String targetType, String targetId, String action, DayRange at) {
     }
 
     public PageResponse<AuditEntry> audit(AuditFilter f, int page, int size) {
@@ -591,6 +646,7 @@ public class AdminQueries {
         if (notBlank(f.action())) {
             w.and("a.action = :action", "action", f.action());
         }
+        range(w, f.at(), "a.at");
         long total = jdbc.queryForObject("SELECT count(*) FROM admin_audit a" + w.sql, w.p, Long.class);
         List<AuditEntry> items = jdbc.query("SELECT a.*, a.details::text details_json FROM admin_audit a" + w.sql
                 + " ORDER BY a.at DESC, a.id" + page(w, page, size), w.p,
@@ -616,6 +672,24 @@ public class AdminQueries {
         Where and(String condition, String name, Object value) {
             p.addValue(name, value);
             return and(condition);
+        }
+    }
+
+    /** {@code ORDER BY} from a request's sort key, only through the list's own key → SQL map. */
+    private static String order(String sort, Map<String, String> sorts, String defaultSort, String tieBreak) {
+        return " ORDER BY " + PageQuery.of(0, 1, sort, sorts, defaultSort, tieBreak).orderBy();
+    }
+
+    /** {@code column} within a range of Phnom Penh days. */
+    private static void range(Where w, DayRange r, String column) {
+        if (r == null) {
+            return;
+        }
+        if (r.start() != null) {
+            w.and(column + " >= :rangeFrom", "rangeFrom", ts(r.start()));
+        }
+        if (r.end() != null) {
+            w.and(column + " < :rangeTo", "rangeTo", ts(r.end()));
         }
     }
 

@@ -3,8 +3,9 @@ package com.kosign.vbiz.admin.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.admin.payload.ListParams;
 import com.kosign.vbiz.admin.payload.AuditEntry;
-import com.kosign.vbiz.admin.payload.PageResponse;
+import com.kosign.vbiz.common.list.PageResponse;
 import com.kosign.vbiz.admin.repository.AdminQueries;
 
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,10 @@ public class AdminAuditService {
     private final AdminQueries queries;
 
     @Transactional(readOnly = true)
-    public PageResponse<AuditEntry> list(String q, String targetType, String targetId, String action, Integer page,
-            Integer size) {
+    public PageResponse<AuditEntry> list(String q, String targetType, String targetId, String action,
+            ListParams lp) {
         access.require();
-        int[] p = AuditLog.paging(page, size);
-        return queries.audit(new AdminQueries.AuditFilter(q, targetType, targetId, action), p[0], p[1]);
+        return queries.audit(new AdminQueries.AuditFilter(q, targetType, targetId, action, lp.range()), lp.pageNo(),
+                lp.sizeNo());
     }
 }

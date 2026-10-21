@@ -6,10 +6,11 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.admin.payload.ListParams;
 import com.kosign.vbiz.admin.domain.AuditTarget;
 import com.kosign.vbiz.admin.payload.AdminOrderDetail;
 import com.kosign.vbiz.admin.payload.AdminOrderRow;
-import com.kosign.vbiz.admin.payload.PageResponse;
+import com.kosign.vbiz.common.list.PageResponse;
 import com.kosign.vbiz.admin.repository.AdminQueries;
 import com.kosign.vbiz.common.api.StatusCode;
 import com.kosign.vbiz.common.error.BusinessException;
@@ -33,11 +34,11 @@ public class AdminOrderService {
     private final EntityManager em;
 
     @Transactional(readOnly = true)
-    public PageResponse<AdminOrderRow> list(String q, String status, UUID businessId, UUID customerId, Integer page,
-            Integer size) {
+    public PageResponse<AdminOrderRow> list(String q, String status, UUID businessId, UUID customerId,
+            String method, String payMethod, ListParams lp) {
         access.require();
-        int[] p = AuditLog.paging(page, size);
-        return queries.orders(new AdminQueries.OrderFilter(q, status, businessId, customerId), p[0], p[1]);
+        return queries.orders(new AdminQueries.OrderFilter(q, status, businessId, customerId, method, payMethod,
+                lp.range(), lp.sort()), lp.pageNo(), lp.sizeNo());
     }
 
     @Transactional(readOnly = true)

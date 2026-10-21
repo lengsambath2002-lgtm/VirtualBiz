@@ -45,7 +45,7 @@ test.describe('Super-admin settings', () => {
 
     // Every change is in the audit log.
     await page.goto('/en/admin/audit?targetType=CATEGORY');
-    await expect(page.getByText('Added a category').first()).toBeVisible();
+    await expect(page.locator('section').getByText('Added a category').first()).toBeVisible();
     expect(errors).toEqual([]);
   });
 
@@ -73,7 +73,9 @@ test.describe('Super-admin settings', () => {
     expect((await pub.json()).data.khrPerUsd).toBe(Number(next));
 
     await page.goto('/en/admin/audit?targetType=SETTINGS');
-    await expect(page.getByText('Changed the platform settings').first()).toBeVisible();
+    await expect(
+      page.locator('section').getByText('Changed the platform settings').first(),
+    ).toBeVisible();
     await expect(page.getByText(/Riel rate: .* → .* KHR/).first()).toBeVisible();
 
     // Put it back.

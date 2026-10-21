@@ -20,7 +20,8 @@ export function useAct() {
     /** Ask for a reason (shown to the person affected and kept in the audit log). */
     reason?: 'required' | 'optional';
     reasonLabel?: string;
-    done: string;
+    /** The toast once it worked; a function to word it from the result (bulk actions). */
+    done: string | ((r: R) => string);
     run: (reason: string) => Promise<R>;
   }): Promise<R | null> {
     const ui = useUi.getState();
@@ -52,7 +53,7 @@ export function useAct() {
       }
       try {
         const r = await opts.run(reason);
-        ui.showToast(opts.done);
+        ui.showToast(typeof opts.done === 'function' ? opts.done(r) : opts.done);
         return r;
       } catch (e) {
         const code = isApiError(e) ? e.code : '';

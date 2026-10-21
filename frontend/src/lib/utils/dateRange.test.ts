@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { rangeOf } from './ExportPanel';
+import { presetOf, rangeOf } from './dateRange';
 
 // 21 Oct 2026, 01:30 in Phnom Penh is still 20 Oct in UTC: ranges follow the shop's day.
 const now = new Date('2026-10-20T18:30:00Z');
@@ -19,5 +19,13 @@ describe('export ranges', () => {
       from: '2025-12-01',
       to: '2025-12-31',
     });
+  });
+});
+
+describe('presets', () => {
+  it('names a range that matches one', () => {
+    expect(rangeOf('today', now)).toEqual({ from: '2026-10-21', to: '2026-10-21' });
+    expect(presetOf({ from: '2026-09-22', to: '2026-10-21' }, now)).toBe('last30');
+    expect(presetOf({ from: '2026-09-23', to: '2026-10-21' }, now)).toBeNull();
   });
 });

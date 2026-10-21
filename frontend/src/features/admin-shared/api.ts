@@ -94,9 +94,16 @@ export const useOrder = (number: string) =>
 export const useReviews = (p: Params) =>
   useAdminQuery<Page<ReviewRow>>(['reviews', p], `/reviews${qs(p)}`);
 
-export const usePromos = () => useAdminQuery<PlatformPromo[]>(['promos'], '/promotions');
+export const usePromos = (p: Params) =>
+  useAdminQuery<Page<PlatformPromo>>(['promos', p], `/promotions${qs(p)}`);
 
-export const useBalances = () => useAdminQuery<PayoutBalance[]>(['balances'], '/payouts/balances');
+export const useBalances = (p: Params) =>
+  useAdminQuery<Page<PayoutBalance>>(['balances', p], `/payouts/balances${qs(p)}`);
+export const usePayoutSummary = () =>
+  useAdminQuery<{ payable: number; onHold: number; shopsDue: number }>(
+    ['payoutSummary'],
+    '/payouts/summary',
+  );
 export const usePayouts = (p: Params) =>
   useAdminQuery<Page<Payout>>(['payouts', p], `/payouts${qs(p)}`);
 
@@ -112,7 +119,16 @@ export function useAdminAction<V, R = unknown>(fn: (v: V) => Promise<R>) {
   });
 }
 
+/** What a bulk action did: rows it refused come back with the reason code. */
+export interface BulkResult {
+  done: number;
+  failed: { id: string; code: string; message: string }[];
+}
+export type BulkList = 'businesses' | 'users' | 'reviews';
+
 export const adminApi = {
+  bulk: (list: BulkList, ids: string[], action: string, reason?: string) =>
+    api.post<BulkResult>(`/admin/${list}/bulk`, { ids, action, ...(reason ? { reason } : {}) }),
   verify: (id: string, reason?: string) =>
     api.post<ShopDetail>(`/admin/businesses/${id}/verify`, reason ? { reason } : {}),
   reject: (id: string, reason: string) =>

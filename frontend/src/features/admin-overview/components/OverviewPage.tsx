@@ -288,7 +288,7 @@ export function OverviewPage() {
           icon="check"
           n={q.pendingVerifications}
           label={t('q.verify')}
-          href="/admin/shops?verification=PENDING&sort=pending"
+          href="/admin/shops?verification=PENDING&sort=created"
           tone="urgent"
         />
         <Queue

@@ -10,5 +10,7 @@ public enum AuditTarget {
     PAYOUT,
     SETTINGS,
     CATEGORY,
-    STAFF_INVITE
+    STAFF_INVITE,
+    /** A CSV export of a console list ({@code targetId} = the list). */
+    EXPORT
 }

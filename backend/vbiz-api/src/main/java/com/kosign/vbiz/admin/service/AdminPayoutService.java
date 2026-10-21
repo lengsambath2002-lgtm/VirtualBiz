@@ -10,9 +10,10 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.admin.payload.ListParams;
 import com.kosign.vbiz.admin.domain.AuditTarget;
 import com.kosign.vbiz.admin.domain.Payout;
-import com.kosign.vbiz.admin.payload.PageResponse;
+import com.kosign.vbiz.common.list.PageResponse;
 import com.kosign.vbiz.admin.payload.PayoutBalance;
 import com.kosign.vbiz.admin.payload.PayoutInput;
 import com.kosign.vbiz.admin.payload.PayoutResponse;
@@ -52,17 +53,54 @@ public class AdminPayoutService {
     private final EntityManager em;
     private final Clock clock;
 
-    @Transactional(readOnly = true)
-    public List<PayoutBalance> balances() {
-        access.require();
-        return queries.balances(releaseBefore());
+    /** What is owed across every shop (the page's totals, independent of its filters). */
+    public record Summary(java.math.BigDecimal payable, java.math.BigDecimal onHold, int shopsDue) {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<PayoutResponse> history(UUID businessId, Integer page, Integer size) {
+    public Summary summary() {
         access.require();
-        int[] p = AuditLog.paging(page, size);
-        return queries.payouts(businessId, p[0], p[1]);
+        List<PayoutBalance> all = queries.balances(releaseBefore());
+        return new Summary(
+                all.stream().map(PayoutBalance::payable).filter(p -> p.signum() > 0)
+                        .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add),
+                all.stream().map(PayoutBalance::onHold).reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add),
+                (int) all.stream().filter(b -> b.payable().signum() > 0).count());
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<PayoutBalance> balances(String q, String due, ListParams lp) {
+        access.require();
+        String needle = q == null ? "" : q.trim().toLowerCase(java.util.Locale.ROOT);
+        String sort = lp.sort() == null ? "-payable" : lp.sort();
+        java.util.Comparator<PayoutBalance> order = switch (sort.replaceFirst("^-", "")) {
+            case "payable" -> java.util.Comparator.comparing(PayoutBalance::payable);
+            case "onHold" -> java.util.Comparator.comparing(PayoutBalance::onHold);
+            case "name" -> java.util.Comparator.comparing(PayoutBalance::name, String.CASE_INSENSITIVE_ORDER);
+            default -> throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "sort",
+                    "one of payable, onHold, name");
+        };
+        if (sort.startsWith("-")) {
+            order = order.reversed();
+        }
+        List<PayoutBalance> all = queries.balances(releaseBefore()).stream()
+                .filter(b -> needle.isEmpty() || b.name().toLowerCase(java.util.Locale.ROOT).contains(needle)
+                        || (b.bakongId() != null && b.bakongId().toLowerCase(java.util.Locale.ROOT).contains(needle)))
+                .filter(b -> switch (due == null ? "" : due) {
+                    case "payable" -> b.payable().signum() > 0;
+                    case "noBakong" -> b.bakongId() == null || b.bakongId().isBlank();
+                    case "held" -> b.onHold().signum() > 0;
+                    default -> true;
+                })
+                .sorted(order.thenComparing(PayoutBalance::businessId)).toList();
+        return PageResponse.slice(all, lp.pageNo(), lp.sizeNo());
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<PayoutResponse> history(String q, UUID businessId, ListParams lp) {
+        access.require();
+        return queries.payouts(new AdminQueries.PayoutFilter(q, businessId, lp.range(), lp.sort()), lp.pageNo(),
+                lp.sizeNo());
     }
 
     @Transactional
@@ -115,7 +153,7 @@ public class AdminPayoutService {
                 b.getType() == com.kosign.vbiz.business.domain.BusinessType.SERVICE ? "/provider/settings"
                         : "/seller/settings");
         em.flush();
-        return queries.payouts(b.getId(), 0, 1).items().get(0);
+        return queries.payouts(AdminQueries.PayoutFilter.of(b.getId()), 0, 1).items().get(0);
     }
 
     private Instant releaseBefore() {

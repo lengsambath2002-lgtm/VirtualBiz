@@ -538,7 +538,8 @@
       "PAYOUT": "Payouts",
       "SETTINGS": "Settings",
       "CATEGORY": "Categories",
-      "STAFF_INVITE": "Staff invites"
+      "STAFF_INVITE": "Staff invites",
+      "EXPORT": "Exports"
     },
     "empty": "No staff actions yet",
     "by": "{name} · {date}",
@@ -570,7 +571,8 @@
       "STAFF_MFA_RESET": "Reset two-step sign-in",
       "MFA_ENABLED": "Turned on two-step sign-in",
       "MFA_RECOVERY_USED": "Signed in with a recovery code",
-      "MFA_RECOVERY_REGENERATED": "Made new recovery codes"
+      "MFA_RECOVERY_REGENERATED": "Made new recovery codes",
+      "DATA_EXPORTED": "Exported a list"
     },
     "yesterday": "Yesterday",
     "byName": "by {name}",
@@ -789,5 +791,79 @@
     "notFoundBody": "Check the link in your email, or ask a super-admin for a new invite.",
     "expiredTitle": "This invite can't be used",
     "expiredBody": "It has expired, was already used, or was withdrawn. Ask a super-admin for a new one."
+  },
+  "lists": {
+    "queue": "Waiting for ID check",
+    "category": "Category",
+    "district": "District",
+    "emptyBody": "Try another search, or clear some filters.",
+    "noMatch": "Nothing matches these filters",
+    "placed": "Placed",
+    "fulfilment": "Fulfilment",
+    "method": {
+      "DELIVERY": "Delivery",
+      "PICKUP": "Pickup"
+    },
+    "review": "Review",
+    "shopItem": "Shop · item",
+    "posted": "Posted",
+    "actions": "Actions",
+    "replied": "Shop reply",
+    "repliedOpt": {
+      "yes": "Replied",
+      "no": "Not replied"
+    },
+    "oneShop": "One shop",
+    "payoutSearch": "Shop, Bakong ID or reference",
+    "dueLabel": "Show",
+    "due": {
+      "all": "All",
+      "payable": "Ready to pay",
+      "held": "Money on hold",
+      "noBakong": "No Bakong ID"
+    },
+    "shopsDue": "{n, plural, =0 {no shop due} one {# shop due} other {# shops due}}",
+    "promoSearch": "Code or name",
+    "action": "Action",
+    "target": "Target",
+    "when": "When",
+    "entries": "{n, plural, one {# entry} other {# entries}}.",
+    "bulk": {
+      "done": "Done for {n, plural, one {# row} other {# rows}}.",
+      "partly": "Done for {done}. {failed, plural, one {# row was} other {# rows were}} refused and stay selected.",
+      "shops": {
+        "verify": "Verify",
+        "verifyTitle": "Verify {n, plural, one {# shop} other {# shops}}?",
+        "verifyBody": "Each owner is told their shop is verified and can take payouts.",
+        "reject": "Reject ID",
+        "rejectTitle": "Reject the ID of {n, plural, one {# shop} other {# shops}}?",
+        "rejectBody": "Each owner sees your reason and can upload a new photo.",
+        "suspend": "Suspend",
+        "suspendTitle": "Suspend {n, plural, one {# shop} other {# shops}}?",
+        "suspendBody": "They disappear from the marketplace and can't sell until reinstated. Owners see your reason.",
+        "reinstate": "Reinstate",
+        "reinstateTitle": "Reinstate {n, plural, one {# shop} other {# shops}}?",
+        "reinstateBody": "They can sell again and show in the marketplace."
+      },
+      "users": {
+        "suspend": "Suspend",
+        "suspendTitle": "Suspend {n, plural, one {# account} other {# accounts}}?",
+        "suspendBody": "They are signed out and can't sign in until reinstated. They see your reason.",
+        "reinstate": "Reinstate",
+        "reinstateTitle": "Reinstate {n, plural, one {# account} other {# accounts}}?",
+        "reinstateBody": "They can sign in again.",
+        "signOut": "Sign out everywhere",
+        "signOutTitle": "Sign {n, plural, one {# account} other {# accounts}} out everywhere?",
+        "signOutBody": "Every session ends; they can sign in again with their password."
+      },
+      "reviews": {
+        "hide": "Hide",
+        "hideTitle": "Hide {n, plural, one {# review} other {# reviews}}?",
+        "hideBody": "They leave public lists and the shop's rating. Authors and shops see your reason.",
+        "restore": "Show again",
+        "restoreTitle": "Show {n, plural, one {# review} other {# reviews}} again?",
+        "restoreBody": "They count in the shop's rating again."
+      }
+    }
   }
 }

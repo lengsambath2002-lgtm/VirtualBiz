@@ -94,7 +94,8 @@ export interface AuditEntry {
     | 'PAYOUT'
     | 'SETTINGS'
     | 'CATEGORY'
-    | 'STAFF_INVITE';
+    | 'STAFF_INVITE'
+    | 'EXPORT';
   targetId: string;
   targetLabel?: string;
   reason?: string;

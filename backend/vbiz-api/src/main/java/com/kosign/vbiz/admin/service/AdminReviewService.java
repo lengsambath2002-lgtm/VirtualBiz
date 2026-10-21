@@ -7,9 +7,10 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.admin.payload.ListParams;
 import com.kosign.vbiz.admin.domain.AuditTarget;
 import com.kosign.vbiz.admin.payload.AdminReviewRow;
-import com.kosign.vbiz.admin.payload.PageResponse;
+import com.kosign.vbiz.common.list.PageResponse;
 import com.kosign.vbiz.admin.repository.AdminQueries;
 import com.kosign.vbiz.common.api.StatusCode;
 import com.kosign.vbiz.common.error.BusinessException;
@@ -37,11 +38,11 @@ public class AdminReviewService {
     private final Clock clock;
 
     @Transactional(readOnly = true)
-    public PageResponse<AdminReviewRow> list(String q, Integer stars, String status, UUID businessId, Integer page,
-            Integer size) {
+    public PageResponse<AdminReviewRow> list(String q, Integer stars, String status, UUID businessId,
+            String replied, ListParams lp) {
         access.require();
-        int[] p = AuditLog.paging(page, size);
-        return queries.reviews(new AdminQueries.ReviewFilter(q, stars, status, businessId, null), p[0], p[1]);
+        return queries.reviews(new AdminQueries.ReviewFilter(q, stars, status, businessId, null, replied,
+                lp.range(), lp.sort()), lp.pageNo(), lp.sizeNo());
     }
 
     @Transactional
@@ -85,6 +86,6 @@ public class AdminReviewService {
 
     private AdminReviewRow row(Review r) {
         em.flush();
-        return queries.reviews(new AdminQueries.ReviewFilter(null, null, null, null, r.getId()), 0, 1).items().get(0);
+        return queries.reviews(AdminQueries.ReviewFilter.one(r.getId()), 0, 1).items().get(0);
     }
 }

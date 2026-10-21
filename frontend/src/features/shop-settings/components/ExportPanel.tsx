@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { apiDownload, isApiError, saveBlob } from '@/lib/api';
 import type { BusinessType } from '@/lib/domain';
 import { cn } from '@/lib/utils/cn';
+import { rangeOf } from '@/lib/utils/dateRange';
 
 import c from './settings.module.css';
 
@@ -17,25 +18,6 @@ const KINDS: Record<BusinessType, Kind[]> = {
 const DATED: Kind[] = ['orders', 'sales', 'appointments'];
 const RANGES = ['last7', 'last30', 'last90', 'thisMonth', 'lastMonth', 'last365'] as const;
 type Range = (typeof RANGES)[number];
-
-/** A Phnom Penh calendar day as YYYY-MM-DD (the API's export days). */
-const day = (d: Date) =>
-  new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Phnom_Penh' }).format(d);
-
-export function rangeOf(r: Range, now = new Date()): { from: string; to: string } {
-  const [y, m, dd] = day(now).split('-').map(Number) as [number, number, number];
-  const at = (yy: number, mm: number, d2: number) => day(new Date(Date.UTC(yy, mm - 1, d2, 12)));
-  switch (r) {
-    case 'thisMonth':
-      return { from: at(y, m, 1), to: at(y, m, dd) };
-    case 'lastMonth':
-      return { from: at(y, m - 1, 1), to: at(y, m, 0) };
-    default: {
-      const n = { last7: 7, last30: 30, last90: 90, last365: 365 }[r];
-      return { from: at(y, m, dd - n + 1), to: at(y, m, dd) };
-    }
-  }
-}
 
 /**
  * "Export data" (docs/api/phase14-customers-exports.md): CSV files of the shop's records for a

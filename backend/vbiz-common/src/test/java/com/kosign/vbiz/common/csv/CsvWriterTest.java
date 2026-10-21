@@ -1,4 +1,4 @@
-package com.kosign.vbiz.report.service;
+package com.kosign.vbiz.common.csv;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

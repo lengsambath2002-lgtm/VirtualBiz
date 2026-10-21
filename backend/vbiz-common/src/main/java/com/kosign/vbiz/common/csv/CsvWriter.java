@@ -1,4 +1,4 @@
-package com.kosign.vbiz.report.service;
+package com.kosign.vbiz.common.csv;
 
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -12,30 +12,30 @@ import java.time.format.DateTimeFormatter;
  * with CRLF, and quotes every text cell. Text that a spreadsheet would run as a formula (starting
  * with {@code = + - @}, tab or CR) gets a leading apostrophe; numbers are written as they are.
  */
-final class CsvWriter {
+public final class CsvWriter {
 
-    static final ZoneId PHNOM_PENH = ZoneId.of("Asia/Phnom_Penh");
+    public static final ZoneId PHNOM_PENH = ZoneId.of("Asia/Phnom_Penh");
     private static final DateTimeFormatter AT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").withZone(PHNOM_PENH);
 
     private final StringBuilder out = new StringBuilder("﻿");
     private int rows;
 
-    CsvWriter(String... header) {
+    public CsvWriter(String... header) {
         write((Object[]) header);
     }
 
-    CsvWriter row(Object... cells) {
+    public CsvWriter row(Object... cells) {
         write(cells);
         rows++;
         return this;
     }
 
     /** Data rows written (not counting the header). */
-    int rows() {
+    public int rows() {
         return rows;
     }
 
-    byte[] bytes() {
+    public byte[] bytes() {
         return out.toString().getBytes(StandardCharsets.UTF_8);
     }
 
@@ -49,7 +49,7 @@ final class CsvWriter {
         out.append("\r\n");
     }
 
-    static String cell(Object v) {
+    public static String cell(Object v) {
         if (v == null) {
             return "";
         }
@@ -72,7 +72,7 @@ final class CsvWriter {
         return '"' + s.replace("\"", "\"\"") + '"';
     }
 
-    static String hm(int minutes) {
+    public static String hm(int minutes) {
         return String.format("%02d:%02d", minutes / 60, minutes % 60);
     }
 }

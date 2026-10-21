@@ -136,6 +136,12 @@ export function BookingDetailPage({ number }: { number: string }) {
             </div>
           </div>
           <dl className={s.spec}>
+            {b.declineMessage && (
+              <>
+                <dt>{t('shopSaid', { shop: sh.name })}</dt>
+                <dd data-testid="decline-message">{b.declineMessage}</dd>
+              </>
+            )}
             <dt>{t('when')}</dt>
             <dd className="num">
               {f.fmtD(b.date)}, {hm(b.start)}–{hm(b.start + b.durationMin)}

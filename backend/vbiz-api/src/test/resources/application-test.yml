@@ -33,6 +33,10 @@ vbiz:
       enabled: true
   storage:
     dir: build/test-uploads
+  bookings:
+    reminders:
+      # Tests run the reminder job explicitly (with their own clock instant).
+      enabled: false
   orders:
     dev-endpoints: true
     jobs:

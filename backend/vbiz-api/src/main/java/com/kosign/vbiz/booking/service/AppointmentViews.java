@@ -99,7 +99,7 @@ public class AppointmentViews {
     private BookingResponse booking(Appointment a, ServiceItem s, Business b, BusinessMember m, Instant now) {
         Instant until = rules.freeCancelUntil(a, b);
         return new BookingResponse(a.getId().toString(), a.getNumber(), a.getStatus(), a.isRescheduled(),
-                a.getCancelReason(),
+                a.getCancelReason(), a.getDeclineMessage(),
                 s == null ? null : new BookingResponse.ServiceRef(s.getId().toString(), s.getSlug(), s.getName()),
                 b == null ? null : new BookingResponse.ShopRef(b.getId().toString(), b.getSlug(), b.getName(),
                         b.getPhone(), b.getStreet(), b.getDistrict()),

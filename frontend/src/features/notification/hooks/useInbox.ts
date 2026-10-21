@@ -25,6 +25,7 @@ const SERVER_KINDS: Record<string, string> = {
   BOOKING_DECLINED: 'bookingDeclined',
   BOOKING_CANCELLED: 'bookingCancelled',
   BOOKING_CHANGED: 'bookingChanged',
+  BOOKING_REMINDER: 'bookingReminder',
 };
 
 const BOOKING_REASONS = [
@@ -89,6 +90,8 @@ export function useInbox() {
         params.when = `${day} ${n.params.time ?? ''}`.trim();
         const r = n.params.reason as (typeof BOOKING_REASONS)[number] | undefined;
         params.reason = r && BOOKING_REASONS.includes(r) ? tr(r) : '';
+        // The shop's own words when it declined (free text, shown as written).
+        params.message = n.params.message ? `“${n.params.message}”` : '';
         return tn(key as 'booked', params);
       }
       if (n.params.reason) params.reason = why(n.params.reason);

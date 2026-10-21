@@ -788,6 +788,8 @@ export interface ApiBooking {
   status: AppointmentStatus;
   rescheduled: boolean;
   cancelReason?: string | null;
+  /** The shop's note to the customer when it declined. */
+  declineMessage?: string | null;
   service: { id: string; slug: string; name: string };
   shop: { id: string; slug: string; name: string; phone: string; street: string; district: string };
   staff?: { id: string; name: string } | null;

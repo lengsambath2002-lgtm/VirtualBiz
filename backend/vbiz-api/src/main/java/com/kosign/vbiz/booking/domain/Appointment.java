@@ -2,6 +2,7 @@ package com.kosign.vbiz.booking.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.Instant;
 import java.util.UUID;
 
 import com.kosign.vbiz.common.persistence.BaseEntity;
@@ -76,6 +77,14 @@ public class Appointment extends BaseEntity {
 
     @Column(name = "cancel_reason", length = 40)
     private String cancelReason;
+
+    /** What the provider wrote to the client when declining. */
+    @Column(name = "decline_message", length = 300)
+    private String declineMessage;
+
+    /** When the booking reminder was sent (each is sent once). */
+    @Column(name = "reminded_at")
+    private Instant remindedAt;
 
     public int end() {
         return start + durationMin;

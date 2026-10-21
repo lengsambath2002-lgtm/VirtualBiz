@@ -42,6 +42,8 @@ public final class AppointmentInputs {
             @Size(max = 200) String note) {
     }
 
-    public record Status(@NotNull AppointmentStatus status, @Size(max = 30) String reason) {
+    /** {@code message}: what the shop says to the client when declining (shown to them; optional). */
+    public record Status(@NotNull AppointmentStatus status, @Size(max = 30) String reason,
+            @Size(max = 300) String message) {
     }
 }

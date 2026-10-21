@@ -20,6 +20,7 @@ public final class NotificationKind {
     public static final String ORDER_CANCELLED = "ORDER_CANCELLED";
     public static final String BOOKING_REQUESTED = "BOOKING_REQUESTED";
     public static final String BOOKING_CANCELLED = "BOOKING_CANCELLED";
+    public static final String BOOKING_REMINDER = "BOOKING_REMINDER";
     // shop
     public static final String NEW_ORDER = "NEW_ORDER";
     public static final String LOW_STOCK = "LOW_STOCK";

@@ -3,7 +3,6 @@
 import { useState } from 'react';
 
 import type { PaymentMethod } from '@/lib/domain';
-import { formatPhone } from '@/lib/utils/phone';
 
 import { PIcon, type PIconName } from '@/features/provider-shared/components/Icon';
 import { Field, Modal } from '@/features/provider-shared/components/Overlay';
@@ -20,6 +19,7 @@ import {
   type CheckoutLine,
 } from '@/features/provider-shared/util/logic';
 import { fmtStamp } from '@/features/provider-shared/util/time';
+import { ShareReceipt } from '@/features/receipt-share';
 import { acceptedMethods, vatIncluded } from '@/lib/shop';
 
 const PAY: [PaymentMethod, PIconName][] = [
@@ -506,21 +506,14 @@ export function Receipt({ saleId, change }: { saleId: string; change?: number | 
           </>
         )}
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-        {c ? (
-          <button
-            type="button"
-            className={k('btn btn-ghost')}
-            onClick={() => {
-              ui.showToast(t('receipt.sent', { phone: formatPhone(c.phone) }));
-              ui.close(true);
-            }}
-          >
-            {t('receipt.sms')}
-          </button>
-        ) : (
-          <span />
-        )}
+      <ShareReceipt
+        number={s.number}
+        businessId={d.business.id}
+        shopName={d.business.name}
+        {...(c?.phone ? { phone: c.phone } : {})}
+        btn={k('btn btn-ghost btn-sm')}
+      />
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8 }}>
         {s.appointmentId ? (
           <button
             type="button"

@@ -77,4 +77,8 @@ public class Sale extends BaseEntity {
 
     @Column(name = "at", nullable = false)
     private Instant at;
+
+    /** Public receipt link token (null until shared). */
+    @Column(name = "share_token", length = 64)
+    private String shareToken;
 }

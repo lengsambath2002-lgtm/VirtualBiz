@@ -52,7 +52,16 @@ public class BookingNotifier {
     }
 
     public void declined(Appointment a, String serviceName, String shopName) {
-        toCustomer(a, NotificationKind.BOOKING_DECLINED, serviceName, shopName, reason(a));
+        Map<String, String> p = new java.util.HashMap<>(reason(a));
+        if (a.getDeclineMessage() != null) {
+            p.put("message", a.getDeclineMessage());
+        }
+        toCustomer(a, NotificationKind.BOOKING_DECLINED, serviceName, shopName, p);
+    }
+
+    /** The visit is coming up (the shop's reminder hours before). */
+    public void reminder(Appointment a, String serviceName, String shopName) {
+        toCustomer(a, NotificationKind.BOOKING_REMINDER, serviceName, shopName, Map.of());
     }
 
     /** The shop cancelled: tell the customer. */

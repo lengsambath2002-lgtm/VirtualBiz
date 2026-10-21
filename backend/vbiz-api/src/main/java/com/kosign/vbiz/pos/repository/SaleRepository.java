@@ -21,6 +21,8 @@ public interface SaleRepository extends JpaRepository<Sale, UUID> {
 
     Optional<Sale> findByNumber(String number);
 
+    Optional<Sale> findByShareToken(String shareToken);
+
     Optional<Sale> findByBusinessIdAndClientRef(UUID businessId, UUID clientRef);
 
     @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)

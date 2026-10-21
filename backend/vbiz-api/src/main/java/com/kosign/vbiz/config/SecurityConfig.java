@@ -60,7 +60,7 @@ public class SecurityConfig {
                         .dispatcherTypeMatchers(DispatcherType.ASYNC, DispatcherType.ERROR).permitAll()
                         .requestMatchers("/api/auth/logout-all").authenticated()
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/health", "/api/meta/**", "/api/staff-invites/**", "/api/join/**").permitAll()
+                        .requestMatchers("/api/health", "/api/meta/**", "/api/staff-invites/**", "/api/join/**", "/api/receipts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/marketplace/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/files/**").permitAll()
                         // Guests see server totals on the cart page (an address id still needs a token).

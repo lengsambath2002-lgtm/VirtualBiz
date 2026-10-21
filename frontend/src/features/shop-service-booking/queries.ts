@@ -42,6 +42,7 @@ export const toShopBooking = (b: ApiBooking): ShopBooking => ({
   ...(b.rescheduled ? { rescheduled: true } : {}),
   ...(b.note ? { note: b.note } : {}),
   ...(b.cancelReason ? { cancelReason: b.cancelReason } : {}),
+  ...(b.declineMessage ? { declineMessage: b.declineMessage } : {}),
   canChange: b.canChange,
   freeCancelUntil: Date.parse(b.freeCancelUntil),
 });

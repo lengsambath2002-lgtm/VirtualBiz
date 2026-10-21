@@ -11,6 +11,7 @@ import order from './order.json';
 import admin from './admin.json';
 import team from './team.json';
 import shopSettings from './shopSettings.json';
+import receipt from './receipt.json';
 
 const messages = {
   meta,
@@ -25,5 +26,6 @@ const messages = {
   admin,
   team,
   shopSettings,
+  receipt,
 };
 export default messages;

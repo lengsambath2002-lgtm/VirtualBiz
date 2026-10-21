@@ -300,16 +300,36 @@ export function InvoiceDialog({ id }: { id: string }) {
         >
           {t('copyEmail')}
         </button>
-        <button
-          type="button"
+        {/* Opens the shop's own email app with the invoice written out (no email provider needed). */}
+        <a
           className={cx(s.btn, s.btnPrimary)}
-          onClick={() => {
-            ui.close(true);
-            ui.showToast(t('sent', { email }));
-          }}
+          aria-disabled={!email}
+          style={email ? undefined : { pointerEvents: 'none', opacity: 0.5 }}
+          href={
+            email
+              ? `mailto:${email}?subject=${encodeURIComponent(
+                  t('mailSubject', { no: o.number, shop: db.shop.name }),
+                )}&body=${encodeURIComponent(
+                  [
+                    t('mailHello', { name: c.name }),
+                    '',
+                    ...o.lines.map(
+                      (l) =>
+                        `${l.qty} × ${l.title}${l.variantName ? ` (${l.variantName})` : ''}  ${f.money(l.qty * l.unitPrice)}`,
+                    ),
+                    '',
+                    `${t('total')}: ${f.money(o.total)} (${f.khr(o.total)})`,
+                    t('paidBy', { pay: tp(payLabel(o)) }),
+                    '',
+                    t('mailThanks', { shop: db.shop.name }),
+                  ].join('\n'),
+                )}`
+              : undefined
+          }
+          onClick={() => ui.close(true)}
         >
           {t('email')}
-        </button>
+        </a>
       </div>
     </Modal>
   );

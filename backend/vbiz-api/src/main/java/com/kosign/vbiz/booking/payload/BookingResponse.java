@@ -12,6 +12,8 @@ public record BookingResponse(
         AppointmentStatus status,
         boolean rescheduled,
         String cancelReason,
+        /** What the shop wrote when declining. */
+        String declineMessage,
         ServiceRef service,
         ShopRef shop,
         StaffRef staff,

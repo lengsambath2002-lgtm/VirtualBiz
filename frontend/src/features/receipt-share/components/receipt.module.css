@@ -1,0 +1,118 @@
+.wrap {
+  min-height: 70vh;
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  padding: 24px 16px 48px;
+}
+.paper {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  color: #111;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  padding: 24px 22px;
+  font-variant-numeric: tabular-nums;
+  display: grid;
+  gap: 14px;
+}
+.head {
+  text-align: center;
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+}
+.head h1 {
+  margin: 4px 0 2px;
+  font-size: 18px;
+  font-weight: 700;
+}
+.head p {
+  margin: 0;
+  font-size: 12.5px;
+  color: #555;
+}
+.logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: #f2f2f2 center / cover no-repeat;
+}
+.note {
+  margin: 4px 0 0;
+  font-size: 12.5px;
+  color: #444;
+  text-align: center;
+}
+.meta {
+  display: grid;
+  gap: 2px;
+  font-size: 12.5px;
+  color: #444;
+  border-top: 1px dashed #bbb;
+  padding-top: 10px;
+}
+.lines {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  border-top: 1px dashed #bbb;
+}
+.lines td {
+  padding: 6px 0;
+  vertical-align: top;
+}
+.lines td:last-child {
+  text-align: right;
+  white-space: nowrap;
+  padding-left: 12px;
+}
+.sums {
+  margin: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  font-size: 13.5px;
+  border-top: 1px dashed #bbb;
+  padding-top: 10px;
+}
+.sums dd {
+  margin: 0;
+  text-align: right;
+}
+.total {
+  font-weight: 700;
+  font-size: 15px;
+}
+.footer {
+  margin: 0;
+  font-size: 12.5px;
+  color: #444;
+  text-align: center;
+  white-space: pre-line;
+  border-top: 1px dashed #bbb;
+  padding-top: 10px;
+}
+.print {
+  justify-self: center;
+  min-height: 38px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid #ccc;
+  background: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+@media print {
+  .wrap {
+    padding: 0;
+  }
+  .paper {
+    box-shadow: none;
+    max-width: none;
+  }
+  .print {
+    display: none;
+  }
+}

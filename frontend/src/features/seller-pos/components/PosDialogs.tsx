@@ -26,6 +26,7 @@ import type { PaymentMethod } from '@/lib/domain';
 import { useSession } from '@/lib/auth';
 import { cashChange, formatCashChange, khrRate, round2 } from '@/lib/money';
 import { acceptedMethods, policyOf, vatIncluded } from '@/lib/shop';
+import { ShareReceipt } from '@/features/receipt-share';
 
 import { focusPosSearch, usePosActions } from '../hooks/usePosActions';
 
@@ -404,10 +405,6 @@ export function ReceiptDialog({ saleId, fresh }: { saleId: string; fresh: boolea
   const change = sale.cash?.change ?? 0;
   const give = cashChange({ totalUsd: 0, tenderedUsd: change, tenderedKhr: 0 });
   const ui = useUi.getState();
-  const send = (via: 'SMS' | 'Telegram') => {
-    ui.close(true);
-    ui.showToast(t('sent', { via }));
-  };
   return (
     <Modal>
       <h2>{fresh ? t('complete') : t('title', { no: sale.number })}</h2>
@@ -499,13 +496,15 @@ export function ReceiptDialog({ saleId, fresh }: { saleId: string; fresh: boolea
           <span style={{ whiteSpace: 'pre-line' }}>{policy.receiptFooter || t('warranty')}</span>
         </div>
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${fresh ? 3 : 2},1fr)`, gap: 8 }}>
-        <button type="button" className={cx(s.btn, s.btnGhost)} onClick={() => send('SMS')}>
-          {t('sms')}
-        </button>
-        <button type="button" className={cx(s.btn, s.btnGhost)} onClick={() => send('Telegram')}>
-          {t('telegram')}
-        </button>
+      {sale.number && (
+        <ShareReceipt
+          number={sale.number}
+          businessId={db.shop.id}
+          shopName={db.shop.name}
+          btn={cx(s.btn, s.btnGhost, s.btnSm)}
+        />
+      )}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 8 }}>
         {fresh ? (
           <button
             type="button"

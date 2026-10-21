@@ -184,6 +184,9 @@ public class AppointmentService {
         if (reason != null) {
             a.setCancelReason(reason);
         }
+        if (to == AppointmentStatus.DECLINED && in.message() != null && !in.message().isBlank()) {
+            a.setDeclineMessage(in.message().trim());
+        }
         Map<String, String> params = new LinkedHashMap<>();
         String code = switch (to) {
             case BOOKED -> from == AppointmentStatus.NO_SHOW ? "reset" : "accepted";

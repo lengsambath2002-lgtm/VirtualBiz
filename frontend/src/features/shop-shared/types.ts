@@ -205,6 +205,8 @@ export interface ShopBooking {
   note?: string;
   /** `client`, `rescheduled`, or the shop's decline / cancel reason code. */
   cancelReason?: string;
+  /** The shop's note when it declined the request. */
+  declineMessage?: string;
   /** The customer may still cancel or reschedule (until `freeCancelUntil`, ms). */
   canChange: boolean;
   freeCancelUntil: number;

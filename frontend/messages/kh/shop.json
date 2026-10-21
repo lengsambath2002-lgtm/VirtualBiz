@@ -85,9 +85,10 @@
     "orderPickedUp": "បានមកយកហើយ៖ ការបញ្ជាទិញ {number}",
     "orderCancelled": "ការបញ្ជាទិញ {number} ត្រូវបានបោះបង់៖ {reason}",
     "orderReturned": "បានទទួលការប្រគល់វិញសម្រាប់ការបញ្ជាទិញ {number}។ ការសងប្រាក់ {amount} បានចាប់ផ្តើម។",
-    "bookingDeclined": "{shop} មិនអាចទទួលការកក់ {name} របស់អ្នក {when} បានទេ។ {reason}",
+    "bookingDeclined": "{shop} មិនអាចទទួលការកក់ {name} របស់អ្នក {when} បានទេ។ {reason} {message}",
     "bookingCancelled": "{shop} បានបោះបង់ការកក់ {name} របស់អ្នក {when}។ {reason}",
-    "bookingChanged": "{shop} បានប្តូរការកក់ {name} របស់អ្នកទៅ {when}"
+    "bookingChanged": "{shop} បានប្តូរការកក់ {name} របស់អ្នកទៅ {when}",
+    "bookingReminder": "រំលឹក៖ {name} នៅ {shop}, {when}"
   },
   "loc": {
     "title": "តើយើងគួរដឹកជញ្ជូនទៅណា?",
@@ -323,6 +324,7 @@
     "changeTime": "ប្តូរម៉ោង"
   },
   "booking": {
+    "shopSaid": "{shop} បាននិយាយ",
     "crumb": "ការកក់",
     "seeYou": "ជួបគ្នាថ្ងៃ {date}",
     "number": "ការកក់ {number}",

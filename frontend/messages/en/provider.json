@@ -683,7 +683,7 @@
   },
   "requests": {
     "title": "Online requests",
-    "sub": "Accept or decline. Clients get an SMS either way.",
+    "sub": "Accept or decline. Clients who booked online hear back in their VirtualBiz inbox either way.",
     "requested": "{staff} · requested {ago}",
     "new": "New",
     "visits": "{n} visits",

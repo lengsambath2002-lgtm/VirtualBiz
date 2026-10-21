@@ -359,7 +359,10 @@
       "paidBy": "បង់តាម {pay}",
       "copyEmail": "ចម្លងអ៊ីមែល",
       "email": "ផ្ញើវិក្កយបត្រតាមអ៊ីមែល",
-      "sent": "បានផ្ញើវិក្កយបត្រទៅ {email}"
+      "sent": "បានផ្ញើវិក្កយបត្រទៅ {email}",
+      "mailSubject": "វិក្កយបត្រ {no} ពី {shop}",
+      "mailHello": "សួស្ដី {name},",
+      "mailThanks": "សូមអរគុណសម្រាប់ការទិញជាមួយ {shop}។"
     }
   },
   "products": {

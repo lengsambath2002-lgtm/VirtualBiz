@@ -1,0 +1,31 @@
+{
+  "label": "Receipt {no}",
+  "number": "Receipt {no}",
+  "customer": "Customer: {name}",
+  "cashier": "Served by {name}",
+  "discount": "Discount",
+  "tip": "Tip",
+  "total": "Total",
+  "riel": "In riel",
+  "paid": "Paid by {m}",
+  "refunded": "Refunded",
+  "vat": "VAT {pct}% included",
+  "tin": "VAT TIN {tin}",
+  "printButton": "Print",
+  "method": {
+    "CASH": "cash",
+    "KHQR": "KHQR",
+    "CARD": "card"
+  },
+  "notFoundTitle": "Receipt not found",
+  "notFoundBody": "Check the link the shop sent you.",
+  "share": {
+    "text": "Your receipt {no} from {shop}",
+    "telegram": "Telegram",
+    "sms": "SMS",
+    "copy": "Copy link",
+    "copied": "Copied",
+    "print": "Print",
+    "failed": "Couldn't make the receipt link. Try again."
+  }
+}

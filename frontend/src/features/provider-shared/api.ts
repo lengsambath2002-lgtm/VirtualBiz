@@ -334,11 +334,17 @@ export const setAppointmentStatus = async (
   id: string,
   status: AppointmentStatus,
   reason?: string,
+  /** What the shop tells the client when declining (they see it). */
+  message?: string,
 ) =>
   toAppointment(
     await api.post<ApiAppointment>(
       `/appointments/${id}/status`,
-      { status, ...(reason ? { reason } : {}) },
+      {
+        status,
+        ...(reason ? { reason } : {}),
+        ...(message?.trim() ? { message: message.trim() } : {}),
+      },
       opts(businessId),
     ),
   );

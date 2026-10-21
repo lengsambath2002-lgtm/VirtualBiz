@@ -359,7 +359,10 @@
       "paidBy": "Paid by {pay}",
       "copyEmail": "Copy email",
       "email": "Email invoice",
-      "sent": "Invoice sent to {email}"
+      "sent": "Invoice sent to {email}",
+      "mailSubject": "Invoice {no} from {shop}",
+      "mailHello": "Hi {name},",
+      "mailThanks": "Thank you for shopping with {shop}."
     }
   },
   "products": {

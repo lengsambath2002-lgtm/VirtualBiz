@@ -47,6 +47,13 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
     List<Appointment> holding(@Param("staffIds") Collection<UUID> staffIds, @Param("from") LocalDate from,
             @Param("to") LocalDate to, @Param("statuses") Collection<AppointmentStatus> statuses);
 
+    /** Booked or confirmed visits in these days that haven't had their reminder. */
+    @Query("""
+            select a from Appointment a where a.remindedAt is null and a.date between :from and :to
+            and a.status in (com.kosign.vbiz.booking.domain.AppointmentStatus.BOOKED,
+                             com.kosign.vbiz.booking.domain.AppointmentStatus.CONFIRMED)""")
+    List<Appointment> dueForReminder(@Param("from") LocalDate from, @Param("to") LocalDate to);
+
     @Query("select a from Appointment a where a.customerId = :customerId order by a.date desc, a.start desc")
     List<Appointment> ofCustomer(@Param("customerId") UUID customerId);
 }

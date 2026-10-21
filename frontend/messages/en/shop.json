@@ -85,9 +85,10 @@
     "orderPickedUp": "Picked up: order {number}",
     "orderCancelled": "Order {number} was cancelled: {reason}",
     "orderReturned": "Return accepted for order {number}. Refund of {amount} started.",
-    "bookingDeclined": "{shop} can't take your {name} booking, {when}. {reason}",
+    "bookingDeclined": "{shop} can't take your {name} booking, {when}. {reason} {message}",
     "bookingCancelled": "{shop} cancelled your {name} booking, {when}. {reason}",
-    "bookingChanged": "{shop} moved your {name} booking to {when}"
+    "bookingChanged": "{shop} moved your {name} booking to {when}",
+    "bookingReminder": "Reminder: {name} at {shop}, {when}"
   },
   "loc": {
     "title": "Where should we deliver?",
@@ -323,6 +324,7 @@
     "changeTime": "Change time"
   },
   "booking": {
+    "shopSaid": "{shop} said",
     "crumb": "Bookings",
     "seeYou": "See you {date}",
     "number": "Booking {number}",

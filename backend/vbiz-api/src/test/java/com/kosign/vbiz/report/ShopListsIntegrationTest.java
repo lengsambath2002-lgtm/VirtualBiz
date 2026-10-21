@@ -140,4 +140,47 @@ class ShopListsIntegrationTest extends BookingTestSupport {
         JsonNode buyers = shop(nita, NITA_GADGET_ID, "GET", "/api/clients/page?sort=-orders&size=1", null).path("data");
         assertThat(buyers.path("items").path(0).path("orders").asLong()).isPositive();
     }
+
+    @Test
+    void sale_history_and_the_appointment_list_page_and_filter() throws Exception {
+        Session nita = login(NITA, DEMO_PASSWORD);
+        JsonNode receipts = shop(nita, NITA_GADGET_ID, "GET", "/api/pos/sales/history?size=3&sort=-total", null)
+                .path("data");
+        assertThat(receipts.path("total").asLong()).isPositive();
+        assertThat(receipts.path("items").size()).isLessThanOrEqualTo(3);
+        receipts.path("items").forEach(r -> assertThat(r.path("number").asText()).startsWith("R-"));
+        String n = receipts.path("items").path(0).path("number").asText();
+        assertThat(shop(nita, NITA_GADGET_ID, "GET", "/api/pos/sales/history?q=" + n, null).path("data")
+                .path("items").path(0).path("number").asText()).isEqualTo(n);
+        shop(nita, NITA_GADGET_ID, "GET", "/api/pos/sales/history?pay=CASH&size=50", null).path("data").path("items")
+                .forEach(r -> assertThat(r.toString()).contains("CASH"));
+
+        Session dana = login(DANA, DEMO_PASSWORD);
+        JsonNode sales = shop(dana, "GET", "/api/sales/history?from=2020-01-01", null).path("data");
+        assertThat(sales.path("total").asLong()).isPositive();
+
+        JsonNode done = shop(dana, "GET", "/api/appointments/list?status=COMPLETED&size=5&sort=-when", null)
+                .path("data");
+        assertThat(done.path("total").asLong()).isPositive();
+        done.path("items").forEach(a -> assertThat(a.path("status").asText()).isEqualTo("COMPLETED"));
+        List<String> days = new ArrayList<>();
+        done.path("items").forEach(a -> days.add(a.path("date").asText()));
+        assertThat(days).isSortedAccordingTo(java.util.Comparator.reverseOrder());
+    }
+
+    @Test
+    void a_salon_accepts_several_requests_at_once() throws Exception {
+        Session dana = login(DANA, DEMO_PASSWORD);
+        Session c = customer();
+        String a = as(c, "POST", "/api/me/bookings", booking(CUT_SLUG, null, workday(73), 780)).path("data")
+                .path("number").asText();
+        String b = as(c, "POST", "/api/me/bookings", booking(CUT_SLUG, null, workday(74), 840)).path("data")
+                .path("number").asText();
+        JsonNode r = shop(dana, "POST", "/api/appointments/bulk-status",
+                Map.of("refs", List.of(a, b, "BK-00000"), "status", Map.of("status", "BOOKED"))).path("data");
+        assertThat(r.path("done").asInt()).isEqualTo(2);
+        assertThat(r.path("failed").size()).isEqualTo(1);
+        assertThat(shop(dana, "GET", "/api/appointments/" + a, null).path("data").path("status").asText())
+                .isEqualTo("BOOKED");
+    }
 }

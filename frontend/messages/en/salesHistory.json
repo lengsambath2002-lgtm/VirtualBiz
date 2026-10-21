@@ -1,0 +1,15 @@
+{
+  "searchPh": "Receipt number or customer",
+  "searchLabel": "Search sales",
+  "refunded": "Refunds",
+  "refundedOpt": {
+    "yes": "Refunded",
+    "no": "Not refunded"
+  },
+  "noMatch": "No sales match",
+  "noMatchBody": "Try another search, or clear some filters.",
+  "title": "Sales history",
+  "sub": "Every receipt, newest first. Open one to reprint, share or refund it.",
+  "open": "Sales history",
+  "staff": "Cashier"
+}

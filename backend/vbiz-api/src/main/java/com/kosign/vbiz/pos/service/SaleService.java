@@ -11,10 +11,16 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.payment.domain.PaymentMethod;
+import com.kosign.vbiz.pos.repository.SaleSpecs;
+import com.kosign.vbiz.common.list.PageResponse;
+import com.kosign.vbiz.common.list.PageQuery;
+import com.kosign.vbiz.common.list.DayRange;
 import com.kosign.vbiz.booking.domain.Appointment;
 import com.kosign.vbiz.booking.service.AppointmentService;
 import com.kosign.vbiz.booking.service.Availability;
@@ -81,6 +87,17 @@ public class SaleService {
         }
         return views(sales.ofBusiness(w.businessId(), Availability.instantOf(f, 0),
                 Availability.instantOf(t.plusDays(1), 0)));
+    }
+
+    /** Every sale, a page at a time, filtered (docs/api/phase16-shop-lists.md). */
+    @Transactional(readOnly = true)
+    public PageResponse<SaleResponse> history(String q, PaymentMethod pay, String cashier, String refunded,
+            LocalDate from, LocalDate to, String sort, Integer page, Integer size) {
+        Workspace w = workspace();
+        PageQuery pq = PageQuery.of(page, size, sort, SaleSpecs.SORTS, "-at", null);
+        var result = sales.findAll(SaleSpecs.history(w.businessId(), false, q, pay, cashier, refunded,
+                DayRange.of(from, to, 3660)), PageRequest.of(pq.page(), pq.size(), SaleSpecs.sort(pq)));
+        return new PageResponse<>(views(result.getContent()), result.getTotalElements(), pq.page(), pq.size());
     }
 
     @Transactional(readOnly = true)

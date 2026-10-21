@@ -11,6 +11,7 @@ export { writeStock, revertStock, SYSTEM_USER, isTmp } from './store/stock';
 export {
   createManualOrder,
   fetchOrderHistory,
+  fetchReceiptHistory,
   fetchSellerCatalog,
   toSellerProduct,
   type ManualOrderInput,

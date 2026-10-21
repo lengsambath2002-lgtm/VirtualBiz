@@ -14,6 +14,8 @@ import shopSettings from './shopSettings.json';
 import receipt from './receipt.json';
 import customerEdit from './customerEdit.json';
 import customerList from './customerList.json';
+import salesHistory from './salesHistory.json';
+import apptList from './apptList.json';
 
 const messages = {
   meta,
@@ -31,5 +33,7 @@ const messages = {
   receipt,
   customerEdit,
   customerList,
+  salesHistory,
+  apptList,
 };
 export default messages;

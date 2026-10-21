@@ -30,7 +30,7 @@ import com.kosign.vbiz.admin.payload.AdminUserDetail;
 import com.kosign.vbiz.admin.payload.AdminUserRow;
 import com.kosign.vbiz.admin.payload.AuditEntry;
 import com.kosign.vbiz.admin.payload.BulkInput;
-import com.kosign.vbiz.admin.payload.BulkResult;
+import com.kosign.vbiz.common.list.BulkResult;
 import com.kosign.vbiz.admin.payload.ListParams;
 import com.kosign.vbiz.admin.payload.CategoryInput;
 import com.kosign.vbiz.admin.payload.IdPhotoResponse;

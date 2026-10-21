@@ -1,6 +1,7 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   useEffect,
   useRef,
@@ -16,7 +17,15 @@ import { PIcon } from '@/features/provider-shared/components/Icon';
 import { k } from '@/features/provider-shared/cx';
 import { calendarHref, useActions } from '@/features/provider-shared/hooks/useActions';
 import { useFmt } from '@/features/provider-shared/hooks/useFmt';
-import { deleteBlock, patchAppointment } from '@/features/provider-shared/api';
+import {
+  deleteBlock,
+  patchAppointment,
+  toAppointment,
+  toBlock,
+} from '@/features/provider-shared/api';
+import { api, type ApiAppointment, type ApiBlock } from '@/lib/api';
+
+import { AppointmentList } from './AppointmentList';
 import { putAppointment, useData, useProviderStore, useUi } from '@/features/provider-shared/store';
 import type {
   CalendarView,
@@ -64,7 +73,46 @@ interface Drag {
 }
 
 /** Calendar (prototype default page): staff columns × 15-min grid, or a 7-day week. */
+/** `?view=list` is the appointment list; otherwise the day / week grid. */
 export function CalendarPage() {
+  const search = useSearchParams();
+  return search.get('view') === 'list' ? <AppointmentList bar={<ListBar />} /> : <CalendarGrid />;
+}
+
+/** The list view's header: back to the grid views. */
+function ListBar() {
+  const { t } = useFmt();
+  const tl = useTranslations('apptList');
+  const router = useRouter();
+  return (
+    <div className={k('cal-bar')}>
+      <h1>{tl('title')}</h1>
+      <div className={k('r')}>
+        <div className={k('seg')} role="tablist">
+          {(['day', 'week', 'list'] as const).map((v) => (
+            <button
+              key={v}
+              type="button"
+              role="tab"
+              aria-selected={v === 'list'}
+              className={k(v === 'list' && 'on')}
+              onClick={() =>
+                router.push(
+                  v === 'list' ? '/provider/calendar?view=list' : calendarHref({ view: v }),
+                )
+              }
+            >
+              {v === 'list' ? tl('list') : t(`calendar.${v}`)}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function CalendarGrid() {
+  const tList = useTranslations('apptList');
   const f = useFmt();
   const { t, locale } = f;
   const d = useData();
@@ -89,6 +137,37 @@ export function CalendarPage() {
     live.current = { ...next, qs: live.current.qs };
     router.push(calendarHref(next));
   };
+
+  // The workspace loads 60 days back and 90 ahead; a day or week outside that is fetched here.
+  const bizId = d.business.id;
+  useEffect(() => {
+    const start = view === 'week' ? addDays(date, -6) : date;
+    const end = view === 'week' ? addDays(date, 6) : date;
+    if (start >= addDays(todayIso(), -60) && end <= addDays(todayIso(), 90)) return;
+    let gone = false;
+    const q = `?from=${start}&to=${end}`;
+    void Promise.all([
+      api.get<ApiAppointment[]>(`/appointments${q}`, { businessId: bizId }),
+      api.get<ApiBlock[]>(`/blocks${q}`, { businessId: bizId }),
+    ]).then(
+      ([as, bs]) => {
+        if (gone) return;
+        useProviderStore.getState().update((dd) => {
+          for (const a of as.map(toAppointment)) {
+            const i = dd.appointments.findIndex((x) => x.id === a.id);
+            if (i >= 0) dd.appointments[i] = a;
+            else dd.appointments.push(a);
+          }
+          for (const b of bs.map(toBlock))
+            if (!dd.blocks.some((x) => x.id === b.id)) dd.blocks.push(b);
+        });
+      },
+      () => undefined,
+    );
+    return () => {
+      gone = true;
+    };
+  }, [date, view, bizId]);
 
   // Auto-refresh every 60 s (now line, "next up"), unless an overlay is open or a drag is on.
   const [, setTick] = useState(0);
@@ -506,6 +585,14 @@ export function CalendarPage() {
                 {t(`calendar.${v}`)}
               </button>
             ))}
+            <button
+              type="button"
+              role="tab"
+              aria-selected={false}
+              onClick={() => router.push('/provider/calendar?view=list')}
+            >
+              {tList('list')}
+            </button>
           </div>
         </div>
       </div>

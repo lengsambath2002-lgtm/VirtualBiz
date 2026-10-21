@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { FilterBar, SegmentFilter, SelectFilter, useListQuery } from '@/components/data';
 import { EmptyView } from '@/components/feedback';
 import {
   cx,
@@ -23,6 +24,21 @@ export function ReviewsPage() {
   const db = useDb();
   const f = useFmt();
   const avg = db.reviews.reduce((x, r) => x + r.stars, 0) / (db.reviews.length || 1);
+  const list = useListQuery(['q', 'stars', 'replied'] as const);
+  const { values: v } = list;
+  const needle = v.q.trim().toLowerCase();
+  const shown = db.reviews
+    .filter((r) => !v.stars || r.stars === Number(v.stars))
+    .filter((r) => !v.replied || (v.replied === 'yes' ? !!r.reply : !r.reply))
+    .filter(
+      (r) =>
+        !needle ||
+        [r.text, r.authorId, db.products.find((x) => x.id === r.targetId)?.title]
+          .join(' ')
+          .toLowerCase()
+          .includes(needle),
+    );
+  const unreplied = db.reviews.filter((r) => !r.reply).length;
   return (
     <>
       <div className={s.phH}>
@@ -31,9 +47,39 @@ export function ReviewsPage() {
           <p className={s.muted}>{t('sub', { avg: avg.toFixed(1) })}</p>
         </div>
       </div>
+      {!!db.reviews.length && (
+        <div style={{ display: 'grid', gap: 10, marginBottom: 12 }}>
+          <SegmentFilter
+            label={t('filterReplied')}
+            value={v.replied}
+            onChange={(replied) => list.set({ replied })}
+            options={[
+              { value: '', label: t('filterAll'), count: db.reviews.length },
+              { value: 'no', label: t('filterUnreplied'), count: unreplied },
+              { value: 'yes', label: t('filterReplied') },
+            ]}
+          />
+          <FilterBar
+            q={v.q}
+            onQ={(q) => list.set({ q })}
+            placeholder={t('searchPh')}
+            label={t('searchLabel')}
+          >
+            <SelectFilter
+              label={t('filterStars')}
+              value={v.stars}
+              onChange={(stars) => list.set({ stars })}
+              options={[5, 4, 3, 2, 1].map((n) => ({ value: String(n), label: '★'.repeat(n) }))}
+            />
+          </FilterBar>
+        </div>
+      )}
       <section className={s.panel}>
         {!db.reviews.length && <EmptyView title={t('emptyTitle')} body={t('emptyBody')} />}
-        {db.reviews.map((r) => {
+        {!!db.reviews.length && !shown.length && (
+          <EmptyView title={t('noMatch')} body={t('noMatchBody')} />
+        )}
+        {shown.map((r) => {
           const p = db.products.find((x) => x.id === r.targetId);
           return (
             <div key={r.id} className={s.rv}>

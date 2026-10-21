@@ -13,9 +13,14 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.booking.repository.AppointmentSpecs;
+import com.kosign.vbiz.common.list.PageResponse;
+import com.kosign.vbiz.common.list.PageQuery;
+import com.kosign.vbiz.common.list.DayRange;
 import com.kosign.vbiz.booking.domain.Appointment;
 import com.kosign.vbiz.booking.domain.AppointmentEvent;
 import com.kosign.vbiz.booking.domain.AppointmentSnapshot;
@@ -62,6 +67,21 @@ public class AppointmentService {
     private final ServiceItemRepository services;
     private final BusinessMemberRepository members;
     private final Clock clock;
+
+    /** Appointments as a list, a page at a time, filtered (docs/api/phase16-shop-lists.md). */
+    @Transactional(readOnly = true)
+    public PageResponse<AppointmentResponse> page(AppointmentStatus status, UUID staffId, UUID serviceId,
+            AppointmentSource source, LocalDate from, LocalDate to, String q, String sort, Integer page,
+            Integer size) {
+        Workspace w = workspace();
+        DayRange.of(from, to, 3660);
+        PageQuery pq = PageQuery.of(page, size, sort, AppointmentSpecs.SORTS, "-when", null);
+        var result = appointments.findAll(
+                AppointmentSpecs.list(w.businessId(), status, staffId, serviceId, source, from, to, q),
+                PageRequest.of(pq.page(), pq.size(), AppointmentSpecs.sort(pq)));
+        return new PageResponse<>(views.views(result.getContent()), result.getTotalElements(), pq.page(),
+                pq.size());
+    }
 
     @Transactional(readOnly = true)
     public List<AppointmentResponse> list(LocalDate from, LocalDate to) {

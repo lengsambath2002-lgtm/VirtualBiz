@@ -209,6 +209,8 @@ interface SellerState {
   putCustomer: (c: ApiClient) => void;
   /** Orders opened from the history that the workspace hadn't loaded (older than its window). */
   rememberOrders: (orders: SellerOrder[]) => void;
+  /** Receipts opened from the history that the register hadn't loaded (older than its window). */
+  rememberSales: (sales: SellerPosSale[]) => void;
   /** Local only (e.g. keeping a saved workspace's name in step with the API). */
   updateShop: (patch: Partial<SellerDb['shop']>) => void;
   /** Settings: shown at once, saved with `PATCH /api/businesses/{id}`, put back if refused. */
@@ -592,6 +594,10 @@ export const useSellerStore = create<SellerState>()(
             return false;
           }
         },
+        rememberSales: (ss) =>
+          patch((d) => {
+            for (const x of ss) if (!d.pos.sales.some((y) => y.id === x.id)) d.pos.sales.unshift(x);
+          }),
         rememberOrders: (os) =>
           patch((d) => {
             for (const o of os) if (!d.orders.some((x) => x.id === o.id)) d.orders.push(o);

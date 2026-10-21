@@ -704,7 +704,12 @@
       }
     },
     "emptyTitle": "No promotions yet",
-    "emptyBody": "Create one to run a sale or give customers a code."
+    "emptyBody": "Create one to run a sale or give customers a code.",
+    "filterAll": "All",
+    "searchPh": "Name or code",
+    "searchLabel": "Search promotions",
+    "noMatch": "No promotions match",
+    "noMatchBody": "Try another search or status."
   },
   "customers": {
     "title": "Customers",
@@ -761,7 +766,15 @@
     "posted": "Reply posted",
     "post": "Post reply",
     "emptyTitle": "No reviews yet",
-    "emptyBody": "Customers can review what they bought once it is delivered."
+    "emptyBody": "Customers can review what they bought once it is delivered.",
+    "filterAll": "All",
+    "filterUnreplied": "Waiting for a reply",
+    "filterReplied": "Replied",
+    "filterStars": "Stars",
+    "searchPh": "Review text or product",
+    "searchLabel": "Search reviews",
+    "noMatch": "No reviews match",
+    "noMatchBody": "Try another search, or clear some filters."
   },
   "settings": {
     "title": "Settings",
@@ -810,9 +823,10 @@
     "cashInOut": "Cash in / out",
     "receiptsBtn": "Receipts",
     "receipts": {
-      "title": "Today's receipts",
+      "title": "Receipts",
       "refunded": "refunded",
-      "none": "No sales yet today"
+      "none": "No sales yet today",
+      "day": "Day"
     },
     "closeShift": "Close shift",
     "openShift": "Open shift",

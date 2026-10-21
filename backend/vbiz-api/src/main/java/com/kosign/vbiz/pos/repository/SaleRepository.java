@@ -5,13 +5,14 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.kosign.vbiz.pos.domain.Sale;
 
-public interface SaleRepository extends JpaRepository<Sale, UUID> {
+public interface SaleRepository extends JpaRepository<Sale, UUID>, JpaSpecificationExecutor<Sale> {
 
     @Query(value = "select nextval('sale_number_seq')", nativeQuery = true)
     long nextNumber();

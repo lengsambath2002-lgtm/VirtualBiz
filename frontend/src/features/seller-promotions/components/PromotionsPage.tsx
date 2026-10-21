@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
 
+import { FilterBar, SegmentFilter, useListQuery } from '@/components/data';
 import { EmptyRow } from '@/components/feedback';
 import {
   cx,
@@ -61,6 +62,13 @@ export function PromotionsPage() {
   const f = useFmt();
   const describe = useDescribe();
   const open = (id?: string) => useUi.getState().open({ kind: 'promo', ...(id ? { id } : {}) });
+  const list = useListQuery(['q', 'state'] as const);
+  const { values: v } = list;
+  const needle = v.q.trim().toLowerCase();
+  const shown = db.promos
+    .filter((p) => !v.state || stateOf(p) === v.state)
+    .filter((p) => !needle || `${p.name} ${p.code ?? ''}`.toLowerCase().includes(needle));
+  const countOf = (st: PromotionState) => db.promos.filter((p) => stateOf(p) === st).length;
 
   return (
     <>
@@ -74,6 +82,29 @@ export function PromotionsPage() {
           {t('create')}
         </button>
       </div>
+      {!!db.promos.length && (
+        <div style={{ display: 'grid', gap: 10, marginBottom: 12 }}>
+          <SegmentFilter
+            label={t('col.status')}
+            value={v.state}
+            onChange={(state) => list.set({ state })}
+            options={[
+              { value: '', label: t('filterAll'), count: db.promos.length },
+              ...(['ACTIVE', 'SCHEDULED', 'ENDED', 'USED_UP'] as const).map((st) => ({
+                value: st,
+                label: t(`state.${st}`),
+                count: countOf(st),
+              })),
+            ]}
+          />
+          <FilterBar
+            q={v.q}
+            onQ={(q) => list.set({ q })}
+            placeholder={t('searchPh')}
+            label={t('searchLabel')}
+          />
+        </div>
+      )}
       <section className={s.panel}>
         <div className={s.tblWrap}>
           <table>
@@ -91,7 +122,10 @@ export function PromotionsPage() {
               {!db.promos.length && (
                 <EmptyRow cols={6} title={t('emptyTitle')} body={t('emptyBody')} />
               )}
-              {db.promos.map((p) => {
+              {!!db.promos.length && !shown.length && (
+                <EmptyRow cols={6} title={t('noMatch')} body={t('noMatchBody')} />
+              )}
+              {shown.map((p) => {
                 const st = stateOf(p);
                 return (
                   <tr key={p.id}>

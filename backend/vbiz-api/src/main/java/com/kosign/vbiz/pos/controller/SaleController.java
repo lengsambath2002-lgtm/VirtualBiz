@@ -3,6 +3,7 @@ package com.kosign.vbiz.pos.controller;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kosign.vbiz.payment.domain.PaymentMethod;
+import com.kosign.vbiz.common.list.PageResponse;
 import com.kosign.vbiz.common.api.ApiResponse;
 import com.kosign.vbiz.common.api.BaseController;
 import com.kosign.vbiz.pos.payload.SaleInput;
@@ -30,6 +33,19 @@ import lombok.RequiredArgsConstructor;
 public class SaleController extends BaseController {
 
     private final SaleService sales;
+
+
+    /** Every sale, a page at a time: {@code q} (number or customer), {@code pay}, {@code cashier}, {@code refunded}. */
+    @GetMapping("/history")
+    public ResponseEntity<ApiResponse<PageResponse<SaleResponse>>> history(@RequestParam(required = false) String q,
+            @RequestParam(required = false) PaymentMethod pay, @RequestParam(required = false) String cashier,
+            @RequestParam(required = false) String refunded,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @RequestParam(required = false) String sort, @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        return ok(sales.history(q, pay, cashier, refunded, from, to, sort, page, size));
+    }
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<SaleResponse>>> list(@RequestParam(required = false) LocalDate from,

@@ -1,12 +1,13 @@
 'use client';
 
+import { SalesHistory } from './SalesHistory';
 import { StaffAvatar } from '@/features/provider-shared/components/Bits';
 import { PIcon } from '@/features/provider-shared/components/Icon';
 import { k } from '@/features/provider-shared/cx';
 import { useFmt } from '@/features/provider-shared/hooks/useFmt';
 import { useData, useUi } from '@/features/provider-shared/store';
 import { firstName } from '@/features/provider-shared/util/logic';
-import { addDays, fmtShortStamp, msOf, todayIso } from '@/features/provider-shared/util/time';
+import { addDays, msOf, todayIso } from '@/features/provider-shared/util/time';
 import type { PaymentMethod } from '@/lib/domain';
 
 const PAYS: PaymentMethod[] = ['CASH', 'KHQR', 'CARD'];
@@ -14,16 +15,13 @@ const PAYS: PaymentMethod[] = ['CASH', 'KHQR', 'CARD'];
 /** Sales: ranges, KPIs, breakdowns, transactions (prototype `P.sales`). */
 export function SalesPage() {
   const f = useFmt();
-  const { t, locale } = f;
+  const { t } = f;
   const d = useData();
   const ui = useUi();
   const today = todayIso();
   const from = msOf(ui.salesR === 1 ? today : addDays(today, -(ui.salesR - 1)));
   const payOf = (s: (typeof d.sales)[number]) => s.payments[0]?.method ?? 'CASH';
   const all = d.sales.filter((s) => Date.parse(s.at) >= from);
-  const list = all
-    .filter((s) => ui.payF === 'all' || payOf(s) === ui.payF)
-    .sort((a, b) => b.at.localeCompare(a.at));
   const gross = all.reduce((x, s) => x + s.lines.reduce((y, i) => y + i.unitPrice * i.qty, 0), 0);
   const tips = all.reduce((x, s) => x + s.tip, 0);
   const disc = all.reduce((x, s) => x + s.discount, 0);
@@ -153,90 +151,7 @@ export function SalesPage() {
           </div>
         </section>
       </div>
-      <section className={k('panel')}>
-        <div className={k('panel-h')}>
-          <h2>{t('sales.transactions')}</h2>
-          <div className={k('chips')}>
-            {(['all', ...PAYS] as const).map((p) => (
-              <button
-                key={p}
-                type="button"
-                className={k('chip', ui.payF === p && 'on')}
-                onClick={() => ui.set({ payF: p })}
-              >
-                {p === 'all' ? t('sales.all') : f.pay(p)}
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className={k('tbl-wrap')}>
-          <table>
-            <thead>
-              <tr>
-                <th>{t('sales.thDate')}</th>
-                <th>{t('sales.thClient')}</th>
-                <th>{t('sales.thItems')}</th>
-                <th>{t('sales.thPayment')}</th>
-                <th className={k('r')}>{t('sales.thTip')}</th>
-                <th className={k('r')}>{t('sales.thTotal')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {list.length ? (
-                list.slice(0, 40).map((s) => {
-                  const c = s.customerId ? d.clients.find((x) => x.id === s.customerId) : undefined;
-                  const openIt = () => ui.open({ t: 'receipt', saleId: s.id });
-                  return (
-                    <tr
-                      key={s.id}
-                      className={k('clk')}
-                      tabIndex={0}
-                      onClick={openIt}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') openIt();
-                      }}
-                    >
-                      <td className={k('num')}>{fmtShortStamp(s.at, locale)}</td>
-                      <td>
-                        {c ? c.name : <span className={k('muted')}>{t('sales.walkin')}</span>}
-                      </td>
-                      <td>{s.lines.map((i) => i.title).join(', ')}</td>
-                      <td>
-                        <span className={k('pill neutral')}>{f.pay(payOf(s))}</span>
-                      </td>
-                      <td className={k('r num')}>{s.tip ? f.money(s.tip) : '–'}</td>
-                      <td className={k('r num')}>
-                        <b>{f.money(s.total)}</b>
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td colSpan={6}>
-                    <div className={k('empty')}>
-                      <strong>{t('sales.empty')}</strong>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-            {list.length > 0 && (
-              <tfoot>
-                <tr>
-                  <td colSpan={4}>
-                    {list.length > 40
-                      ? t('sales.footMore', { n: list.length })
-                      : t('sales.foot', { n: list.length })}
-                  </td>
-                  <td className={k('r num')}>{f.money(list.reduce((x, s) => x + s.tip, 0))}</td>
-                  <td className={k('r num')}>{f.money(list.reduce((x, s) => x + s.total, 0))}</td>
-                </tr>
-              </tfoot>
-            )}
-          </table>
-        </div>
-      </section>
+      <SalesHistory />
     </>
   );
 }

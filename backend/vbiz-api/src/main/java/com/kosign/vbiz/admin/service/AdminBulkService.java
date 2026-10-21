@@ -8,7 +8,7 @@ import java.util.function.Consumer;
 import org.springframework.stereotype.Service;
 
 import com.kosign.vbiz.admin.payload.BulkInput;
-import com.kosign.vbiz.admin.payload.BulkResult;
+import com.kosign.vbiz.common.list.BulkResult;
 import com.kosign.vbiz.common.api.StatusCode;
 import com.kosign.vbiz.common.error.BusinessException;
 

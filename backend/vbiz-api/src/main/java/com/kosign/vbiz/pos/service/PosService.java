@@ -21,6 +21,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.pos.repository.SaleSpecs;
+import com.kosign.vbiz.common.list.PageResponse;
+import com.kosign.vbiz.common.list.PageQuery;
+import com.kosign.vbiz.common.list.DayRange;
 import com.kosign.vbiz.booking.service.Availability;
 import com.kosign.vbiz.business.domain.BusinessType;
 import com.kosign.vbiz.business.domain.ShopPolicy;
@@ -172,6 +176,17 @@ public class PosService {
         }
         return views(sales.receipts(w.businessId(), Availability.instantOf(f, 0),
                 Availability.instantOf(t.plusDays(1), 0)));
+    }
+
+    /** Every sale, a page at a time, filtered (docs/api/phase16-shop-lists.md). */
+    @Transactional(readOnly = true)
+    public PageResponse<PosSaleResponse> history(String q, PaymentMethod pay, String cashier, String refunded,
+            LocalDate from, LocalDate to, String sort, Integer page, Integer size) {
+        Workspace w = workspace();
+        PageQuery pq = PageQuery.of(page, size, sort, SaleSpecs.SORTS, "-at", null);
+        var result = sales.findAll(SaleSpecs.history(w.businessId(), true, q, pay, cashier, refunded,
+                DayRange.of(from, to, 3660)), PageRequest.of(pq.page(), pq.size(), SaleSpecs.sort(pq)));
+        return new PageResponse<>(views(result.getContent()), result.getTotalElements(), pq.page(), pq.size());
     }
 
     /** True in {@code created} when this call stored the sale (false: the clientRef was known). */

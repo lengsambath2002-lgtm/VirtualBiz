@@ -237,6 +237,15 @@ export async function fetchSellerOrders(businessId: string) {
 
 const one = (p: Promise<ApiOrder>) => p.then(toSellerOrder);
 
+/** One page of the register's receipts (`GET /api/pos/sales/history`). */
+export async function fetchReceiptHistory(businessId: string, query: string) {
+  const p = await api.get<{ items: ApiPosSale[]; total: number; page: number; size: number }>(
+    `/pos/sales/history?${query}`,
+    opts(businessId),
+  );
+  return { ...p, items: p.items.map((s) => toPosSale(s, businessId)) };
+}
+
 /** One page of the shop's order history (`GET /api/orders/history`, docs/api/phase16-shop-lists.md). */
 export async function fetchOrderHistory(businessId: string, query: string) {
   const p = await api.get<{ items: ApiOrder[]; total: number; page: number; size: number }>(

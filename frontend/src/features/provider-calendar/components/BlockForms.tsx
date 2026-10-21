@@ -1,8 +1,10 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
+import { api } from '@/lib/api';
 import { BLOCK_REASONS, type BlockReason } from '@/lib/domain';
 
 import { PIcon } from '@/features/provider-shared/components/Icon';
@@ -193,6 +195,34 @@ export function RequestsDrawer() {
   const act = useActions();
   const req = pending(d);
   const today = todayIso();
+  const tl = useTranslations('apptList');
+  const [busy, setBusy] = useState(false);
+  // Requests that don't clash with another booking: safe to accept together.
+  const clear = req.filter((a) => !conflicts(d, a).length);
+  const acceptClear = async () => {
+    setBusy(true);
+    try {
+      const res = await api.post<{ done: number; failed: { id: string }[] }>(
+        '/appointments/bulk-status',
+        { refs: clear.map((a) => a.id), status: { status: 'BOOKED' } },
+        { businessId: d.business.id },
+      );
+      useProviderStore.getState().update((dd) => {
+        for (const a of dd.appointments)
+          if (clear.some((c) => c.id === a.id) && !res.failed.some((x) => x.id === a.id))
+            a.status = 'BOOKED';
+      });
+      ui.showToast(
+        res.failed.length
+          ? tl('acceptedSome', { done: res.done, failed: res.failed.length })
+          : tl('accepted', { n: res.done }),
+      );
+    } catch {
+      ui.showToast(t('common.failed'));
+    } finally {
+      setBusy(false);
+    }
+  };
   return (
     <Drawer label={t('requests.title')}>
       <div className={k('dr-h')}>
@@ -200,7 +230,19 @@ export function RequestsDrawer() {
           <h2>{t('requests.title')}</h2>
           <p className={k('small muted')}>{t('requests.sub')}</p>
         </div>
-        <CloseButton />
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+          {clear.length > 1 && (
+            <button
+              type="button"
+              className={k('btn btn-primary btn-sm')}
+              disabled={busy}
+              onClick={() => void acceptClear()}
+            >
+              {tl('acceptClear', { n: clear.length })}
+            </button>
+          )}
+          <CloseButton />
+        </div>
       </div>
       <div className={k('dr-b')} style={{ gap: 10 }}>
         {req.length ? (

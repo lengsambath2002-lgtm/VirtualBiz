@@ -46,4 +46,10 @@ public final class AppointmentInputs {
     public record Status(@NotNull AppointmentStatus status, @Size(max = 30) String reason,
             @Size(max = 300) String message) {
     }
+
+    /** {@code POST /api/appointments/bulk-status}: one status change for several appointments. */
+    public record BulkStatus(@jakarta.validation.constraints.NotEmpty
+            @jakarta.validation.constraints.Size(max = 100) java.util.List<String> refs,
+            @jakarta.validation.constraints.NotNull @jakarta.validation.Valid Status status) {
+    }
 }

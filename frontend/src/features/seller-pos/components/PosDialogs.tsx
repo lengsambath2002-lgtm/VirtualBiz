@@ -1,5 +1,7 @@
 'use client';
 
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
+
 import { useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
 
@@ -8,18 +10,18 @@ import {
   Ic,
   Modal,
   ms,
-  posSalesFrom,
   posTotals,
   s,
   saleNet,
   shiftCash,
   shiftFloat,
-  today0,
+  fetchReceiptHistory,
   useDb,
   useFmt,
   useSellerStore,
   useUi,
   type CashTenderInfo,
+  type SellerPosSale,
   useMethodName,
 } from '@/features/seller-shared';
 import type { PaymentMethod } from '@/lib/domain';
@@ -27,6 +29,9 @@ import { useSession } from '@/lib/auth';
 import { cashChange, formatCashChange, khrRate, round2 } from '@/lib/money';
 import { acceptedMethods, policyOf, vatIncluded } from '@/lib/shop';
 import { ShareReceipt } from '@/features/receipt-share';
+import { Pagination } from '@/components/data';
+import { ErrorView } from '@/components/feedback';
+import { ppDay } from '@/lib/utils/dateRange';
 
 import { focusPosSearch, usePosActions } from '../hooks/usePosActions';
 
@@ -643,28 +648,78 @@ export function RefundDialog({ saleId }: { saleId: string }) {
   );
 }
 
+/**
+ * Receipts (docs/api/phase16-shop-lists.md): a day at a time from the API, or a search by receipt
+ * number or customer over all of them, so an older sale can be reprinted, shared or refunded.
+ */
 export function ReceiptsDialog() {
   const t = useTranslations('seller.pos.receipts');
+  const th = useTranslations('salesHistory');
   const tm = useMethodName();
   const db = useDb();
   const f = useFmt();
-  const list = posSalesFrom(db.pos.sales, today0()).slice().reverse();
+  const [day, setDay] = useState(() => ppDay(new Date()));
+  const [q, setQ] = useState('');
+  const [page, setPage] = useState(0);
+  const query = new URLSearchParams({
+    ...(q.trim() ? { q: q.trim() } : { from: day, to: day }),
+    page: String(page),
+    size: '20',
+  }).toString();
+  const { data, error, refetch } = useQuery({
+    queryKey: ['seller', 'receipts', db.shop.id, query],
+    queryFn: () => fetchReceiptHistory(db.shop.id, query),
+    placeholderData: keepPreviousData,
+  });
+  const open = (sl: SellerPosSale) => {
+    useSellerStore.getState().rememberSales([sl]);
+    useUi.getState().open({ kind: 'posReceipt', saleId: sl.id, fresh: false });
+  };
   return (
     <Modal>
       <h2>{t('title')}</h2>
-      {list.length ? (
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div className={s.field} style={{ flex: '1 1 180px' }}>
+          <input
+            type="search"
+            value={q}
+            placeholder={th('searchPh')}
+            aria-label={th('searchLabel')}
+            onChange={(e) => {
+              setQ(e.target.value);
+              setPage(0);
+            }}
+          />
+        </div>
+        <div className={s.field}>
+          <input
+            type="date"
+            value={day}
+            max={ppDay(new Date())}
+            disabled={!!q.trim()}
+            aria-label={t('day')}
+            onChange={(e) => {
+              if (e.target.value) setDay(e.target.value);
+              setPage(0);
+            }}
+          />
+        </div>
+      </div>
+      {error && !data ? (
+        <ErrorView error={error} retry={() => void refetch()} size="panel" />
+      ) : !data ? (
+        <div className={s.empty} aria-busy="true" />
+      ) : data.items.length ? (
         <div>
-          {list.map((sl) => (
+          {data.items.map((sl) => (
             <button
               key={sl.id}
               type="button"
               className={s.row}
               style={{ gridTemplateColumns: 'auto 1fr auto', padding: '10px 0' }}
-              onClick={() =>
-                useUi.getState().open({ kind: 'posReceipt', saleId: sl.id, fresh: false })
-              }
+              onClick={() => open(sl)}
             >
-              <span className={cx(s.num, s.small)}>{f.hm(sl.at)}</span>
+              <span className={cx(s.num, s.small)}>{q.trim() ? f.fmtDT(sl.at) : f.hm(sl.at)}</span>
               <span className={cx(s.small, s.ellipsis)} style={{ minWidth: 0 }}>
                 {sl.number} · {sl.lines.map((l) => l.title).join(', ')}
                 <span className={cx(s.tiny, s.muted, s.block)}>
@@ -675,10 +730,11 @@ export function ReceiptsDialog() {
               <b className={s.num}>{f.money(saleNet(sl))}</b>
             </button>
           ))}
+          <Pagination page={page} size={20} total={data.total} onPage={setPage} />
         </div>
       ) : (
         <div className={s.empty}>
-          <strong>{t('none')}</strong>
+          <strong>{q.trim() ? th('noMatch') : t('none')}</strong>
         </div>
       )}
     </Modal>

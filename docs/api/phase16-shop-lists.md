@@ -45,9 +45,31 @@ written unless `skipInvalid=true`, which writes the good rows only.
 - **customers** (both): `Name`, `Phone` (required), `Email`, `District`, `Note`. The phone matches an
   existing customer (updated; blank cells leave fields as they are) or adds a new one.
 
+## Sales, receipts and appointments
+
+- `GET /api/sales/history` (service providers) and `GET /api/pos/sales/history` (product shops,
+  the register's `R-` receipts): `q` (receipt number or customer), `pay` (CASH/KHQR/CARD), `cashier`,
+  `refunded` (yes/no), `from` / `to`; sort `at` (default `-at`), `total`, `number` (`SaleSpecs`).
+- `GET /api/appointments/list` (service providers): `status`, `staffId`, `serviceId`, `source`,
+  `from` / `to` (visit day), `q` (booking number, client name or phone digits); sort `when`
+  (default `-when`: day then start time), `price`, `number` (`AppointmentSpecs`). The calendar's own
+  `GET /api/appointments?from&to` is unchanged; the calendar now asks for any day or week outside the
+  60-days-back / 90-ahead window it loads at start.
+- `POST /api/appointments/bulk-status` `{refs (≤ 100 ids or numbers), status: {status, reason?,
+  message?}}` → `{done, failed: [{id, code, message}]}`: each through the single status change (rules,
+  clash check, notifications). `BulkResult` now lives in `common.list` (the console's bulk actions
+  use it too).
+
 ## Screens
 
 - Seller **Products**: Export, Import CSV, and row selection with Publish / Move to draft / Delete.
 - Seller **Customers** and provider **Clients**: the shared `CustomerList` (segments, filters in
   the URL, sortable lifetime columns, pages, Add customer, Import CSV, Export).
 - Seller **Orders**: history tabs as above, with Export of the filtered view (up to a year).
+- Seller **Register → Receipts**: any day, or a search over all receipts, paged; an older receipt
+  opens for reprint, share or refund.
+- Seller **Reviews** (waiting for a reply / replied, stars, search) and **Promotions** (status with
+  counts, search) filter with their state in the URL.
+- Provider **Sales**: the transactions table is the paged history (was the latest 40 of 90 days).
+- Provider **Calendar → List**: every appointment with filters, export, and "Accept N requests" for
+  selected requests; the requests drawer has "Accept all without a clash".

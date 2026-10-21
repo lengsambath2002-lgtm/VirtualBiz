@@ -1,0 +1,24 @@
+{
+  "title": "Appointments",
+  "list": "List",
+  "when": "When",
+  "service": "Service",
+  "staff": "Team member",
+  "status": "Status",
+  "source": "Booked via",
+  "price": "Price",
+  "sourceOpt": {
+    "ONLINE": "Online",
+    "PHONE": "Phone",
+    "WALK_IN": "Walk-in"
+  },
+  "searchPh": "Booking number, client name or phone",
+  "searchLabel": "Search appointments",
+  "noMatch": "No appointments match",
+  "noMatchBody": "Try another search, or clear some filters.",
+  "empty": "No appointments yet",
+  "acceptN": "{n, plural, =0 {Select requests to accept} one {Accept # request} other {Accept # requests}}",
+  "accepted": "Accepted {n, plural, one {# request} other {# requests}}.",
+  "acceptedSome": "Accepted {done}. {failed, plural, one {# request} other {# requests}} couldn't be accepted.",
+  "acceptClear": "Accept all without a clash ({n})"
+}

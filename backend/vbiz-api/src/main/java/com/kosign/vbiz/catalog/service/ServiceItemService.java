@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.common.list.BulkResult;
 import com.kosign.vbiz.booking.service.BookingRules;
 import com.kosign.vbiz.business.domain.BookingSettings;
 import com.kosign.vbiz.business.domain.Business;
@@ -77,6 +78,25 @@ public class ServiceItemService {
             ensureCategory(w, s.getCategory());
         }
         return CatalogMapper.toProvider(services.saveAndFlush(s));
+    }
+
+    /** Online booking on or off for several services at once (docs/api/phase17-more-lists.md). */
+    @Transactional
+    public BulkResult setBookableOnline(List<UUID> ids, boolean online) {
+        Workspace w = serviceWorkspace(true);
+        int done = 0;
+        List<BulkResult.Failure> failed = new java.util.ArrayList<>();
+        for (UUID id : ids.stream().distinct().limit(200).toList()) {
+            var s = services.findById(id).filter(x -> x.getBusinessId().equals(w.businessId()) && x.getDeletedAt() == null);
+            if (s.isEmpty()) {
+                failed.add(new BulkResult.Failure(id.toString(), StatusCode.SERVICE_NOT_FOUND.name(), "Service not found"));
+                continue;
+            }
+            s.get().setBookableOnline(online);
+            done++;
+        }
+        services.flush();
+        return new BulkResult(done, failed);
     }
 
     @Transactional

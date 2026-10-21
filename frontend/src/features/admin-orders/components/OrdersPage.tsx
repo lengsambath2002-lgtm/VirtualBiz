@@ -120,6 +120,7 @@ export function OrdersPage() {
           ]}
         />
         <FilterBar
+          views="admin.orders"
           q={v.q}
           onQ={(q) => list.set({ q })}
           placeholder={t('searchPh')}

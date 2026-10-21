@@ -142,6 +142,7 @@ export function AppointmentList({ bar }: { bar: React.ReactNode }) {
       {bar}
       <div style={{ display: 'grid', gap: 12, margin: '12px 0' }}>
         <FilterBar
+          views="provider.appointments"
           q={v.q}
           onQ={(q) => list.set({ q })}
           placeholder={tl('searchPh')}

@@ -122,7 +122,8 @@
       "low": "Low stock: {item} has {n} left",
       "review": "{name} left a {n}-star review"
     },
-    "noNotifs": "You’re all caught up. New orders and alerts appear here."
+    "noNotifs": "You’re all caught up. New orders and alerts appear here.",
+    "seeAll": "See all notifications"
   },
   "palette": {
     "orders": "Orders",

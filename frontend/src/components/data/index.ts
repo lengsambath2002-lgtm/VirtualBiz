@@ -21,3 +21,4 @@ export {
 export { csvTemplate, parseCsv, type CsvTable } from './csv';
 export { useListQuery, type ListQuery, type Sort } from './useListQuery';
 export { default as dataStyles } from './data.module.css';
+export { SavedViews } from './SavedViews';

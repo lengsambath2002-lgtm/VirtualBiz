@@ -125,6 +125,7 @@ export function SalesHistory() {
       </div>
       <div style={{ padding: '12px 14px 0' }}>
         <FilterBar
+          views="provider.sales"
           q={v.q}
           onQ={(q) => list.set({ q })}
           placeholder={th('searchPh')}

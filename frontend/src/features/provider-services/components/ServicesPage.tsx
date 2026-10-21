@@ -3,7 +3,7 @@
 import { useState } from 'react';
 
 import { EmptyView } from '@/components/feedback';
-import { isApiError } from '@/lib/api';
+import { api, isApiError } from '@/lib/api';
 import type { Service } from '@/lib/domain';
 import { cn as cx } from '@/lib/utils/cn';
 import { photoBg } from '@/lib/utils/photo';
@@ -107,6 +107,27 @@ export function ServicesPage() {
       flip(!on);
       ui.showToast(t('services.saveFailed'));
       return false;
+    }
+  };
+
+  /** Online booking on or off for a whole category (`POST /api/catalog/services/online`). */
+  const setAllOnline = async (ids: string[], on: boolean) => {
+    const before = new Map(d.services.map((x) => [x.id, x.bookableOnline]));
+    useProviderStore.getState().update((dd) => {
+      for (const x of dd.services) if (ids.includes(x.id)) x.bookableOnline = on;
+    });
+    try {
+      const r = await api.post<{ done: number }>(
+        '/catalog/services/online',
+        { ids, online: on },
+        { businessId: d.business.id },
+      );
+      ui.showToast(t(on ? 'services.allOnlineDone' : 'services.allHiddenDone', { n: r.done }));
+    } catch {
+      useProviderStore.getState().update((dd) => {
+        for (const x of dd.services) if (before.has(x.id)) x.bookableOnline = before.get(x.id)!;
+      });
+      ui.showToast(t('services.saveFailed'));
     }
   };
 
@@ -240,6 +261,38 @@ export function ServicesPage() {
                 {f.category(cg)}
                 <span className={c.count}>{list.length}</span>
               </h2>
+              {list.length > 1 && (
+                <span style={{ display: 'flex', gap: 6, marginLeft: 'auto' }}>
+                  {list.some((x) => !x.bookableOnline) && (
+                    <button
+                      type="button"
+                      className={k('btn btn-ghost btn-sm')}
+                      onClick={() =>
+                        void setAllOnline(
+                          list.map((x) => x.id),
+                          true,
+                        )
+                      }
+                    >
+                      {t('services.allOnline')}
+                    </button>
+                  )}
+                  {list.some((x) => x.bookableOnline) && (
+                    <button
+                      type="button"
+                      className={k('btn btn-ghost btn-sm')}
+                      onClick={() =>
+                        void setAllOnline(
+                          list.map((x) => x.id),
+                          false,
+                        )
+                      }
+                    >
+                      {t('services.allHidden')}
+                    </button>
+                  )}
+                </span>
+              )}
               <button
                 type="button"
                 className={c.addIn}

@@ -1,0 +1,12 @@
+{
+  "title": "Notifications",
+  "sub": "Everything that happened in your shop, newest first.",
+  "markAll": "Mark all as read",
+  "show": "Show",
+  "all": "All",
+  "unread": "Unread",
+  "empty": "No notifications yet",
+  "emptyBody": "New orders, bookings, reviews and stock alerts appear here.",
+  "noUnread": "You're all caught up",
+  "noUnreadBody": "No unread notifications."
+}

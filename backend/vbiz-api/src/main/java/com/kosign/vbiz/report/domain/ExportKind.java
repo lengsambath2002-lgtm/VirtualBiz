@@ -9,6 +9,7 @@ import com.kosign.vbiz.business.domain.BusinessType;
 public enum ExportKind {
     ORDERS(BusinessType.PRODUCT, true),
     PRODUCTS(BusinessType.PRODUCT, false),
+    MOVEMENTS(BusinessType.PRODUCT, true),
     SALES(null, true),
     APPOINTMENTS(BusinessType.SERVICE, true),
     CUSTOMERS(null, false);

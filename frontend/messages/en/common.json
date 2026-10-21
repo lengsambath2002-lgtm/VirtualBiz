@@ -219,6 +219,18 @@
     },
     "between": "{from} – {to}",
     "since": "since {from}",
-    "until": "until {to}"
+    "until": "until {to}",
+    "views": {
+      "label": "View",
+      "none": "All (no view)",
+      "saveCurrent": "Save view",
+      "name": "View name",
+      "namePh": "e.g. Unpaid this week",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete view",
+      "tooMany": "You have 20 views for this list. Delete one first.",
+      "failed": "Couldn't save the view."
+    }
   }
 }

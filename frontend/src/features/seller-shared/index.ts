@@ -12,6 +12,7 @@ export {
   createManualOrder,
   fetchOrderHistory,
   fetchReceiptHistory,
+  toMovement,
   fetchSellerCatalog,
   toSellerProduct,
   type ManualOrderInput,

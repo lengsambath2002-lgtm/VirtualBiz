@@ -150,6 +150,7 @@ export function OrderHistory({ tab }: { tab: Extract<OrderTab, 'done' | 'cancell
   return (
     <>
       <FilterBar
+        views="seller.orders"
         q={v.q}
         onQ={(q) => list.set({ q })}
         placeholder={t('searchPh')}

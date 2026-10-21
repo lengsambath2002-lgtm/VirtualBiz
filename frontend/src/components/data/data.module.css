@@ -577,3 +577,28 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* ── saved views ───────────────────────────────────────────────────── */
+.views {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.viewForm {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.viewForm input {
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--g-fill-strong);
+  padding: 0 12px;
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--ink);
+  min-width: 160px;
+}

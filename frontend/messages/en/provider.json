@@ -43,7 +43,8 @@
     },
     "loadFailed": "Couldn't load your workspace.",
     "retry": "Try again",
-    "noNotifications": "You’re all caught up. Booking requests and alerts appear here."
+    "noNotifications": "You’re all caught up. Booking requests and alerts appear here.",
+    "seeAll": "See all notifications"
   },
   "common": {
     "close": "Close",
@@ -524,7 +525,11 @@
     "catNew": "New category",
     "catAdd": "Add",
     "catErrName": "Use 1–40 characters.",
-    "catErrTaken": "You already have this category."
+    "catErrTaken": "You already have this category.",
+    "allOnline": "All online",
+    "allHidden": "Hide all",
+    "allOnlineDone": "{n, plural, one {# service is} other {# services are}} bookable online.",
+    "allHiddenDone": "{n, plural, one {# service is} other {# services are}} hidden from online booking."
   },
   "team": {
     "title": "Team",

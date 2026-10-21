@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kosign.vbiz.common.list.BulkResult;
 import com.kosign.vbiz.catalog.payload.ProviderServiceResponse;
 import com.kosign.vbiz.catalog.payload.ServiceInput;
 import com.kosign.vbiz.catalog.service.ServiceItemService;
@@ -33,6 +34,16 @@ public class ServiceItemController extends BaseController {
     private final ServiceItemService services;
 
     /** Body: {@code {"from": "Hair", "to": "Hair & beauty"}}; returns the shop's category list. */
+    /** {@code {ids, online}}: online booking on or off for several services. */
+    @PostMapping("/online")
+    public ResponseEntity<ApiResponse<BulkResult>> setOnline(@RequestBody OnlineInput in) {
+        return ok(services.setBookableOnline(in.ids(), in.online()));
+    }
+
+    public record OnlineInput(@jakarta.validation.constraints.NotEmpty java.util.List<java.util.UUID> ids,
+            boolean online) {
+    }
+
     @PostMapping("/categories/rename")
     public ResponseEntity<ApiResponse<List<String>>> renameCategory(@RequestBody java.util.Map<String, String> body) {
         return ok(services.renameCategory(body.get("from"), body.get("to")));

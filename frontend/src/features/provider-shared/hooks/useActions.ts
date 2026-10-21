@@ -185,7 +185,13 @@ export function useActions() {
             'div',
             { className: k('field') },
             h('label', { htmlFor: 'dm' }, t('appt.declineMessage')),
-            h('textarea', { id: 'dm', 'data-k': 'msg', rows: 2, maxLength: 300, defaultValue: msg }),
+            h('textarea', {
+              id: 'dm',
+              'data-k': 'msg',
+              rows: 2,
+              maxLength: 300,
+              defaultValue: msg,
+            }),
           ),
         ),
       });

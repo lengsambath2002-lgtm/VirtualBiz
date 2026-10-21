@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -12,7 +13,8 @@ import org.springframework.data.repository.query.Param;
 
 import com.kosign.vbiz.notification.domain.Notification;
 
-public interface NotificationRepository extends JpaRepository<Notification, UUID> {
+public interface NotificationRepository extends JpaRepository<Notification, UUID>,
+        JpaSpecificationExecutor<Notification> {
 
     @Query("select n from Notification n where n.userId = :userId order by n.at desc, n.id desc")
     List<Notification> latestOfUser(@Param("userId") UUID userId, Pageable page);

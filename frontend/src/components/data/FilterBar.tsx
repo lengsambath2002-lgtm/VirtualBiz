@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils/cn';
 import { isDay, presetOf, RANGE_PRESETS, rangeOf, type RangePreset } from '@/lib/utils/dateRange';
 
 import d from './data.module.css';
+import { SavedViews } from './SavedViews';
 
 export interface ActiveFilter {
   key: string;
@@ -29,6 +30,7 @@ export function FilterBar({
   active = [],
   onClearAll,
   actions,
+  views,
 }: {
   q?: string;
   onQ?: (q: string) => void;
@@ -40,6 +42,8 @@ export function FilterBar({
   onClearAll?: () => void;
   /** Right-hand buttons: Export, Import, New … */
   actions?: ReactNode;
+  /** The list's key for saved views ("admin.orders"); shows the views control. */
+  views?: string;
 }) {
   const t = useTranslations('common.data');
   const [text, setText] = useState(q ?? '');
@@ -77,7 +81,12 @@ export function FilterBar({
           </label>
         )}
         {children}
-        {actions && <div className={d.actions}>{actions}</div>}
+        {(actions || views) && (
+          <div className={d.actions}>
+            {views && <SavedViews list={views} />}
+            {actions}
+          </div>
+        )}
       </div>
       {!!active.length && (
         <div className={d.chips} aria-label={t('activeFilters')}>
@@ -121,8 +130,8 @@ export function SelectFilter({
   const t = useTranslations('common.data');
   return (
     <label className={cn(d.select, value && d.selectOn)}>
-      <span>{label}</span>
-      <select value={value} onChange={(e) => onChange(e.target.value)}>
+      <span aria-hidden>{label}</span>
+      <select aria-label={label} value={value} onChange={(e) => onChange(e.target.value)}>
         <option value="">{anyLabel ?? t('any')}</option>
         {options.map((o) => (
           <option key={o.value} value={o.value}>
@@ -188,8 +197,9 @@ export function DateRangeFilter({
   return (
     <div className={cn(d.range, has && d.selectOn)}>
       <label className={d.select}>
-        <span>{label ?? t('date')}</span>
+        <span aria-hidden>{label ?? t('date')}</span>
         <select
+          aria-label={label ?? t('date')}
           value={mode}
           onChange={(e) => {
             const v = e.target.value;

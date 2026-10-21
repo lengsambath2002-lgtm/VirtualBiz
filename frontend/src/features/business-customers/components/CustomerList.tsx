@@ -230,6 +230,7 @@ export function CustomerList({
           ]}
         />
         <FilterBar
+          views="customers"
           q={v.q}
           onQ={(q) => list.set({ q })}
           placeholder={t('searchPh')}

@@ -61,9 +61,9 @@ export function TeamAccess({ businessId }: { businessId: string }) {
   };
 
   const roleLabel = (r: MemberRole) => t(`role.${r}`);
-  // Former team members (removed logins) stay for their history; shown on request.
-  const removed = (members ?? []).filter((m) => m.userId && !m.active);
-  const people = (members ?? []).filter((m) => m.active || (showRemoved && m.userId));
+  // Former team members stay for their history (past bookings, sales); shown on request.
+  const removed = (members ?? []).filter((m) => !m.active);
+  const people = (members ?? []).filter((m) => m.active || showRemoved);
 
   return (
     <section className={t$.panel} aria-labelledby="team-access-title">
@@ -164,7 +164,7 @@ export function TeamAccess({ businessId }: { businessId: string }) {
                     {t('giveLogin')}
                   </button>
                 )}
-                {canManage(m) && m.userId && (
+                {canManage(m) && (
                   <button
                     type="button"
                     className={t$.ghost}

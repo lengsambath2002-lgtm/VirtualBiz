@@ -162,6 +162,7 @@ export function ReviewsPage() {
           ]}
         />
         <FilterBar
+          views="admin.reviews"
           q={v.q}
           onQ={(q) => list.set({ q })}
           placeholder={t('searchPh')}

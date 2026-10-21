@@ -88,6 +88,7 @@ export function AuditPage() {
       />
       <div style={{ marginBottom: 12 }}>
         <FilterBar
+          views="admin.audit"
           q={v.q}
           onQ={(q) => list.set({ q })}
           placeholder={t('searchPh')}

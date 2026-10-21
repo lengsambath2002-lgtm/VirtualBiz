@@ -1,9 +1,22 @@
 'use client';
 
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
 
-import { EmptyRow } from '@/components/feedback';
+import {
+  chipsFor,
+  DateRangeFilter,
+  ExportButton,
+  FilterBar,
+  Pagination,
+  SegmentFilter,
+  SelectFilter,
+  useListQuery,
+  useRangeLabel,
+} from '@/components/data';
+import { EmptyRow, ErrorView } from '@/components/feedback';
+import { api, type ApiStockMovement } from '@/lib/api';
+import { rangeOf } from '@/lib/utils/dateRange';
 import {
   cx,
   findVariant,
@@ -13,6 +26,7 @@ import {
   Thumb,
   useDb,
   useFmt,
+  toMovement,
   useUi,
   vname,
   type IcName,
@@ -36,8 +50,7 @@ const KIND: Record<StockReason, ['sale' | 'in' | 'loss' | 'back' | 'adjust', IcN
   QUICK_ADJUST: ['adjust', 'edit'],
 };
 
-const PAGE = 8;
-const MAX = 40;
+const KEYS = ['mq', 'reason', 'direction', 'from', 'to'] as const;
 
 const initials = (n: string) =>
   n
@@ -56,9 +69,35 @@ export function RecentChanges() {
   const tr = useTranslations('seller.stockReasons');
   const db = useDb();
   const f = useFmt();
-  const [all, setAll] = useState(false);
-  const sorted = [...db.log].sort((a, b) => b.at.localeCompare(a.at));
-  const rows = sorted.slice(0, all ? MAX : PAGE);
+  const th = useTranslations('stockHistory');
+  const list = useListQuery(KEYS, { size: 10 });
+  const { values: v } = list;
+  const query = new URLSearchParams(
+    Object.entries({
+      q: v.mq,
+      reason: v.reason,
+      direction: v.direction,
+      from: v.from,
+      to: v.to,
+      page: String(list.page),
+      size: String(list.size),
+    }).filter(([, x]) => x) as [string, string][],
+  ).toString();
+  // The local log's length joins the key: a stock change made here refetches the page.
+  const { data, error, refetch } = useQuery({
+    queryKey: ['seller', 'movements', db.shop.id, query, db.log.length],
+    queryFn: () =>
+      api.get<{ items: ApiStockMovement[]; total: number }>(
+        `/inventory/movements/history?${query}`,
+        {
+          businessId: db.shop.id,
+        },
+      ),
+    placeholderData: keepPreviousData,
+  });
+  const rows = (data?.items ?? []).map(toMovement);
+  const rangeLabel = useRangeLabel(t('col.when'));
+  const span = v.from && v.to ? { from: v.from, to: v.to } : rangeOf('last365');
 
   const openOrder = (number: string) => {
     const o = db.orders.find((x) => x.number === number);
@@ -69,10 +108,54 @@ export function RecentChanges() {
     <section className={s.panel}>
       <div className={s.panelH}>
         <div>
-          <h2>{t('recent')}</h2>
-          <p className={cx(s.small, s.muted)}>{t('recentSub')}</p>
+          <h2>{th('title')}</h2>
+          <p className={cx(s.small, s.muted)}>{th('sub')}</p>
         </div>
+        <ExportButton
+          path={`/exports/movements?${new URLSearchParams(span)}`}
+          businessId={db.shop.id}
+          className={cx(s.btn, s.btnGhost, s.btnSm)}
+        />
       </div>
+      <div style={{ display: 'grid', gap: 10, padding: '12px 16px' }}>
+        <SegmentFilter
+          label={th('direction')}
+          value={v.direction}
+          onChange={(direction) => list.set({ direction })}
+          options={[
+            { value: '', label: th('all') },
+            { value: 'in', label: th('in') },
+            { value: 'out', label: th('out') },
+          ]}
+        />
+        <FilterBar
+          views="seller.stock"
+          q={v.mq}
+          onQ={(mq) => list.set({ mq })}
+          placeholder={th('searchPh')}
+          label={th('searchLabel')}
+          active={chipsFor(
+            list,
+            { reason: (x) => `${t('col.reason')}: ${tr(x as StockReason)}` },
+            rangeLabel,
+          )}
+          onClearAll={list.reset}
+        >
+          <SelectFilter
+            label={t('col.reason')}
+            value={v.reason}
+            onChange={(reason) => list.set({ reason })}
+            options={(Object.keys(KIND) as StockReason[]).map((x) => ({ value: x, label: tr(x) }))}
+          />
+          <DateRangeFilter
+            label={t('col.when')}
+            from={v.from}
+            to={v.to}
+            onChange={(from, to) => list.set({ from, to })}
+          />
+        </FilterBar>
+      </div>
+      {error && !data && <ErrorView error={error} retry={() => void refetch()} size="panel" />}
       <div className={s.tblWrap}>
         <table className={r.table}>
           <colgroup>
@@ -92,8 +175,12 @@ export function RecentChanges() {
             </tr>
           </thead>
           <tbody>
-            {!rows.length && (
-              <EmptyRow cols={5} title={t('noMovesTitle')} body={t('noMovesBody')} />
+            {data && !rows.length && (
+              <EmptyRow
+                cols={5}
+                title={list.active.length ? th('noMatch') : t('noMovesTitle')}
+                body={list.active.length ? th('noMatchBody') : t('noMovesBody')}
+              />
             )}
             {rows.map((l) => {
               const [p, v] = findVariant(db.products, l.variantId);
@@ -163,16 +250,14 @@ export function RecentChanges() {
           </tbody>
         </table>
       </div>
-      {sorted.length > PAGE && (
-        <div className={r.more}>
-          <button
-            type="button"
-            className={cx(s.btn, s.btnGhost, s.btnSm)}
-            onClick={() => setAll(!all)}
-          >
-            {all ? t('showLess') : t('showMore', { n: Math.min(sorted.length, MAX) - PAGE })}
-          </button>
-        </div>
+      {data && (
+        <Pagination
+          page={list.page}
+          size={list.size}
+          total={data.total}
+          onPage={(page) => list.set({ page })}
+          onSize={(size) => list.set({ size })}
+        />
       )}
     </section>
   );

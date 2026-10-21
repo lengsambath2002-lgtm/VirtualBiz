@@ -31,7 +31,7 @@ const NEW_MENU: { key: 'product' | 'receive' | 'promo' | 'manual'; icon: IcName 
 ];
 
 /** Shop inbox entries (`kind` + `params` from the API) in the UI language. */
-function useNotifText() {
+export function useNotifText() {
   const t = useTranslations('seller.top.notif');
   const why = useReasonText();
   const status = useStatusNotifText();
@@ -190,6 +190,17 @@ export function TopBar() {
                 </button>
               ))}
             </div>
+            <button
+              type="button"
+              className={cx(s.link, s.quiet, s.small)}
+              style={{ display: 'block', padding: '10px 16px', textAlign: 'left' }}
+              onClick={() => {
+                setMenu(null);
+                void go('/seller/notifications');
+              }}
+            >
+              {t('seeAll')}
+            </button>
           </div>
         )}
       </div>

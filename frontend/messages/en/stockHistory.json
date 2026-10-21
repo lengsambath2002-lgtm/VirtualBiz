@@ -1,0 +1,12 @@
+{
+  "title": "Stock history",
+  "sub": "Every change to your stock: sales, deliveries, counts and corrections.",
+  "direction": "Direction",
+  "all": "All",
+  "in": "Stock in",
+  "out": "Stock out",
+  "searchPh": "Product, SKU or barcode",
+  "searchLabel": "Search stock history",
+  "noMatch": "No stock changes match",
+  "noMatchBody": "Try another search, or clear some filters."
+}

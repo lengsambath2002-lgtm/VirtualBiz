@@ -183,4 +183,64 @@ class ShopListsIntegrationTest extends BookingTestSupport {
         assertThat(shop(dana, "GET", "/api/appointments/" + a, null).path("data").path("status").asText())
                 .isEqualTo("BOOKED");
     }
+
+    @Test
+    void stock_history_notifications_and_services_online_page_and_filter() throws Exception {
+        Session nita = login(NITA, DEMO_PASSWORD);
+        JsonNode moves = shop(nita, NITA_GADGET_ID, "GET", "/api/inventory/movements/history?size=5", null)
+                .path("data");
+        assertThat(moves.path("total").asLong()).isPositive();
+        shop(nita, NITA_GADGET_ID, "GET", "/api/inventory/movements/history?direction=out&size=50", null)
+                .path("data").path("items").forEach(m -> assertThat(m.path("delta").asInt()).isNegative());
+        shop(nita, NITA_GADGET_ID, "GET", "/api/inventory/movements/history?reason=RECEIVED&size=50", null)
+                .path("data").path("items").forEach(m -> assertThat(m.path("reason").asText()).isEqualTo("RECEIVED"));
+        assertThat(shop(nita, NITA_GADGET_ID, "GET", "/api/inventory/movements/history?q=USB-C", null).path("data")
+                .path("total").asLong()).isPositive();
+        String csv = mvc.perform(get("/api/exports/movements").header("Authorization", nita.bearer())
+                .header("X-Business-Id", NITA_GADGET_ID)).andReturn().getResponse()
+                .getContentAsString(java.nio.charset.StandardCharsets.UTF_8);
+        assertThat(csv).startsWith("\uFEFF\"Time\",\"Product\"");
+
+        JsonNode inbox = shop(nita, NITA_GADGET_ID, "GET", "/api/notifications/history?size=3", null).path("data");
+        assertThat(inbox.path("items").size()).isLessThanOrEqualTo(3);
+        assertThat(inbox.path("total").asLong()).isGreaterThanOrEqualTo(inbox.path("items").size());
+        shop(nita, NITA_GADGET_ID, "GET", "/api/notifications/history?unread=true&size=50", null).path("data")
+                .path("items").forEach(n -> assertThat(n.path("unread").asBoolean()).isTrue());
+
+        Session dana = login(DANA, DEMO_PASSWORD);
+        JsonNode svc = shop(dana, "GET", "/api/catalog/services", null).path("data");
+        String a = svc.path(0).path("id").asText();
+        String b = svc.path(1).path("id").asText();
+        JsonNode off = shop(dana, "POST", "/api/catalog/services/online",
+                Map.of("ids", List.of(a, b, "99999999-9999-4999-8999-999999999999"), "online", false)).path("data");
+        assertThat(off.path("done").asInt()).isEqualTo(2);
+        assertThat(off.path("failed").size()).isEqualTo(1);
+        assertThat(jdbc.queryForObject("select count(*) from service where id in (?::uuid, ?::uuid) and not bookable_online",
+                Integer.class, a, b)).isEqualTo(2);
+        shop(dana, "POST", "/api/catalog/services/online", Map.of("ids", List.of(a, b), "online", true));
+    }
+
+    @Test
+    void a_person_saves_views_per_list_replaces_by_name_and_sees_only_their_own() throws Exception {
+        Session nita = login(NITA, DEMO_PASSWORD);
+        String list = "seller.orders." + System.nanoTime() % 100000;
+        JsonNode v = as(nita, "POST", "/api/me/views", Map.of("list", list, "name", "Pickup this month",
+                "query", "?method=PICKUP&from=2026-10-01&to=2026-10-31&page=3")).path("data");
+        assertThat(v.path("query").asText()).isEqualTo("method=PICKUP&from=2026-10-01&to=2026-10-31");
+        JsonNode again = as(nita, "POST", "/api/me/views", Map.of("list", list, "name", "pickup THIS month",
+                "query", "method=DELIVERY")).path("data");
+        assertThat(again.path("id").asText()).isEqualTo(v.path("id").asText());
+        assertThat(as(nita, "GET", "/api/me/views?list=" + list, null).path("data").size()).isEqualTo(1);
+
+        Session dana = login(DANA, DEMO_PASSWORD);
+        assertThat(as(dana, "GET", "/api/me/views?list=" + list, null).path("data").size()).isZero();
+        assertThat(code(body(mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                .delete("/api/me/views/" + v.path("id").asText()).header("Authorization", dana.bearer()))
+                .andReturn()))).isEqualTo("NOT_FOUND");
+        mvc.perform(org.springframework.test.web.servlet.request.MockMvcRequestBuilders
+                .delete("/api/me/views/" + v.path("id").asText()).header("Authorization", nita.bearer()));
+        assertThat(as(nita, "GET", "/api/me/views?list=" + list, null).path("data").size()).isZero();
+        assertThat(code(as(nita, "POST", "/api/me/views", Map.of("list", "Bad List!", "name", "x"))))
+                .isEqualTo("VALIDATION_FAILED");
+    }
 }

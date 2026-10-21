@@ -7,6 +7,7 @@ import { readAllNotifications, readNotification } from '@/features/provider-shar
 import { k } from '@/features/provider-shared/cx';
 import { PIcon, type PIconName } from '@/features/provider-shared/components/Icon';
 import { useActions } from '@/features/provider-shared/hooks/useActions';
+import { useRouter } from '@/lib/i18n/navigation';
 import { useFmt } from '@/features/provider-shared/hooks/useFmt';
 import { useData, useProviderStore, useUi, type Overlay } from '@/features/provider-shared/store';
 import { WorkspaceSwitcher } from '@/features/account-switcher';
@@ -27,6 +28,7 @@ const NEW_MENU: [string, PIconName, Overlay][] = [
 
 /** Top bar: business, Ctrl K search, + New menu, notifications, account. */
 export function TopBar() {
+  const router = useRouter();
   const t = useTranslations('provider');
   const d = useData();
   const menu = useUi((s) => s.menu);
@@ -101,7 +103,9 @@ export function TopBar() {
           <PIcon name="bell" />
           {unread > 0 && <span className={k('badge')}>{unread}</span>}
         </button>
-        {menu === 'n' && <Notifications d={d} onGo={a.go} />}
+        {menu === 'n' && (
+          <Notifications d={d} onGo={a.go} onAll={() => router.push('/provider/notifications')} />
+        )}
       </div>
       <WorkspaceSwitcher
         businessId={b.id}
@@ -114,17 +118,10 @@ export function TopBar() {
   );
 }
 
-function Notifications({
-  d,
-  onGo,
-}: {
-  d: ProviderData;
-  onGo: (p: 'marketing' | 'settings') => void;
-}) {
+/** Shop inbox entries in the UI language (the bell and the notifications page). */
+export function useProviderNotifText() {
   const f = useFmt();
   const { t } = f;
-  const update = useProviderStore((s) => s.update);
-  const ui = useUi();
   const status = useStatusNotifText();
   const when = (date: string) =>
     relKey(date, todayIso()) ? f.rel(date, todayIso()).toLowerCase() : f.rel(date, todayIso());
@@ -152,6 +149,23 @@ function Notifications({
         return status(n.kind, p) ?? n.kind;
     }
   };
+  return text;
+}
+
+function Notifications({
+  d,
+  onGo,
+  onAll,
+}: {
+  d: ProviderData;
+  onGo: (p: 'marketing' | 'settings') => void;
+  onAll: () => void;
+}) {
+  const f = useFmt();
+  const { t } = f;
+  const update = useProviderStore((s) => s.update);
+  const ui = useUi();
+  const text = useProviderNotifText();
   const markRead = (id?: string) => {
     update((x) => {
       x.notifications.forEach((n) => {
@@ -204,6 +218,17 @@ function Notifications({
           </button>
         ))}
       </div>
+      <button
+        type="button"
+        className={k('link quiet small')}
+        style={{ display: 'block', padding: '10px 16px', textAlign: 'left' }}
+        onClick={() => {
+          ui.set({ menu: null });
+          onAll();
+        }}
+      >
+        {t('shell.seeAll')}
+      </button>
     </div>
   );
 }

@@ -19,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.inventory.service.InventoryService;
 import com.kosign.vbiz.payment.domain.PaymentMethod;
 import com.kosign.vbiz.order.service.OrderService;
 import com.kosign.vbiz.order.domain.OrderSource;
@@ -84,6 +85,7 @@ public class ExportService {
     private final ProductVariantRepository variants;
     private final CollectionRepository collections;
     private final ClientRepository clients;
+    private final InventoryService inventory;
     private final AppointmentRepository appointments;
     private final ServiceItemRepository services;
     private final BusinessMemberRepository members;
@@ -125,6 +127,7 @@ public class ExportService {
             case SALES -> sales(b, from, to);
             case APPOINTMENTS -> appointments(b, from, to);
             case PRODUCTS -> products(b);
+            case MOVEMENTS -> movements(b, from, to);
             case CUSTOMERS -> customers(b);
         };
         String range = kind.dated() ? "-" + from + "_" + to : "-" + to;
@@ -198,6 +201,22 @@ public class ExportService {
                     CsvWriter.hm(a.getStart() + a.getDurationMin()), serviceNames.get(a.getServiceId()),
                     staff.get(a.getStaffId()), c == null ? null : c.getName(), c == null ? null : c.getPhone(),
                     a.getStatus(), a.getSource(), a.getPrice(), a.getNote(), a.getCancelReason());
+        }
+        return csv;
+    }
+
+    private CsvWriter movements(UUID b, LocalDate from, LocalDate to) {
+        List<InventoryService.MovementRow> ms = inventory.movementsForExport(b, new DayRange(from, to));
+        Map<UUID, ProductVariant> vs = new HashMap<>();
+        variants.findAllById(ids(ms, InventoryService.MovementRow::variantId)).forEach(v -> vs.put(v.getId(), v));
+        Map<UUID, String> titles = names(products.findAllById(vs.values().stream().map(ProductVariant::getProductId)
+                .distinct().toList()), Product::getId, Product::getTitle);
+        CsvWriter csv = new CsvWriter("Time", "Product", "Variant", "SKU", "Change", "Reason", "Note", "By");
+        for (InventoryService.MovementRow m : ms) {
+            ProductVariant v = vs.get(m.variantId());
+            csv.row(m.at(), v == null ? null : titles.get(v.getProductId()),
+                    v == null ? null : String.join(" / ", v.getOptionValues()), v == null ? null : v.getSku(),
+                    m.delta(), m.reason(), m.note(), m.byName());
         }
         return csv;
     }

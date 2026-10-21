@@ -1,8 +1,10 @@
 package com.kosign.vbiz.inventory.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kosign.vbiz.inventory.domain.StockReason;
+import com.kosign.vbiz.common.list.PageResponse;
 import com.kosign.vbiz.common.api.ApiResponse;
 import com.kosign.vbiz.common.api.BaseController;
 import com.kosign.vbiz.inventory.payload.RevertResponse;
@@ -34,6 +38,19 @@ import lombok.RequiredArgsConstructor;
 public class InventoryController extends BaseController {
 
     private final InventoryService inventory;
+
+    /** Every movement, a page at a time: reason, direction (in/out), product, search, day range. */
+    @GetMapping("/movements/history")
+    public ResponseEntity<ApiResponse<PageResponse<StockMovementResponse>>> history(
+            @RequestParam(required = false) StockReason reason, @RequestParam(required = false) String direction,
+            @RequestParam(required = false) UUID productId, @RequestParam(required = false) UUID variantId,
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @RequestParam(required = false) String sort, @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        return ok(inventory.history(reason, direction, productId, variantId, q, from, to, sort, page, size));
+    }
 
     @GetMapping("/movements")
     public ResponseEntity<ApiResponse<List<StockMovementResponse>>> movements(

@@ -157,6 +157,7 @@ export function UsersPage() {
           ]}
         />
         <FilterBar
+          views="admin.users"
           q={v.q}
           onQ={(q) => list.set({ q })}
           placeholder={t('searchPh')}

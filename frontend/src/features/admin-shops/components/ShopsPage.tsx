@@ -197,6 +197,7 @@ export function ShopsPage() {
           ]}
         />
         <FilterBar
+          views="admin.shops"
           q={v.q}
           onQ={(q) => list.set({ q })}
           placeholder={t('searchPh')}

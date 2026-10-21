@@ -1,5 +1,6 @@
 package com.kosign.vbiz.inventory.service;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
@@ -13,6 +14,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.inventory.repository.MovementSpecs;
+import com.kosign.vbiz.common.list.PageResponse;
+import com.kosign.vbiz.common.list.PageQuery;
+import com.kosign.vbiz.common.list.DayRange;
 import com.kosign.vbiz.business.service.WorkspaceAccess;
 import com.kosign.vbiz.business.service.WorkspaceAccess.Workspace;
 import com.kosign.vbiz.catalog.domain.Product;
@@ -70,6 +75,36 @@ public class InventoryService {
                         : movements.latest(w.businessId(), page);
         Map<UUID, UUID> productOf = productIds(rows.stream().map(StockMovement::getVariantId).toList());
         return rows.stream().map(m -> InventoryMapper.toResponse(m, productOf.get(m.getVariantId()))).toList();
+    }
+
+    /** A movement for the CSV export (the report package doesn't read the log itself). */
+    public record MovementRow(java.time.Instant at, UUID variantId, int delta, StockReason reason, String note,
+            String byName) {
+    }
+
+    /** Every movement of the shop in a day range, newest first (exports). */
+    @Transactional(readOnly = true)
+    public List<MovementRow> movementsForExport(UUID businessId, DayRange range) {
+        return movements.findAll(MovementSpecs.history(businessId, null, null, null, null, null, range),
+                org.springframework.data.domain.Sort.by("at").descending().and(
+                        org.springframework.data.domain.Sort.by("createdAt").descending()))
+                .stream().map(m -> new MovementRow(m.getAt(), m.getVariantId(), m.getDelta(), m.getReason(),
+                        m.getNote(), m.getByName()))
+                .toList();
+    }
+
+    /** Every stock movement, a page at a time, filtered (docs/api/phase17-more-lists.md). */
+    @Transactional(readOnly = true)
+    public PageResponse<StockMovementResponse> history(StockReason reason, String direction, UUID productId,
+            UUID variantId, String q, LocalDate from, LocalDate to, String sort, Integer page, Integer size) {
+        Workspace w = access.member();
+        PageQuery pq = PageQuery.of(page, size, sort, MovementSpecs.SORTS, "-at", null);
+        var result = movements.findAll(MovementSpecs.history(w.businessId(), reason, direction, productId, variantId,
+                q, DayRange.of(from, to, 3660)), PageRequest.of(pq.page(), pq.size(), MovementSpecs.sort(pq)));
+        List<StockMovement> rows = result.getContent();
+        Map<UUID, UUID> productOf = productIds(rows.stream().map(StockMovement::getVariantId).toList());
+        return new PageResponse<>(rows.stream().map(m -> InventoryMapper.toResponse(m, productOf.get(m.getVariantId())))
+                .toList(), result.getTotalElements(), pq.page(), pq.size());
     }
 
     @Transactional

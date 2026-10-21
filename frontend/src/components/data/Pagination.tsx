@@ -36,8 +36,12 @@ export function Pagination({
       </span>
       {onSize && (
         <label className={d.sizePick}>
-          <span>{t('perPage')}</span>
-          <select value={size} onChange={(e) => onSize(Number(e.target.value))}>
+          <span aria-hidden>{t('perPage')}</span>
+          <select
+            aria-label={t('perPage')}
+            value={size}
+            onChange={(e) => onSize(Number(e.target.value))}
+          >
             {PAGE_SIZES.map((n) => (
               <option key={n} value={n}>
                 {n}

@@ -39,4 +39,11 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             where p.businessId = :businessId and p.deletedAt is null and p.collectionId is not null
             group by p.collectionId""")
     List<Object[]> countByCollection(@Param("businessId") UUID businessId);
+
+    boolean existsByBusinessIdAndCollectionIdIsNotNull(UUID businessId);
+
+    /** Moves every product of collection {@code from} to {@code to} (null = no collection). */
+    @org.springframework.data.jpa.repository.Modifying
+    @Query("update Product p set p.collectionId = :to where p.businessId = :businessId and p.collectionId = :from")
+    int moveCollection(@Param("businessId") UUID businessId, @Param("from") UUID from, @Param("to") UUID to);
 }

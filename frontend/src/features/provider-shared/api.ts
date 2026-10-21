@@ -58,6 +58,7 @@ export const toService = (s: ApiProviderService): Service => ({
   staffIds: s.staffIds,
   bookableOnline: s.bookableOnline,
   ...(s.discountPct ? { discountPct: s.discountPct } : {}),
+  ...(s.description ? { description: s.description } : {}),
 });
 
 /** A colour for a member who never picked one (the owner added when the shop opened): the same one every time. */
@@ -243,6 +244,7 @@ export function toBusinessState(b: Business, ownerName: string): ProviderBusines
     slotMinutes: bs.slotMinutes ?? 30,
     maxDaysAhead: bs.maxDaysAhead ?? 90,
     tipPresets: bs.tipPresets ?? [0, 5, 10, 15],
+    serviceCategories: bs.serviceCategories ?? [],
   } as ProviderBusinessState;
 }
 
@@ -301,6 +303,10 @@ export const deleteService = (businessId: string, id: string) =>
   api.delete<void>(`/catalog/services/${id}`, opts(businessId));
 
 /** The input for a full create from an existing service (Undo of a delete). */
+/** Renames a service category; its services move with it. Returns the shop's category list. */
+export const renameServiceCategory = (businessId: string, from: string, to: string) =>
+  api.post<string[]>('/catalog/services/categories/rename', { from, to }, opts(businessId));
+
 export const serviceInput = (s: Service): ServiceInput => ({
   name: s.name,
   category: s.category,
@@ -309,6 +315,7 @@ export const serviceInput = (s: Service): ServiceInput => ({
   discountPct: s.discountPct ?? 0,
   staffIds: s.staffIds,
   bookableOnline: s.bookableOnline,
+  description: s.description ?? '',
 });
 
 // ---- Appointments, blocks, clients, sales -------------------------------------------------
@@ -441,6 +448,7 @@ export function businessPatch(p: Partial<ProviderBusinessState>): Record<string,
   if (p.slotMinutes !== undefined) bs.slotMinutes = p.slotMinutes;
   if (p.maxDaysAhead !== undefined) bs.maxDaysAhead = p.maxDaysAhead;
   if (p.tipPresets !== undefined) bs.tipPresets = p.tipPresets;
+  if (p.serviceCategories !== undefined) bs.serviceCategories = p.serviceCategories;
   if (Object.keys(bs).length) out.bookingSettings = bs;
   return out;
 }

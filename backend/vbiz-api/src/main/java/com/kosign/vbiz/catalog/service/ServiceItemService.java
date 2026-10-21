@@ -11,11 +11,15 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.booking.service.BookingRules;
+import com.kosign.vbiz.business.domain.BookingSettings;
+import com.kosign.vbiz.business.domain.Business;
 import com.kosign.vbiz.business.domain.BusinessMember;
 import com.kosign.vbiz.business.domain.BusinessType;
+import com.kosign.vbiz.business.repository.BusinessRepository;
 import com.kosign.vbiz.business.service.MembershipService;
-import com.kosign.vbiz.business.service.WorkspaceAccess;
 import com.kosign.vbiz.business.service.WorkspaceAccess.Workspace;
+import com.kosign.vbiz.business.service.WorkspaceAccess;
 import com.kosign.vbiz.catalog.domain.ServiceItem;
 import com.kosign.vbiz.catalog.mapper.CatalogMapper;
 import com.kosign.vbiz.catalog.payload.ProviderServiceResponse;
@@ -35,6 +39,8 @@ public class ServiceItemService {
     private final WorkspaceAccess access;
     private final MembershipService membership;
     private final ServiceItemRepository services;
+    private final BusinessRepository businesses;
+    private final BookingRules rules;
     private final ListingSlugs slugs;
     private final Clock clock;
 
@@ -58,6 +64,7 @@ public class ServiceItemService {
         s.setPosition(services.maxPosition(w.businessId()) + 1);
         apply(w, s, in);
         s.setSlug(slugs.unique(s.getName()));
+        ensureCategory(w, s.getCategory());
         return CatalogMapper.toProvider(services.saveAndFlush(s));
     }
 
@@ -67,6 +74,7 @@ public class ServiceItemService {
         ServiceItem s = require(w, id);
         if (in != null) {
             apply(w, s, in);
+            ensureCategory(w, s.getCategory());
         }
         return CatalogMapper.toProvider(services.saveAndFlush(s));
     }
@@ -77,6 +85,49 @@ public class ServiceItemService {
         ServiceItem s = require(w, id);
         s.setDeletedAt(clock.instant());
         services.saveAndFlush(s);
+    }
+
+    /**
+     * Renames a service category: every service in it moves to {@code to}, and the shop's category
+     * list keeps its order (merging when {@code to} already exists). Returns the new list.
+     */
+    @Transactional
+    public List<String> renameCategory(String from, String rawTo) {
+        Workspace w = serviceWorkspace(true);
+        String to = rawTo == null ? "" : rawTo.trim().replaceAll("\\s+", " ");
+        if (to.isEmpty() || to.length() > 40 || from == null || from.isBlank()) {
+            throw fail("to", "Category must be 1–40 characters");
+        }
+        services.renameCategory(w.businessId(), from.trim(), to);
+        List<String> cats = new java.util.ArrayList<>(rules.settings(w.business()).serviceCategories());
+        boolean exists = cats.stream().anyMatch(c -> c.equalsIgnoreCase(to) && !c.equalsIgnoreCase(from.trim()));
+        cats = new java.util.ArrayList<>(cats.stream()
+                .map(c -> c.equalsIgnoreCase(from.trim()) ? (exists ? null : to) : c)
+                .filter(java.util.Objects::nonNull).toList());
+        if (cats.stream().noneMatch(c -> c.equalsIgnoreCase(to))) {
+            cats.add(to);
+        }
+        saveCategories(w, cats);
+        return cats;
+    }
+
+    /** A service in a category the shop doesn't list yet adds it at the end. */
+    private void ensureCategory(Workspace w, String category) {
+        List<String> cats = rules.settings(w.business()).serviceCategories();
+        if (category != null && cats.stream().noneMatch(c -> c.equalsIgnoreCase(category))) {
+            List<String> next = new java.util.ArrayList<>(cats);
+            next.add(category);
+            saveCategories(w, next);
+        }
+    }
+
+    private void saveCategories(Workspace w, List<String> cats) {
+        Business b = w.business();
+        BookingSettings s = rules.settings(b);
+        b.setBookingSettings(new BookingSettings(s.onlineBooking(), s.autoConfirm(), s.reminderHours(),
+                s.minNoticeHours(), s.freeCancelHours(), s.bufferMinutes(), s.slotMinutes(), s.maxDaysAhead(),
+                s.tipPresets(), List.copyOf(cats)));
+        businesses.save(b);
     }
 
     private Workspace serviceWorkspace(boolean write) {

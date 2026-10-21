@@ -82,6 +82,7 @@ function data(over: Partial<ProviderData> = {}): ProviderData {
       slotMinutes: 30,
       maxDaysAhead: 90,
       tipPresets: [0, 5, 10, 15],
+      serviceCategories: ['Hair', 'Nails', 'Make-up'],
       district: 'Toul Kork',
       policy: policyOf(null),
     },

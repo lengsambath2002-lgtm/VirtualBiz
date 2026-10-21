@@ -17,6 +17,7 @@ import com.kosign.vbiz.business.domain.Business;
 import com.kosign.vbiz.business.domain.BusinessMember;
 import com.kosign.vbiz.business.domain.Closure;
 import com.kosign.vbiz.catalog.domain.ServiceItem;
+import com.kosign.vbiz.catalog.service.CatalogStarters;
 
 /** A service business's booking settings with their defaults, and the windows derived from them. */
 @Component
@@ -33,7 +34,8 @@ public class BookingRules {
                 or(s.reminderHours(), d.reminderHours()), or(s.minNoticeHours(), d.minNoticeHours()),
                 or(s.freeCancelHours(), d.freeCancelHours()), or(s.bufferMinutes(), d.bufferMinutes()),
                 or(s.slotMinutes(), d.slotMinutes()), or(s.maxDaysAhead(), d.maxDaysAhead()),
-                or(s.tipPresets(), d.tipPresets()));
+                or(s.tipPresets(), d.tipPresets()),
+                or(s.serviceCategories(), CatalogStarters.serviceCategories(b.getCategoryId())));
     }
 
     /** The customer may cancel or reschedule until the start minus the free-cancellation hours. */

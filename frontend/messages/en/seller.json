@@ -58,11 +58,31 @@
     "PICKUP": "Pickup"
   },
   "collections": {
-    "Phones": "Phones",
-    "Audio": "Audio",
-    "Wearables": "Wearables",
-    "Laptops": "Laptops",
-    "Accessories": "Accessories"
+    "title": "Collections",
+    "sub": "Group your products the way customers browse them. Changes show in the shop at once.",
+    "products": "{n, plural, =0 {no products} one {# product} other {# products}}",
+    "nameOf": "Name of {name}",
+    "up": "Move {name} up",
+    "down": "Move {name} down",
+    "delete": "Delete {name}",
+    "empty": "No collections yet. Add your first below.",
+    "deleteTitle": "Delete {name}?",
+    "moveLabel": "Move its {n, plural, one {# product} other {# products}} to",
+    "moveNone": "No collection",
+    "deleteEmpty": "It has no products.",
+    "deleteOk": "Delete",
+    "cancel": "Cancel",
+    "newName": "New collection name",
+    "add": "Add",
+    "added": "{name} added",
+    "renamed": "Renamed to {name}",
+    "deleted": "{name} deleted",
+    "errTaken": "Another collection has this name.",
+    "errName": "Use 2–40 characters.",
+    "errRole": "Only the owner or a manager can change collections.",
+    "failed": "Couldn't save. Try again.",
+    "loadFailed": "Couldn't load collections.",
+    "retry": "Try again"
   },
   "stockReasons": {
     "RECEIVED": "Received from supplier",
@@ -382,7 +402,8 @@
     "duplicated": "{title} duplicated as a draft",
     "duplicateFailed": "Couldn’t duplicate it. Try again.",
     "emptyTitle": "No products yet",
-    "emptyBody": "Add your first product so customers can find it."
+    "emptyBody": "Add your first product so customers can find it.",
+    "collections": "Collections"
   },
   "editor": {
     "leaveTitle": "Leave without saving?",

@@ -12,6 +12,7 @@ import {
   createService,
   deleteService,
   patchService,
+  renameServiceCategory,
   serviceInput,
 } from '@/features/provider-shared/api';
 
@@ -20,8 +21,9 @@ import { PIcon } from '@/features/provider-shared/components/Icon';
 import { Field, Modal } from '@/features/provider-shared/components/Overlay';
 import { k } from '@/features/provider-shared/cx';
 import { useFmt } from '@/features/provider-shared/hooks/useFmt';
+import { useSaveBusiness } from '@/features/provider-shared/hooks/useSaveBusiness';
+import { useServiceCategories } from '@/features/provider-shared/hooks/useServiceCategories';
 import { useData, useProviderStore, useUi } from '@/features/provider-shared/store';
-import { SERVICE_CATEGORIES } from '@/features/provider-shared/types';
 import { firstName } from '@/features/provider-shared/util/logic';
 import { addDays, todayIso } from '@/features/provider-shared/util/time';
 
@@ -39,7 +41,8 @@ export function ServicesPage() {
   const from30 = addDays(today, -30);
   const update = useProviderStore((s) => s.update);
   const [query, setQuery] = useState('');
-  const [cat, setCat] = useState<'all' | (typeof SERVICE_CATEGORIES)[number]>('all');
+  const [cat, setCat] = useState<string>('all');
+  const cats = useServiceCategories();
 
   const remove = async (s: Service) => {
     const up = d.appointments.filter(
@@ -108,7 +111,7 @@ export function ServicesPage() {
   };
 
   const q = query.trim().toLowerCase();
-  const used = SERVICE_CATEGORIES.filter((c) => d.services.some((s) => s.category === c));
+  const used = cats.filter((c) => d.services.some((s) => s.category === c));
   const shown = d.services.filter(
     (s) => (cat === 'all' || s.category === cat) && (!q || s.name.toLowerCase().includes(q)),
   );
@@ -135,14 +138,23 @@ export function ServicesPage() {
             })}
           </p>
         </div>
-        <button
-          type="button"
-          className={k('btn btn-primary')}
-          onClick={() => ui.open({ t: 'svcForm' })}
-        >
-          <PIcon name="plus" size={18} />
-          {t('services.add')}
-        </button>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            className={k('btn btn-ghost')}
+            onClick={() => ui.open({ t: 'svcCategories' })}
+          >
+            {t('services.manageCategories')}
+          </button>
+          <button
+            type="button"
+            className={k('btn btn-primary')}
+            onClick={() => ui.open({ t: 'svcForm' })}
+          >
+            <PIcon name="plus" size={18} />
+            {t('services.add')}
+          </button>
+        </div>
       </div>
       {!d.services.length && (
         <section className={k('panel')}>
@@ -175,7 +187,7 @@ export function ServicesPage() {
           </label>
           {used.length > 1 && (
             <div className={k('chips')} role="group" aria-label={t('services.category')}>
-              {(['all', ...used] as const).map((x) => (
+              {['all', ...used].map((x) => (
                 <button
                   key={x}
                   type="button"
@@ -215,7 +227,7 @@ export function ServicesPage() {
           />
         </section>
       )}
-      {SERVICE_CATEGORIES.map((cg) => {
+      {cats.map((cg) => {
         const list = shown.filter((s) => s.category === cg);
         if (!list.length) return null;
         return (
@@ -412,10 +424,12 @@ export function ServicesPage() {
 export function ServiceForm({ id, cat: preset }: { id?: string; cat?: string }) {
   const { t, category } = useFmt();
   const d = useData();
+  const cats = useServiceCategories();
   const ui = useUi();
   const s = id ? d.services.find((x) => x.id === id) : undefined;
   const [name, setName] = useState(s?.name ?? '');
-  const [cat, setCat] = useState(s?.category ?? preset ?? 'Hair');
+  const [desc, setDesc] = useState(s?.description ?? '');
+  const [cat, setCat] = useState(s?.category ?? preset ?? cats[0] ?? 'Services');
   const [dur, setDur] = useState(s?.durationMin ?? 45);
   const [price, setPrice] = useState(s ? String(s.price) : '');
   const [staff, setStaff] = useState<string[]>(s?.staffIds ?? []);
@@ -441,6 +455,7 @@ export function ServiceForm({ id, cat: preset }: { id?: string; cat?: string }) 
     const data = {
       name: n,
       category: cat,
+      description: desc.trim(),
       durationMin: dur,
       price: +p.toFixed(2),
       staffIds: staff,
@@ -489,10 +504,19 @@ export function ServiceForm({ id, cat: preset }: { id?: string; cat?: string }) 
             onChange={(e) => setName(e.target.value)}
           />
         </Field>
+        <Field id="sdesc" label={t('services.description')}>
+          <textarea
+            id="sdesc"
+            maxLength={500}
+            placeholder={t('services.descriptionPh')}
+            value={desc}
+            onChange={(e) => setDesc(e.target.value)}
+          />
+        </Field>
         <div className={k('g3')}>
           <Field id="sc" label={t('services.category')}>
             <select id="sc" value={cat} onChange={(e) => setCat(e.target.value)}>
-              {SERVICE_CATEGORIES.map((c) => (
+              {cats.map((c) => (
                 <option key={c} value={c}>
                   {category(c)}
                 </option>
@@ -558,6 +582,153 @@ export function ServiceForm({ id, cat: preset }: { id?: string; cat?: string }) 
           </button>
         </div>
       </form>
+    </Modal>
+  );
+}
+
+/** The shop's service categories: add, rename (services follow), reorder, remove unused ones. */
+export function ServiceCategories() {
+  const f = useFmt();
+  const { t } = f;
+  const d = useData();
+  const ui = useUi();
+  const save = useSaveBusiness();
+  const cats = useServiceCategories();
+  const [edit, setEdit] = useState<Record<string, string>>({});
+  const [name, setName] = useState('');
+  const [err, setErr] = useState('');
+  const [busy, setBusy] = useState(false);
+  const used = (c: string) => d.services.filter((s) => s.category === c).length;
+  const saveList = async (next: string[], done?: string) => {
+    setBusy(true);
+    const ok = await save({ serviceCategories: next });
+    setBusy(false);
+    if (ok && done) ui.showToast(done);
+    return ok;
+  };
+  const rename = async (from: string) => {
+    const to = (edit[from] ?? from).trim();
+    if (to === from) return;
+    if (to.length < 1 || to.length > 40) return setErr(t('services.catErrName'));
+    setBusy(true);
+    try {
+      const list = await renameServiceCategory(d.business.id, from, to);
+      useProviderStore.getState().update((dd) => {
+        dd.business.serviceCategories = list;
+        dd.services.forEach((s) => {
+          if (s.category === from) s.category = to;
+        });
+      });
+      setEdit((x) => {
+        const { [from]: _, ...rest } = x;
+        return rest;
+      });
+      ui.showToast(t('services.catRenamed', { name: to }));
+    } catch {
+      setErr(t('services.saveFailed'));
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <Modal label={t('services.catTitle')}>
+      <h2>{t('services.catTitle')}</h2>
+      <p className={k('muted small')} style={{ marginTop: -6 }}>
+        {t('services.catSub')}
+      </p>
+      <ul className={c.catList}>
+        {cats.map((cat, i) => (
+          <li key={cat} className={c.catRow}>
+            <input
+              aria-label={t('services.catNameOf', { name: cat })}
+              value={edit[cat] ?? cat}
+              maxLength={40}
+              onChange={(e) => {
+                setEdit((x) => ({ ...x, [cat]: e.target.value }));
+                setErr('');
+              }}
+              onBlur={() => void rename(cat)}
+              onKeyDown={(e) => e.key === 'Enter' && (e.target as HTMLInputElement).blur()}
+            />
+            <span className={k('muted small')}>{t('services.catCount', { n: used(cat) })}</span>
+            <span className={c.acts}>
+              <button
+                type="button"
+                className={c.act}
+                aria-label={t('services.catUp', { name: cat })}
+                disabled={busy || i === 0}
+                onClick={() => {
+                  const next = [...cats];
+                  [next[i - 1], next[i]] = [next[i]!, next[i - 1]!];
+                  void saveList(next);
+                }}
+              >
+                ↑
+              </button>
+              <button
+                type="button"
+                className={c.act}
+                aria-label={t('services.catDown', { name: cat })}
+                disabled={busy || i === cats.length - 1}
+                onClick={() => {
+                  const next = [...cats];
+                  [next[i + 1], next[i]] = [next[i]!, next[i + 1]!];
+                  void saveList(next);
+                }}
+              >
+                ↓
+              </button>
+              <button
+                type="button"
+                className={cx(c.act, c.danger)}
+                aria-label={t('services.catRemove', { name: cat })}
+                title={used(cat) ? t('services.catInUse') : undefined}
+                disabled={busy || used(cat) > 0}
+                onClick={() =>
+                  void saveList(
+                    cats.filter((x) => x !== cat),
+                    t('services.catRemoved', { name: cat }),
+                  )
+                }
+              >
+                <PIcon name="trash" size={16} />
+              </button>
+            </span>
+          </li>
+        ))}
+      </ul>
+      <form
+        className={c.catAdd}
+        onSubmit={(e) => {
+          e.preventDefault();
+          const n = name.trim();
+          if (n.length < 1 || n.length > 40) return setErr(t('services.catErrName'));
+          if (cats.some((x) => x.toLowerCase() === n.toLowerCase()))
+            return setErr(t('services.catErrTaken'));
+          void saveList([...cats, n], t('services.catAdded', { name: n })).then(
+            (ok) => ok && setName(''),
+          );
+        }}
+      >
+        <input
+          aria-label={t('services.catNew')}
+          placeholder={t('services.catNew')}
+          value={name}
+          maxLength={40}
+          onChange={(e) => {
+            setName(e.target.value);
+            setErr('');
+          }}
+        />
+        <button type="submit" className={k('btn btn-primary btn-sm')} disabled={busy}>
+          {t('services.catAdd')}
+        </button>
+      </form>
+      {err && (
+        <p className={k('err')} role="alert">
+          {err}
+        </p>
+      )}
     </Modal>
   );
 }

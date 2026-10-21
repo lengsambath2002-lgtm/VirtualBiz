@@ -91,6 +91,8 @@ export interface ProviderBusinessState extends Omit<
   maxDaysAhead: number;
   /** Tip choices at checkout, percent. */
   tipPresets: number[];
+  /** Service categories, in display order (the owner manages them). */
+  serviceCategories: string[];
   /** Receipt, VAT, counter payment methods, links (defaults filled in). */
   policy: ShopPolicy;
 }

@@ -23,7 +23,7 @@ import {
   RefundDialog,
   VariantPickDialog,
 } from '@/features/seller-pos';
-import { ProductQuickAdd } from '@/features/seller-products';
+import { CollectionsDialog, ProductQuickAdd } from '@/features/seller-products';
 import { PromoForm } from '@/features/seller-promotions';
 import { ReplyDialog } from '@/features/seller-reviews';
 import {
@@ -114,6 +114,8 @@ export function OverlayHost() {
       return <ManualOrderDialog />;
     case 'productAdd':
       return <ProductQuickAdd />;
+    case 'collections':
+      return <CollectionsDialog />;
     case 'customer':
       return <CustomerDrawer key={o.id} id={o.id} />;
     case 'pack':

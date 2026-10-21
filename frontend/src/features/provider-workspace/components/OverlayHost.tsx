@@ -10,7 +10,7 @@ import {
 import { ClientDrawer, NewClientForm } from '@/features/provider-clients';
 import { DealForm, ReplyForm } from '@/features/provider-marketing';
 import { Checkout, Receipt } from '@/features/provider-sales';
-import { ServiceForm } from '@/features/provider-services';
+import { ServiceCategories, ServiceForm } from '@/features/provider-services';
 import { ConfirmBox } from '@/features/provider-shared/components/Overlay';
 import { useUi } from '@/features/provider-shared/store';
 import { StaffForm } from '@/features/provider-team';
@@ -42,6 +42,8 @@ export function OverlayHost() {
       return <BlockForm date={o.date} start={o.start} staffId={o.staffId} />;
     case 'confirm':
       return <ConfirmBox key={o.opts.title} />;
+    case 'svcCategories':
+      return <ServiceCategories />;
     case 'svcForm':
       return <ServiceForm key={o.id ?? 'new'} id={o.id} cat={o.cat} />;
     case 'staffForm':

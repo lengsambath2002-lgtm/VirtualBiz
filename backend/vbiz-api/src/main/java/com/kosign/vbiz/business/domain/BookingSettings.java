@@ -15,7 +15,17 @@ public record BookingSettings(
         /** How many days ahead clients can book online (1–180; default 90). */
         Integer maxDaysAhead,
         /** Tip choices at checkout, in percent (up to 5, each 0–50). */
-        List<Integer> tipPresets) {
+        List<Integer> tipPresets,
+        /** The provider's service categories, in display order (null = starters for its category). */
+        List<String> serviceCategories) {
+
+    /** Without service categories (the starters apply). */
+    public BookingSettings(Boolean onlineBooking, Boolean autoConfirm, Integer reminderHours, Integer minNoticeHours,
+            Integer freeCancelHours, Integer bufferMinutes, Integer slotMinutes, Integer maxDaysAhead,
+            List<Integer> tipPresets) {
+        this(onlineBooking, autoConfirm, reminderHours, minNoticeHours, freeCancelHours, bufferMinutes, slotMinutes,
+                maxDaysAhead, tipPresets, null);
+    }
 
     /** The settings before slot interval, horizon and tips existed (their defaults apply). */
     public BookingSettings(Boolean onlineBooking, Boolean autoConfirm, Integer reminderHours, Integer minNoticeHours,

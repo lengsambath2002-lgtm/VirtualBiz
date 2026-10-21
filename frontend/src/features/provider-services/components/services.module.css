@@ -231,6 +231,49 @@ tr:focus-within .acts {
   color: var(--muted);
 }
 
+/* Manage categories */
+.catList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  max-height: 46vh;
+  overflow: auto;
+}
+.catRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.catRow input,
+.catAdd input {
+  min-height: 38px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  padding: 6px 10px;
+  background: transparent;
+  font-size: 14px;
+  width: 100%;
+}
+.catRow input:hover,
+.catRow input:focus,
+.catAdd input {
+  border-color: var(--line);
+  background: var(--g-fill-strong);
+}
+.catAdd {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.act:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
 /* Phone: each service is a card. */
 @media (max-width: 640px) {
   .table {

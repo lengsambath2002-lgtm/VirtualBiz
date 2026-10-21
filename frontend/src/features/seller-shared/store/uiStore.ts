@@ -40,6 +40,7 @@ export type Overlay =
   | { kind: 'order'; id: string }
   | { kind: 'manual' }
   | { kind: 'productAdd' }
+  | { kind: 'collections' }
   | { kind: 'customer'; id: string }
   | { kind: 'pack'; id: string }
   | { kind: 'ship'; id: string }

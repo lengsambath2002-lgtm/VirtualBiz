@@ -13,6 +13,11 @@ import com.kosign.vbiz.catalog.domain.ServiceItem;
 
 public interface ServiceItemRepository extends JpaRepository<ServiceItem, UUID> {
 
+    /** Moves a shop's services from one category to another (case-insensitive match). */
+    @org.springframework.data.jpa.repository.Modifying
+    @Query("update ServiceItem s set s.category = :to where s.businessId = :businessId and lower(s.category) = lower(:from)")
+    int renameCategory(@Param("businessId") UUID businessId, @Param("from") String from, @Param("to") String to);
+
     List<ServiceItem> findByBusinessIdAndDeletedAtIsNullOrderByPositionAscCreatedAtAsc(UUID businessId);
 
     Optional<ServiceItem> findByIdAndBusinessIdAndDeletedAtIsNull(UUID id, UUID businessId);

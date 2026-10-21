@@ -121,10 +121,20 @@ export function ProductsPage() {
             })}
           </p>
         </div>
-        <button type="button" className={cx(s.btn, s.btnPrimary)} onClick={addProduct}>
-          <Ic name="plus" size={18} />
-          {t('add')}
-        </button>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            className={cx(s.btn, s.btnGhost)}
+            onClick={() => useUi.getState().open({ kind: 'collections' })}
+          >
+            <Ic name="tag" size={18} />
+            {t('collections')}
+          </button>
+          <button type="button" className={cx(s.btn, s.btnPrimary)} onClick={addProduct}>
+            <Ic name="plus" size={18} />
+            {t('add')}
+          </button>
+        </div>
       </div>
       <div className={s.tabs}>
         {(Object.keys(FILTERS) as ProdFilter[]).map((k) => (

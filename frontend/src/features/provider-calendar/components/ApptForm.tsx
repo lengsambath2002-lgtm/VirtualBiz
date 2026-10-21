@@ -18,7 +18,8 @@ import {
   useUi,
   type ApptFormOpts,
 } from '@/features/provider-shared/store';
-import { SERVICE_CATEGORIES, type ProviderAppointment } from '@/features/provider-shared/types';
+import { useServiceCategories } from '@/features/provider-shared/hooks/useServiceCategories';
+import type { ProviderAppointment } from '@/features/provider-shared/types';
 import { conflicts, firstName, pickStaff } from '@/features/provider-shared/util/logic';
 import {
   fmtD,
@@ -36,6 +37,7 @@ export function ApptForm({ opts }: { opts: ApptFormOpts }) {
   const f = useFmt();
   const { t, locale } = f;
   const d = useData();
+  const cats = useServiceCategories();
   const ui = useUi();
   const router = useRouter();
   const pathname = usePathname();
@@ -294,7 +296,7 @@ export function ApptForm({ opts }: { opts: ApptFormOpts }) {
               }}
             >
               <option value="">{t('form.choose')}</option>
-              {SERVICE_CATEGORIES.map((cat) => (
+              {cats.map((cat) => (
                 <optgroup key={cat} label={f.category(cat)}>
                   {d.services
                     .filter((s) => s.category === cat)

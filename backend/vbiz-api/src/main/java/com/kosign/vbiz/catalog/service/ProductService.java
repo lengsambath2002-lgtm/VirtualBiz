@@ -47,14 +47,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProductService {
 
-    /** Collections a shop starts with (Seller prototype). */
-    public static final List<String> DEFAULT_COLLECTIONS =
-            List.of("Phones", "Audio", "Wearables", "Laptops", "Accessories");
-
     private final WorkspaceAccess access;
     private final ProductRepository products;
     private final ProductVariantRepository variants;
     private final CollectionRepository collections;
+    private final CollectionService collectionService;
     private final ListingSlugs slugs;
     private final BarcodeService barcodes;
     private final StockWriter stock;
@@ -206,20 +203,6 @@ public class ProductService {
         products.saveAndFlush(p);
     }
 
-    /** The shop's collections, or the defaults (not stored until used) when it has none. */
-    @Transactional(readOnly = true)
-    public List<CollectionResponse> collections() {
-        Workspace w = access.member();
-        List<Collection> cs = collections.findByBusinessIdOrderByPositionAscNameAsc(w.businessId());
-        if (cs.isEmpty()) {
-            return DEFAULT_COLLECTIONS.stream().map(n -> new CollectionResponse(null, n, 0)).toList();
-        }
-        Map<UUID, Long> counts = new HashMap<>();
-        products.countByCollection(w.businessId()).forEach(r -> counts.put((UUID) r[0], (Long) r[1]));
-        return cs.stream().map(c -> new CollectionResponse(c.getId().toString(), c.getName(),
-                counts.getOrDefault(c.getId(), 0L))).toList();
-    }
-
     // ── helpers ──────────────────────────────────────────────────────────────────────
 
     private Product require(Workspace w, UUID id) {
@@ -235,34 +218,7 @@ public class ProductService {
         p.setOptions(new ArrayList<>(in.options()));
         p.setPhotos(new ArrayList<>(in.photos()));
         p.setSpecs(new ArrayList<>(in.specs()));
-        p.setCollectionId(in.collection() == null ? null : collectionId(w.businessId(), in.collection()));
-    }
-
-    /** Find the collection by name (case-insensitive) or create it; a shop's first use stores the defaults. */
-    private UUID collectionId(UUID businessId, String name) {
-        Optional<Collection> found = collections.findByName(businessId, name);
-        if (found.isPresent()) {
-            return found.get().getId();
-        }
-        if (collections.findByBusinessIdOrderByPositionAscNameAsc(businessId).isEmpty()) {
-            for (int i = 0; i < DEFAULT_COLLECTIONS.size(); i++) {
-                Collection c = new Collection();
-                c.setBusinessId(businessId);
-                c.setName(DEFAULT_COLLECTIONS.get(i));
-                c.setPosition(i);
-                collections.save(c);
-            }
-            collections.flush();
-            found = collections.findByName(businessId, name);
-            if (found.isPresent()) {
-                return found.get().getId();
-            }
-        }
-        Collection c = new Collection();
-        c.setBusinessId(businessId);
-        c.setName(name);
-        c.setPosition(collections.maxPosition(businessId) + 1);
-        return collections.saveAndFlush(c).getId();
+        p.setCollectionId(in.collection() == null ? null : collectionService.idForName(w, in.collection()));
     }
 
     private void checkUnique(UUID businessId, List<CleanVariant> vs, UUID productId) {

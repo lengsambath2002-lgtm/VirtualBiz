@@ -1,1 +1,1 @@
-export { ServiceForm, ServicesPage } from './components/ServicesPage';
+export { ServiceCategories, ServiceForm, ServicesPage } from './components/ServicesPage';

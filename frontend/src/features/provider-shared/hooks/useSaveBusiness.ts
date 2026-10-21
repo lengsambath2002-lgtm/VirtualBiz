@@ -86,6 +86,7 @@ export function toApiBusiness(b: ProviderBusinessState): ServiceBusiness {
       slotMinutes: b.slotMinutes,
       maxDaysAhead: b.maxDaysAhead,
       tipPresets: b.tipPresets,
+      serviceCategories: b.serviceCategories,
     },
   } as ServiceBusiness;
 }

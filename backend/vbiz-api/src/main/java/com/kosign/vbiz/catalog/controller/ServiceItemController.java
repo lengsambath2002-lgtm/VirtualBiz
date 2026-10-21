@@ -32,6 +32,12 @@ public class ServiceItemController extends BaseController {
 
     private final ServiceItemService services;
 
+    /** Body: {@code {"from": "Hair", "to": "Hair & beauty"}}; returns the shop's category list. */
+    @PostMapping("/categories/rename")
+    public ResponseEntity<ApiResponse<List<String>>> renameCategory(@RequestBody java.util.Map<String, String> body) {
+        return ok(services.renameCategory(body.get("from"), body.get("to")));
+    }
+
     @GetMapping
     public ResponseEntity<ApiResponse<List<ProviderServiceResponse>>> list() {
         return ok(services.list());

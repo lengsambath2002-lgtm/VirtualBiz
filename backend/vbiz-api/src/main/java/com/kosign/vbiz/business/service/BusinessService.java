@@ -410,7 +410,8 @@ public class BusinessService {
                 free, zones, s.returnDays());
     }
 
-    private static BookingSettings validate(BookingSettings s) {
+    private static BookingSettings validate(BookingSettings input) {
+        BookingSettings s = input;
         requireAll("bookingSettings", "onlineBooking", s.onlineBooking(), "autoConfirm", s.autoConfirm(),
                 "reminderHours", s.reminderHours(), "minNoticeHours", s.minNoticeHours(),
                 "freeCancelHours", s.freeCancelHours(), "bufferMinutes", s.bufferMinutes());
@@ -424,6 +425,16 @@ public class BusinessService {
         }
         if (s.maxDaysAhead() != null) {
             range("bookingSettings.maxDaysAhead", s.maxDaysAhead(), 1, 180);
+        }
+        if (s.serviceCategories() != null) {
+            List<String> cats = s.serviceCategories().stream().map(c -> c == null ? "" : c.trim()).toList();
+            if (cats.size() > 20 || cats.stream().anyMatch(c -> c.isEmpty() || c.length() > 40)
+                    || cats.stream().map(c -> c.toLowerCase(java.util.Locale.ROOT)).distinct().count() != cats.size()) {
+                throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "bookingSettings.serviceCategories",
+                        "Up to 20 different names, 1–40 characters each");
+            }
+            s = new BookingSettings(s.onlineBooking(), s.autoConfirm(), s.reminderHours(), s.minNoticeHours(),
+                    s.freeCancelHours(), s.bufferMinutes(), s.slotMinutes(), s.maxDaysAhead(), s.tipPresets(), cats);
         }
         if (s.tipPresets() != null) {
             if (s.tipPresets().size() > 5 || s.tipPresets().stream().anyMatch(p -> p == null || p < 0 || p > 50)) {

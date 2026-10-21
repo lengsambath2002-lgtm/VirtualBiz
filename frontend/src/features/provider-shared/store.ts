@@ -92,6 +92,7 @@ export type Overlay =
   | { t: 'block'; date?: string; start?: number; staffId?: string }
   | { t: 'confirm'; opts: ConfirmOpts; resolve: (v: Record<string, string> | null) => void }
   | { t: 'svcForm'; id?: string; cat?: string }
+  | { t: 'svcCategories' }
   | { t: 'staffForm'; id?: string }
   | { t: 'dealForm'; id?: string }
   | { t: 'reply'; reviewId: string }

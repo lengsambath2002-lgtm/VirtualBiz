@@ -136,6 +136,8 @@ export interface BookingSettings {
   maxDaysAhead?: number;
   /** Tip choices at checkout, percent (default 0, 5, 10, 15). */
   tipPresets?: number[];
+  /** The provider's service categories, in display order. */
+  serviceCategories?: string[];
 }
 
 interface BusinessBase {
@@ -239,6 +241,8 @@ export interface Service {
   staffIds: Id[];
   bookableOnline: boolean;
   discountPct?: number;
+  /** What the client gets (shown on the booking page). */
+  description?: string;
 }
 
 export interface StockMovement {

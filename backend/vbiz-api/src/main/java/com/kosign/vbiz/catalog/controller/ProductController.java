@@ -12,12 +12,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kosign.vbiz.catalog.payload.CollectionResponse;
 import com.kosign.vbiz.catalog.payload.ProductInput;
 import com.kosign.vbiz.catalog.payload.SellerProductResponse;
 import com.kosign.vbiz.catalog.payload.StatusInput;
+import com.kosign.vbiz.catalog.service.CollectionService;
 import com.kosign.vbiz.catalog.service.ProductService;
 import com.kosign.vbiz.common.api.ApiResponse;
 import com.kosign.vbiz.common.api.BaseController;
@@ -35,6 +37,7 @@ import lombok.RequiredArgsConstructor;
 public class ProductController extends BaseController {
 
     private final ProductService products;
+    private final CollectionService collectionService;
 
     @GetMapping("/products")
     public ResponseEntity<ApiResponse<List<SellerProductResponse>>> list() {
@@ -76,6 +79,32 @@ public class ProductController extends BaseController {
 
     @GetMapping("/collections")
     public ResponseEntity<ApiResponse<List<CollectionResponse>>> collections() {
-        return ok(products.collections());
+        return ok(collectionService.list());
+    }
+
+    /** Body: {@code {"name": "…"}}. */
+    @PostMapping("/collections")
+    public ResponseEntity<ApiResponse<List<CollectionResponse>>> createCollection(
+            @RequestBody java.util.Map<String, String> body) {
+        return created(collectionService.create(body.get("name")));
+    }
+
+    @PatchMapping("/collections/{id}")
+    public ResponseEntity<ApiResponse<List<CollectionResponse>>> renameCollection(@PathVariable UUID id,
+            @RequestBody java.util.Map<String, String> body) {
+        return ok(collectionService.rename(id, body.get("name")));
+    }
+
+    /** Its products move to {@code moveTo}, or to no collection. */
+    @DeleteMapping("/collections/{id}")
+    public ResponseEntity<ApiResponse<List<CollectionResponse>>> deleteCollection(@PathVariable UUID id,
+            @RequestParam(required = false) UUID moveTo) {
+        return ok(collectionService.delete(id, moveTo));
+    }
+
+    /** Body: every collection id in the new order. */
+    @PutMapping("/collections/order")
+    public ResponseEntity<ApiResponse<List<CollectionResponse>>> reorderCollections(@RequestBody List<UUID> ids) {
+        return ok(collectionService.reorder(ids));
     }
 }

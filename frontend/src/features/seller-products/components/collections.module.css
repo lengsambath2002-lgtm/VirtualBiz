@@ -1,0 +1,79 @@
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  max-height: 46vh;
+  overflow: auto;
+}
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line);
+}
+.row input,
+.add input {
+  min-height: 38px;
+  border: 1px solid transparent;
+  border-radius: var(--r-sm);
+  padding: 6px 10px;
+  background: transparent;
+  font-size: 14px;
+  width: 100%;
+}
+.row input:hover,
+.row input:focus,
+.add input {
+  border-color: var(--line);
+  background: var(--g-fill-strong);
+}
+.count {
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.acts {
+  display: flex;
+  gap: 2px;
+}
+.act {
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--ink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.act:hover:not(:disabled) {
+  background: var(--sunk);
+}
+.act:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.danger {
+  color: var(--danger);
+}
+.confirm {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  background: var(--sunk);
+}
+.btns {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.add {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}

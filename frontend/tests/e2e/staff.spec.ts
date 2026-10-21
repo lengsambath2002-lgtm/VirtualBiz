@@ -97,8 +97,10 @@ test.describe('Staff security', () => {
     await expect(row).toBeHidden();
 
     await page.goto('/en/admin/audit?targetType=USER');
-    await expect(page.getByText('Reset two-step sign-in').first()).toBeVisible();
-    await expect(page.getByText('Turned on two-step sign-in').first()).toBeVisible();
+    await expect(page.locator('section').getByText('Reset two-step sign-in').first()).toBeVisible();
+    await expect(
+      page.locator('section').getByText('Turned on two-step sign-in').first(),
+    ).toBeVisible();
     expect(errors).toEqual([]);
     // The only failed request is the wrong code typed on purpose (422).
     expect(daraErrors.filter((e) => !/status of 422/.test(e))).toEqual([]);

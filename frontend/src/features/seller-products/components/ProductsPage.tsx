@@ -20,7 +20,10 @@ import {
   type SellerProduct,
   useCollectionName,
 } from '@/features/seller-shared';
+import { ExportButton, ImportDialog, type ImportReport } from '@/components/data';
 import { EmptyView } from '@/components/feedback';
+import { useMyRole } from '@/features/account-switcher';
+import { api } from '@/lib/api';
 
 import r from './products.module.css';
 
@@ -49,6 +52,10 @@ export function ProductsPage() {
   const [filter, setFilter] = useState<ProdFilter>('all');
   const [cat, setCat] = useState('all');
   const [q, setQ] = useState('');
+  const [sel, setSel] = useState<Set<string>>(new Set());
+  const [importing, setImporting] = useState(false);
+  const role = useMyRole(db.shop.id);
+  const canManage = role === 'OWNER' || role === 'MANAGER';
   const query = q.trim().toLowerCase();
   const list = db.products
     .filter(FILTERS[filter])
@@ -108,6 +115,25 @@ export function ProductsPage() {
     </button>
   );
   const addProduct = () => useUi.getState().open({ kind: 'productAdd' });
+  const selected = [...sel].filter((id) => db.products.some((p) => p.id === id));
+  const ui = useUi.getState();
+  const bulkStatus = async (status: 'ACTIVE' | 'DRAFT') => {
+    const n = await useSellerStore.getState().setProductsStatus(selected, status);
+    ui.showToast(t('bulkDone', { n, total: selected.length }));
+    setSel(new Set());
+  };
+  const bulkDelete = async () => {
+    const ok = await ui.confirm({
+      title: t('bulkDeleteTitle', { n: selected.length }),
+      body: t('bulkDeleteBody'),
+      ok: t('bulkDelete'),
+      danger: true,
+    });
+    if (!ok) return;
+    const n = await useSellerStore.getState().deleteProducts(selected);
+    ui.showToast(t('bulkDone', { n, total: selected.length }));
+    setSel(new Set());
+  };
 
   return (
     <>
@@ -122,6 +148,22 @@ export function ProductsPage() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          {canManage && (
+            <>
+              <ExportButton
+                path="/exports/products"
+                businessId={db.shop.id}
+                className={cx(s.btn, s.btnGhost)}
+              />
+              <button
+                type="button"
+                className={cx(s.btn, s.btnGhost)}
+                onClick={() => setImporting(true)}
+              >
+                {t('import')}
+              </button>
+            </>
+          )}
           <button
             type="button"
             className={cx(s.btn, s.btnGhost)}
@@ -175,10 +217,45 @@ export function ProductsPage() {
         </select>
       </div>
       <section className={s.panel}>
+        {canManage && selected.length > 0 && (
+          <div className={s.bulk}>
+            <b>{t('selectedN', { n: selected.length })}</b>
+            <button
+              type="button"
+              className={cx(s.btn, s.btnGhost, s.btnSm)}
+              onClick={() => void bulkStatus('ACTIVE')}
+            >
+              {t('bulkPublish')}
+            </button>
+            <button
+              type="button"
+              className={cx(s.btn, s.btnGhost, s.btnSm)}
+              onClick={() => void bulkStatus('DRAFT')}
+            >
+              {t('bulkDraft')}
+            </button>
+            <button
+              type="button"
+              className={cx(s.btn, s.btnGhost, s.btnSm)}
+              onClick={() => void bulkDelete()}
+            >
+              {t('bulkDelete')}
+            </button>
+            <button
+              type="button"
+              className={cx(s.link, s.quiet, s.small)}
+              style={{ color: 'inherit' }}
+              onClick={() => setSel(new Set())}
+            >
+              {t('clearSel')}
+            </button>
+          </div>
+        )}
         {list.length ? (
           <div className={s.tblWrap}>
             <table className={r.table}>
               <colgroup>
+                {canManage && <col style={{ width: 44 }} />}
                 <col style={{ width: '34%' }} />
                 <col style={{ width: '10%' }} />
                 <col style={{ width: '17%' }} />
@@ -189,6 +266,20 @@ export function ProductsPage() {
               </colgroup>
               <thead>
                 <tr>
+                  {canManage && (
+                    <th style={{ width: 40 }}>
+                      <input
+                        type="checkbox"
+                        aria-label={t('selectAll')}
+                        checked={!!sortedList.length && selected.length === sortedList.length}
+                        onChange={(e) =>
+                          setSel(
+                            e.target.checked ? new Set(sortedList.map((p) => p.id)) : new Set(),
+                          )
+                        }
+                      />
+                    </th>
+                  )}
                   <th aria-sort={ariaSort('title')}>{sortHead('title', t('col.product'))}</th>
                   <th>{t('col.status')}</th>
                   <th aria-sort={ariaSort('stock')}>{sortHead('stock', t('col.stock'))}</th>
@@ -220,6 +311,21 @@ export function ProductsPage() {
                       onClick={open}
                       onKeyDown={(e) => e.key === 'Enter' && e.target === e.currentTarget && open()}
                     >
+                      {canManage && (
+                        <td onClick={(e) => e.stopPropagation()}>
+                          <input
+                            type="checkbox"
+                            aria-label={t('selectOne', { name: p.title })}
+                            checked={sel.has(p.id)}
+                            onChange={(e) => {
+                              const next = new Set(sel);
+                              if (e.target.checked) next.add(p.id);
+                              else next.delete(p.id);
+                              setSel(next);
+                            }}
+                          />
+                        </td>
+                      )}
                       <td className={r.cProd}>
                         <div className={r.prod}>
                           <Thumb p={p} size={44} />
@@ -337,6 +443,45 @@ export function ProductsPage() {
           />
         )}
       </section>
+      {importing && (
+        <ImportDialog
+          title={t('importTitle')}
+          columns={[
+            { name: 'Product', hint: t('importHint.product') },
+            { name: 'Variant', hint: t('importHint.variant') },
+            { name: 'SKU', hint: t('importHint.sku') },
+            { name: 'Barcode' },
+            { name: 'Collection' },
+            { name: 'Price (USD)', hint: t('importHint.price') },
+            { name: 'Compare at (USD)' },
+            { name: 'Cost (USD)' },
+            { name: 'Stock', hint: t('importHint.stock') },
+            { name: 'Status', hint: t('importHint.status') },
+          ]}
+          example={[
+            'USB-C Cable 1 m',
+            '',
+            'CBL-USBC-1M',
+            '',
+            'Accessories',
+            '6.00',
+            '',
+            '2.10',
+            '25',
+            'Active',
+          ]}
+          templateName="products-template.csv"
+          run={(rows, o) =>
+            api.post<ImportReport>(
+              `/imports/products?dryRun=${o.dryRun}&skipInvalid=${o.skipInvalid}`,
+              { rows },
+              { businessId: db.shop.id },
+            )
+          }
+          onClose={() => setImporting(false)}
+          onDone={() => void useSellerStore.getState().resync()}
+        />
+      )}
     </>
   );
 }

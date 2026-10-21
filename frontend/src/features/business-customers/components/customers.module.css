@@ -111,3 +111,90 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* ── customer list ─────────────────────────────────────────────────── */
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.head h1 {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 650;
+}
+.head p {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.headActs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.filters {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.panel {
+  background: var(--g-fill);
+  -webkit-backdrop-filter: var(--g-blur);
+  backdrop-filter: var(--g-blur);
+  border: 1px solid var(--g-brd);
+  box-shadow: var(--g-hi), var(--g-shadow);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  min-width: 0;
+}
+.who {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.who strong {
+  font-weight: 550;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.sub {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+.num {
+  font-variant-numeric: tabular-nums;
+}
+.tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 1px 7px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+.tag_vip {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+.tag_new {
+  background: var(--info-soft);
+  color: var(--info);
+}
+.tag_risk {
+  background: var(--sale-soft);
+  color: var(--sale);
+}
+.head .ghost,
+.head .primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

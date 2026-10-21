@@ -9,7 +9,7 @@ import { DANA, signIn } from './_helpers/app';
 
 test('a seller edits a customer and downloads customers as CSV', async ({ page }) => {
   await signIn(page, '/seller/customers');
-  const row = page.locator('tbody tr').first();
+  const row = page.locator('tbody tr[tabindex="0"]').first();
   await expect(row).toBeVisible({ timeout: 20_000 });
   await row.click();
   const drawer = page.getByRole('dialog').first();

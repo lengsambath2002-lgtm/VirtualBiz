@@ -13,6 +13,7 @@ import team from './team.json';
 import shopSettings from './shopSettings.json';
 import receipt from './receipt.json';
 import customerEdit from './customerEdit.json';
+import customerList from './customerList.json';
 
 const messages = {
   meta,
@@ -29,5 +30,6 @@ const messages = {
   shopSettings,
   receipt,
   customerEdit,
+  customerList,
 };
 export default messages;

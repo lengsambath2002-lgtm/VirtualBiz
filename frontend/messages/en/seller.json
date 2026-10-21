@@ -406,7 +406,27 @@
     "duplicateFailed": "Couldn’t duplicate it. Try again.",
     "emptyTitle": "No products yet",
     "emptyBody": "Add your first product so customers can find it.",
-    "collections": "Collections"
+    "collections": "Collections",
+    "import": "Import CSV",
+    "importTitle": "Import products",
+    "importHint": {
+      "product": "Name of a new product",
+      "variant": "Only to update an existing variant (by its SKU)",
+      "sku": "A SKU you already have updates that variant",
+      "price": "Required for a new product",
+      "stock": "The count you have now; the difference is logged as a count correction",
+      "status": "Active or Draft (new products)"
+    },
+    "selectedN": "{n} selected",
+    "bulkPublish": "Publish",
+    "bulkDraft": "Move to draft",
+    "bulkDelete": "Delete",
+    "bulkDeleteTitle": "Delete {n, plural, one {# product} other {# products}}?",
+    "bulkDeleteBody": "They leave your shop and the register. Past orders keep their lines.",
+    "bulkDone": "Done for {n} of {total}.",
+    "clearSel": "Clear",
+    "selectAll": "Select all products",
+    "selectOne": "Select {name}"
   },
   "editor": {
     "leaveTitle": "Leave without saving?",
@@ -1045,5 +1065,16 @@
     "addLive": "Add product",
     "addDraft": "Save draft",
     "errStock": "A whole number, 0 or more."
+  },
+  "orderHistory": {
+    "placed": "Placed",
+    "source": "Source",
+    "online": "Online",
+    "pay": {
+      "KHQR": "KHQR",
+      "CARD": "Card",
+      "CASH": "Cash"
+    },
+    "emptyFiltered": "Try another search, or clear some filters."
   }
 }

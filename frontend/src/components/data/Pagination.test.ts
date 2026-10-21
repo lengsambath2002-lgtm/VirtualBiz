@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { pageItems } from './Pagination';
+import { pageItems } from './paging';
 
 describe('pageItems', () => {
   it('shows every page when there are few', () => {

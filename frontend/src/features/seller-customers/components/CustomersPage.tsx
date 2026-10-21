@@ -3,15 +3,14 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import { EmptyRow } from '@/components/feedback';
-import { EditCustomerDialog } from '@/features/business-customers';
+import { useMyRole } from '@/features/account-switcher';
+import { CustomerList, EditCustomerDialog } from '@/features/business-customers';
 import { copyText } from '@/features/seller-orders';
 import {
   CloseButton,
   custStats,
   cx,
   Drawer,
-  Ic,
   initials,
   lastAddressLine,
   s,
@@ -22,85 +21,25 @@ import {
 } from '@/features/seller-shared';
 import { formatPhone } from '@/lib/utils/phone';
 
+/** The shop's customers: every one, a page at a time, with lifetime orders and spend. */
 export function CustomersPage() {
   const t = useTranslations('seller.customers');
   const db = useDb();
-  const f = useFmt();
-  const [q, setQ] = useState('');
-  const query = q.trim().toLowerCase().replace(/\s/g, '');
-  const rows = db.customers
-    .map((c) => ({ c, st: custStats(db.orders, c.id) }))
-    .filter(
-      (r) => !query || (r.c.name + r.c.phone).toLowerCase().replace(/\s/g, '').includes(query),
-    )
-    .sort((a, b) => b.st.spent - a.st.spent);
-  const open = (id: string) => useUi.getState().open({ kind: 'customer', id });
+  const role = useMyRole(db.shop.id);
   return (
-    <>
-      <div className={s.phH}>
-        <div>
-          <h1>{t('title')}</h1>
-          <p className={s.muted}>{t('sub', { n: db.customers.length })}</p>
-        </div>
-      </div>
-      <div className={s.search}>
-        <Ic name="search" size={18} />
-        <input
-          type="search"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder={t('searchPh')}
-          aria-label={t('searchLabel')}
-        />
-      </div>
-      <section className={s.panel}>
-        <div className={s.tblWrap}>
-          <table>
-            <thead>
-              <tr>
-                <th>{t('col.customer')}</th>
-                <th>{t('col.area')}</th>
-                <th className={s.r}>{t('col.orders')}</th>
-                <th className={s.r}>{t('col.spent')}</th>
-                <th>{t('col.last')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {!rows.length && (
-                <EmptyRow
-                  cols={5}
-                  title={db.customers.length ? t('noMatch') : t('emptyTitle')}
-                  {...(db.customers.length ? {} : { body: t('emptyBody') })}
-                />
-              )}
-              {rows.map(({ c, st }) => (
-                <tr
-                  key={c.id}
-                  className={s.clk}
-                  tabIndex={0}
-                  onClick={() => open(c.id)}
-                  onKeyDown={(e) => e.key === 'Enter' && open(c.id)}
-                >
-                  <td>
-                    <div className={s.cw}>
-                      <span className={s.av}>{initials(c.name)}</span>
-                      <div>
-                        <div className={s.who}>{c.name}</div>
-                        <span className={cx(s.tiny, s.muted, s.num)}>{formatPhone(c.phone)}</span>
-                      </div>
-                    </div>
-                  </td>
-                  <td>{c.district}</td>
-                  <td className={cx(s.r, s.num)}>{st.n}</td>
-                  <td className={cx(s.r, s.num)}>{f.money0(st.spent)}</td>
-                  <td>{st.last ? f.ago(st.last) : '–'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </>
+    <CustomerList
+      businessId={db.shop.id}
+      type="PRODUCT"
+      canManage={role === 'OWNER' || role === 'MANAGER'}
+      title={t('title')}
+      sub={(n) => t('sub', { n })}
+      onOpen={(r) => useUi.getState().open({ kind: 'customer', id: r.userId ?? r.id })}
+      onSaved={(c) => {
+        const st = useSellerStore.getState();
+        if (c) st.putCustomer(c);
+        else void st.resyncExtras();
+      }}
+    />
   );
 }
 

@@ -81,6 +81,8 @@ for (const key of all) {
 // Untranslated guard: a kh value with Latin letters but no Khmer script, identical to en, is a
 // copy-paste leak. Brand/proper nouns that are legitimately the same go in SAME_OK.
 const SAME_OK = new Set([
+  'customerList.segment.vip',
+  'seller.orderHistory.pay.KHQR',
   'common.data.between',
   'receipt.method.KHQR',
   'receipt.share.telegram',

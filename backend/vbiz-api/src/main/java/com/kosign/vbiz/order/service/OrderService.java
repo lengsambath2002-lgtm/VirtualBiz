@@ -16,11 +16,18 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.payment.domain.PaymentMethod;
+import com.kosign.vbiz.order.domain.OrderSource;
+import com.kosign.vbiz.order.repository.OrderSpecs;
+import com.kosign.vbiz.common.list.PageResponse;
+import com.kosign.vbiz.common.list.PageQuery;
+import com.kosign.vbiz.common.list.DayRange;
 import com.kosign.vbiz.account.repository.UserRepository;
 import com.kosign.vbiz.business.domain.Business;
 import com.kosign.vbiz.business.domain.ProductSettings;
@@ -150,6 +157,41 @@ public class OrderService {
                 ? orders.ofBusiness(w.businessId(), PageRequest.of(0, n))
                 : orders.ofBusiness(w.businessId(), statuses, PageRequest.of(0, n));
         return search(views.views(rows), q, true);
+    }
+
+    /** Sort keys of the shop's order history → entity fields. */
+    private static final Map<String, String> HISTORY_SORTS = Map.of("placed", "placedAt", "total", "total",
+            "number", "number");
+
+    /**
+     * The shop's orders page by page (docs/api/phase16-shop-lists.md): every order, not only the
+     * latest, with the list contract's sort, date range and paging.
+     */
+    @Transactional(readOnly = true)
+    public PageResponse<OrderResponse> shopOrderHistory(String tab, String q, FulfilmentMethod method,
+            PaymentMethod pay, OrderSource source, LocalDate from, LocalDate to, String sort, Integer page,
+            Integer size) {
+        Workspace w = access.member();
+        DayRange range = DayRange.of(from, to, 3660);
+        PageQuery pq = PageQuery.of(page, size, sort, HISTORY_SORTS, "-placed", null);
+        Specification<Order> spec = historySpec(w.businessId(), tab, q, method, pay, source, range);
+        String field = HISTORY_SORTS.get(pq.sortKey());
+        org.springframework.data.domain.Sort order = pq.desc()
+                ? org.springframework.data.domain.Sort.by(field).descending().and(
+                        org.springframework.data.domain.Sort.by("number").descending())
+                : org.springframework.data.domain.Sort.by(field).ascending().and(
+                        org.springframework.data.domain.Sort.by("number").ascending());
+        var result = orders.findAll(spec, PageRequest.of(pq.page(), pq.size(), order));
+        return new PageResponse<>(views.views(result.getContent()), result.getTotalElements(), pq.page(), pq.size());
+    }
+
+    /** The order history's filters, shared with its CSV export. */
+    public static Specification<Order> historySpec(UUID businessId, String tab, String q, FulfilmentMethod method,
+            PaymentMethod pay, OrderSource source, DayRange range) {
+        return Specification.allOf(OrderSpecs.placedBy(businessId), OrderSpecs.status(tabStatuses(tab)),
+                OrderSpecs.placedFrom(range == null ? null : range.start()),
+                OrderSpecs.placedBefore(range == null ? null : range.end()), OrderSpecs.method(method),
+                OrderSpecs.paidWith(pay), OrderSpecs.source(source), OrderSpecs.text(q));
     }
 
     @Transactional(readOnly = true)

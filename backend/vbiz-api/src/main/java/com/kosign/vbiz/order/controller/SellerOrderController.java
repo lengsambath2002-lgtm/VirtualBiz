@@ -1,7 +1,9 @@
 package com.kosign.vbiz.order.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kosign.vbiz.payment.domain.PaymentMethod;
+import com.kosign.vbiz.order.domain.OrderSource;
+import com.kosign.vbiz.order.domain.FulfilmentMethod;
+import com.kosign.vbiz.common.list.PageResponse;
 import com.kosign.vbiz.common.api.ApiResponse;
 import com.kosign.vbiz.common.api.BaseController;
 import com.kosign.vbiz.order.payload.BulkResultResponse;
@@ -44,6 +50,19 @@ public class SellerOrderController extends BaseController {
     public ResponseEntity<ApiResponse<List<OrderResponse>>> list(@RequestParam(required = false) String tab,
             @RequestParam(required = false) String q, @RequestParam(required = false) Integer limit) {
         return ok(orders.shopOrders(tab, q, limit));
+    }
+
+    /** Every order of the shop, a page at a time (the history; the open tabs use {@code GET /orders}). */
+    @GetMapping("/history")
+    public ResponseEntity<ApiResponse<PageResponse<OrderResponse>>> history(
+            @RequestParam(required = false) String tab, @RequestParam(required = false) String q,
+            @RequestParam(required = false) FulfilmentMethod method, @RequestParam(required = false) PaymentMethod pay,
+            @RequestParam(required = false) OrderSource source,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @RequestParam(required = false) String sort, @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        return ok(orders.shopOrderHistory(tab, q, method, pay, source, from, to, sort, page, size));
     }
 
     @GetMapping("/counts")

@@ -1,5 +1,6 @@
 'use client';
 
+import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef, useState } from 'react';
 
 import { isApiError } from '@/lib/api';
@@ -8,185 +9,38 @@ import { formatPhone, isValidPhone, normalizePhone } from '@/lib/utils/phone';
 import { ClientAvatar, StatusPill } from '@/features/provider-shared/components/Bits';
 import { PIcon } from '@/features/provider-shared/components/Icon';
 import { CloseButton, Drawer, Field, Modal } from '@/features/provider-shared/components/Overlay';
-import { EditCustomerDialog } from '@/features/business-customers';
+
+import { useMyRole } from '@/features/account-switcher';
+import { CustomerList, EditCustomerDialog } from '@/features/business-customers';
+import { providerWorkspaceKey } from '@/features/provider-shared/queries';
 import { createClient, patchClient, toClient } from '@/features/provider-shared/api';
 import { k } from '@/features/provider-shared/cx';
 import { useActions } from '@/features/provider-shared/hooks/useActions';
 import { useFmt } from '@/features/provider-shared/hooks/useFmt';
 import { useData, useProviderStore, useUi } from '@/features/provider-shared/store';
-import {
-  clientStats,
-  firstName,
-  segmenter,
-  type ClientFilter,
-} from '@/features/provider-shared/util/logic';
-import {
-  daysBetween,
-  fmtDay2Month,
-  fmtMonthYear,
-  hm,
-  isoOf,
-  relKey,
-  todayIso,
-} from '@/features/provider-shared/util/time';
+import { clientStats, firstName } from '@/features/provider-shared/util/logic';
+import { fmtDay2Month, fmtMonthYear, hm, isoOf } from '@/features/provider-shared/util/time';
 
-const FILTERS: ClientFilter[] = ['all', 'vip', 'new', 'risk', 'noshow'];
-const TAG_TONE = { vip: 'warn', new: 'info', risk: 'bad' } as const;
-
-/** Clients with segments (prototype `P.clients`). */
+/**
+ * Clients (docs/api/phase16-shop-lists.md): every client a page at a time from the API, with
+ * lifetime visits and spend and the prototype's segments worked out on the server.
+ */
 export function ClientsPage() {
-  const f = useFmt();
-  const { t } = f;
+  const { t } = useFmt();
   const d = useData();
   const ui = useUi();
-  const today = todayIso();
-  const [q, setQ] = useState(ui.clientQ);
-  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  useEffect(() => () => clearTimeout(timer.current), []);
-
-  const rows = d.clients.map((c) => ({ c, st: clientStats(d, c.id) }));
-  const { tag, filters } = segmenter(rows, today);
-  const query = ui.clientQ.trim().toLowerCase().replace(/\s/g, '');
-  const list = rows
-    .filter(filters[ui.clientF])
-    .filter(
-      (r) =>
-        !query ||
-        (r.c.name + r.c.phone + (r.c.email ?? '')).toLowerCase().replace(/\s/g, '').includes(query),
-    )
-    .sort((a, b) => (b.st.last ?? '').localeCompare(a.st.last ?? ''));
-
-  const lastLabel = (iso: string) => {
-    const rk = relKey(iso, today);
-    return rk ? t(`time.${rk}`) : t('clients.daysAgo', { n: daysBetween(iso, today) });
-  };
-
+  const qc = useQueryClient();
+  const role = useMyRole(d.business.id);
   return (
-    <>
-      <div className={k('ph-h')}>
-        <div>
-          <h1>{t('clients.title')}</h1>
-          <p className={k('muted')}>{t('clients.sub', { n: d.clients.length })}</p>
-        </div>
-        <button
-          type="button"
-          className={k('btn btn-primary')}
-          onClick={() => ui.open({ t: 'newClient' })}
-        >
-          <PIcon name="plus" size={18} />
-          {t('clients.add')}
-        </button>
-      </div>
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
-        <div className={k('search')}>
-          <PIcon name="search" size={18} />
-          <input
-            type="search"
-            value={q}
-            placeholder={t('clients.searchPh')}
-            aria-label={t('clients.searchLabel')}
-            onChange={(e) => {
-              const v = e.target.value;
-              setQ(v);
-              clearTimeout(timer.current);
-              timer.current = setTimeout(() => ui.set({ clientQ: v }), 200);
-            }}
-          />
-        </div>
-        <div className={k('chips')}>
-          {FILTERS.map((key) => (
-            <button
-              key={key}
-              type="button"
-              className={k('chip', ui.clientF === key && 'on')}
-              onClick={() => ui.set({ clientF: key })}
-            >
-              {t(`clients.f.${key}`)}{' '}
-              <span className={k('ct num')}>{rows.filter(filters[key]).length}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-      <section className={k('panel')}>
-        <div className={k('tbl-wrap')}>
-          <table>
-            <thead>
-              <tr>
-                <th>{t('clients.thClient')}</th>
-                <th>{t('clients.thPhone')}</th>
-                <th className={k('r')}>{t('clients.thVisits')}</th>
-                <th className={k('r')}>{t('clients.thSpent')}</th>
-                <th>{t('clients.thLast')}</th>
-                <th>{t('clients.thNext')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {list.length ? (
-                list.map((r) => {
-                  const tg = tag(r);
-                  const openIt = () => ui.open({ t: 'client', id: r.c.id });
-                  return (
-                    <tr
-                      key={r.c.id}
-                      className={k('clk')}
-                      tabIndex={0}
-                      onClick={openIt}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') openIt();
-                      }}
-                    >
-                      <td>
-                        <div className={k('cw')}>
-                          <ClientAvatar c={r.c} size={32} />
-                          <div>
-                            <div className={k('who')}>
-                              {r.c.name}{' '}
-                              {tg && (
-                                <span className={k('pill', TAG_TONE[tg])} style={{ fontSize: 11 }}>
-                                  {t(`clients.tag.${tg}`)}
-                                </span>
-                              )}
-                            </div>
-                            {r.st.noshow > 0 && (
-                              <span className={k('tiny')} style={{ color: 'var(--danger)' }}>
-                                {t('clients.noShowN', { n: r.st.noshow })}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-                      <td className={k('num')}>{formatPhone(r.c.phone)}</td>
-                      <td className={k('r num')}>{r.st.visits}</td>
-                      <td className={k('r num')}>{f.money0(r.st.spend)}</td>
-                      <td>
-                        {r.st.last ? lastLabel(r.st.last) : <span className={k('muted')}>–</span>}
-                      </td>
-                      <td>
-                        {r.st.next ? (
-                          <span className={k('num')}>
-                            {f.rel(r.st.next.date, today)} {hm(r.st.next.start)}
-                          </span>
-                        ) : (
-                          <span className={k('muted')}>{t('clients.none')}</span>
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })
-              ) : (
-                <tr>
-                  <td colSpan={6}>
-                    <div className={k('empty')}>
-                      <strong>{t('clients.empty')}</strong>
-                    </div>
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </>
+    <CustomerList
+      businessId={d.business.id}
+      type="SERVICE"
+      canManage={role === 'OWNER' || role === 'MANAGER'}
+      title={t('clients.title')}
+      sub={(n) => t('clients.sub', { n })}
+      onOpen={(r) => ui.open({ t: 'client', id: r.id })}
+      onSaved={() => void qc.invalidateQueries({ queryKey: providerWorkspaceKey(d.business.id) })}
+    />
   );
 }
 

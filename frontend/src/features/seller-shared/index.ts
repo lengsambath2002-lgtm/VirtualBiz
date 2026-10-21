@@ -10,6 +10,7 @@ export type { CashTenderInfo, FailReason, RejectReason, ReturnReason } from './s
 export { writeStock, revertStock, SYSTEM_USER, isTmp } from './store/stock';
 export {
   createManualOrder,
+  fetchOrderHistory,
   fetchSellerCatalog,
   toSellerProduct,
   type ManualOrderInput,

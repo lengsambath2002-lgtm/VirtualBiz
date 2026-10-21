@@ -16,5 +16,6 @@
   "errPhoneTaken": "Another customer already has this phone number.",
   "errDistrict": "Pick a district from the list.",
   "errCheck": "Some details aren't valid. Check them and try again.",
-  "failed": "Couldn't save. Check your connection and try again."
+  "failed": "Couldn't save. Check your connection and try again.",
+  "newTitle": "New customer"
 }

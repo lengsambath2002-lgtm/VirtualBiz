@@ -12,7 +12,11 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.kosign.vbiz.business.domain.BusinessType;
+import com.kosign.vbiz.customer.repository.ClientQueries;
+import com.kosign.vbiz.customer.payload.ClientRow;
+import com.kosign.vbiz.common.list.PageResponse;
+import com.kosign.vbiz.common.list.PageQuery;
+import com.kosign.vbiz.common.list.DayRange;
 import com.kosign.vbiz.business.service.WorkspaceAccess;
 import com.kosign.vbiz.business.service.WorkspaceAccess.Workspace;
 import com.kosign.vbiz.common.api.StatusCode;
@@ -41,6 +45,7 @@ public class ClientService {
     private final UserRepository users;
     private final WorkspaceAccess access;
     private final ReferenceDataService reference;
+    private final ClientQueries queries;
     private final Clock clock;
 
     @Transactional(readOnly = true)
@@ -50,9 +55,24 @@ public class ClientService {
                 .toList();
     }
 
+    /**
+     * The shop's customers a page at a time with lifetime numbers (docs/api/phase16-shop-lists.md),
+     * both kinds of shop.
+     */
+    @Transactional(readOnly = true)
+    public PageResponse<ClientRow> page(String q, String district, String segment, String account,
+            java.time.LocalDate from, java.time.LocalDate to, String sort, Integer page, Integer size) {
+        Workspace w = access.member();
+        PageQuery pq = PageQuery.of(page, size, sort, ClientQueries.SORTS, "name", "id");
+        java.time.Instant now = clock.instant();
+        return queries.page(w.businessId(), new ClientQueries.Filter(q, district, segment, account,
+                DayRange.of(from, to, 3660)), pq, java.time.LocalDate.ofInstant(now, DayRange.PHNOM_PENH), now);
+    }
+
     @Transactional
     public ClientResponse create(ClientInput in) {
-        Workspace w = workspace();
+        // Both kinds of shop keep customer records (docs/api/phase16-shop-lists.md).
+        Workspace w = access.member();
         String name = requireName(in.name());
         String phone = PhoneNumbers.normalizeOrThrow(in.phone());
         if (clients.findByBusinessIdAndPhone(w.businessId(), phone).isPresent()) {
@@ -61,6 +81,9 @@ public class ClientService {
         Client c = newClient(w.businessId(), name, phone);
         c.setEmail(email(in.email()));
         c.setNote(blankToNull(in.note()));
+        if (in.district() != null && !in.district().isBlank()) {
+            c.setDistrict(reference.canonicalDistrict(in.district()));
+        }
         return toResponse(clients.saveAndFlush(c));
     }
 
@@ -178,11 +201,6 @@ public class ClientService {
 
     // ── internals ─────────────────────────────────────────────────────────────────────
 
-    private Workspace workspace() {
-        Workspace w = access.member();
-        WorkspaceAccess.requireType(w, BusinessType.SERVICE);
-        return w;
-    }
 
     private Client newClient(UUID businessId, String name, String phone) {
         Client c = new Client();

@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kosign.vbiz.payment.domain.PaymentMethod;
+import com.kosign.vbiz.order.domain.OrderSource;
+import com.kosign.vbiz.order.domain.FulfilmentMethod;
 import com.kosign.vbiz.common.api.BaseController;
 import com.kosign.vbiz.report.service.ExportService;
 import com.kosign.vbiz.report.service.ExportService.Export;
@@ -34,8 +37,11 @@ public class ExportController extends BaseController {
     @GetMapping("/api/exports/{kind}")
     public ResponseEntity<byte[]> export(@PathVariable String kind,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        Export e = exports.export(kind, from, to);
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
+            @RequestParam(required = false) String tab, @RequestParam(required = false) String q,
+            @RequestParam(required = false) FulfilmentMethod method, @RequestParam(required = false) PaymentMethod pay,
+            @RequestParam(required = false) OrderSource source) {
+        Export e = exports.export(kind, from, to, new ExportService.OrderFilters(tab, q, method, pay, source));
         return ResponseEntity.ok()
                 .contentType(CSV)
                 .cacheControl(CacheControl.noStore())

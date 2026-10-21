@@ -7,11 +7,11 @@ import { useState, type FormEvent } from 'react';
 import { api, isApiError, type ApiClient, type ApiDistrict } from '@/lib/api';
 import { cn } from '@/lib/utils/cn';
 
-import { patchCustomer } from '../api';
+import { createCustomer, patchCustomer } from '../api';
 import c$ from './customers.module.css';
 
 export interface EditableCustomer {
-  /** The shop's client record (`/api/clients/{id}`). */
+  /** The shop's client record (`/api/clients/{id}`); empty for a new customer. */
   clientId: string;
   name: string;
   phone: string;
@@ -66,14 +66,17 @@ export function EditCustomerDialog({
     }
     setBusy(true);
     try {
+      const input = {
+        name,
+        phone: f.phone.trim(),
+        email: f.email.trim(),
+        district: f.district,
+        note: f.note.trim(),
+      };
       onSaved(
-        await patchCustomer(businessId, customer.clientId, {
-          name,
-          phone: f.phone.trim(),
-          email: f.email.trim(),
-          district: f.district,
-          note: f.note.trim(),
-        }),
+        customer.clientId
+          ? await patchCustomer(businessId, customer.clientId, input)
+          : await createCustomer(businessId, input),
       );
       onClose();
     } catch (x) {
@@ -108,11 +111,11 @@ export function EditCustomerDialog({
         className={c$.dialog}
         role="dialog"
         aria-modal="true"
-        aria-label={t('title', { name: customer.name })}
+        aria-label={customer.clientId ? t('title', { name: customer.name }) : t('newTitle')}
         onSubmit={submit}
         noValidate
       >
-        <h2>{t('title', { name: customer.name })}</h2>
+        <h2>{customer.clientId ? t('title', { name: customer.name }) : t('newTitle')}</h2>
         <label className={cn(c$.field, err?.field === 'name' && c$.bad)}>
           <span>{t('name')}</span>
           <input

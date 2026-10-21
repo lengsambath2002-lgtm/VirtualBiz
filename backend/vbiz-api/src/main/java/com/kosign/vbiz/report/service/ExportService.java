@@ -15,9 +15,15 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.payment.domain.PaymentMethod;
+import com.kosign.vbiz.order.service.OrderService;
+import com.kosign.vbiz.order.domain.OrderSource;
+import com.kosign.vbiz.order.domain.FulfilmentMethod;
+import com.kosign.vbiz.common.list.DayRange;
 import com.kosign.vbiz.booking.domain.Appointment;
 import com.kosign.vbiz.booking.repository.AppointmentRepository;
 import com.kosign.vbiz.business.domain.BusinessMember;
@@ -88,6 +94,16 @@ public class ExportService {
 
     @Transactional(readOnly = true)
     public Export export(String kindName, LocalDate fromDay, LocalDate toDay) {
+        return export(kindName, fromDay, toDay, OrderFilters.NONE);
+    }
+
+    /** Extra filters of the order export, as the order history list takes them. */
+    public record OrderFilters(String tab, String q, FulfilmentMethod method, PaymentMethod pay, OrderSource source) {
+        static final OrderFilters NONE = new OrderFilters(null, null, null, null, null);
+    }
+
+    @Transactional(readOnly = true)
+    public Export export(String kindName, LocalDate fromDay, LocalDate toDay, OrderFilters of) {
         ExportKind kind = ExportKind.of(kindName)
                 .orElseThrow(() -> BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "kind",
                         "one of " + Arrays.stream(ExportKind.values()).map(ExportKind::path).toList()));
@@ -105,7 +121,7 @@ public class ExportService {
         }
         UUID b = w.businessId();
         CsvWriter csv = switch (kind) {
-            case ORDERS -> orders(b, from, to);
+            case ORDERS -> orders(b, from, to, of);
             case SALES -> sales(b, from, to);
             case APPOINTMENTS -> appointments(b, from, to);
             case PRODUCTS -> products(b);
@@ -118,8 +134,9 @@ public class ExportService {
         return new Export(name, csv.bytes(), csv.rows());
     }
 
-    private CsvWriter orders(UUID b, LocalDate from, LocalDate to) {
-        List<Order> os = orders.placedBetween(b, start(from), start(to.plusDays(1)));
+    private CsvWriter orders(UUID b, LocalDate from, LocalDate to, OrderFilters of) {
+        List<Order> os = orders.findAll(OrderService.historySpec(b, of.tab(), of.q(), of.method(), of.pay(),
+                of.source(), new DayRange(from, to)), Sort.by("placedAt").descending().and(Sort.by("number").descending()));
         Map<UUID, List<OrderLine>> lines = orderLines.findByOrderIdInOrderByPositionAsc(ids(os, Order::getId))
                 .stream().collect(Collectors.groupingBy(OrderLine::getOrderId));
         CsvWriter csv = new CsvWriter("Order", "Placed", "Status", "Customer", "Phone", "Fulfilment", "Address",

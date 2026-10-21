@@ -1,0 +1,43 @@
+{
+  "all": "All",
+  "segmentLabel": "Segment",
+  "segment": {
+    "vip": "VIP",
+    "new": "New",
+    "risk": "At risk",
+    "noshow": "No-shows"
+  },
+  "searchPh": "Name, phone or email",
+  "searchLabel": "Search customers",
+  "since": "Customer since",
+  "account": "VirtualBiz account",
+  "accountOpt": {
+    "yes": "Has an account",
+    "no": "No account"
+  },
+  "col": {
+    "customer": "Customer",
+    "district": "District",
+    "orders": "Orders",
+    "visits": "Visits",
+    "spent": "Spent",
+    "lastOrder": "Last order",
+    "lastVisit": "Last visit"
+  },
+  "noShows": "{n, plural, one {# no-show} other {# no-shows}}",
+  "next": "Next: {date}",
+  "add": "Add customer",
+  "import": "Import CSV",
+  "importTitle": "Import customers",
+  "importHint": {
+    "Name": "2–80 characters",
+    "Phone": "A Cambodian number; an existing customer with this phone is updated",
+    "Email": "Optional",
+    "District": "A Phnom Penh district, e.g. Daun Penh",
+    "Note": "Only your team sees it"
+  },
+  "noMatch": "No customers match",
+  "noMatchBody": "Try another search, or clear some filters.",
+  "emptyTitle": "No customers yet",
+  "emptyBody": "Customers appear here after their first order or booking. Add or import them to start."
+}

@@ -1,5 +1,6 @@
 export { DataTable, type Column } from './DataTable';
-export { Pagination, pageItems } from './Pagination';
+export { Pagination } from './Pagination';
+export { PAGE_SIZES, pageItems } from './paging';
 export {
   DateRangeFilter,
   ExportButton,
@@ -18,5 +19,5 @@ export {
   type ImportRun,
 } from './ImportDialog';
 export { csvTemplate, parseCsv, type CsvTable } from './csv';
-export { PAGE_SIZES, useListQuery, type ListQuery, type Sort } from './useListQuery';
+export { useListQuery, type ListQuery, type Sort } from './useListQuery';
 export { default as dataStyles } from './data.module.css';

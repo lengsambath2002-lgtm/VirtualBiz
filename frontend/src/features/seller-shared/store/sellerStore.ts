@@ -185,6 +185,10 @@ interface SellerState {
   duplicateProduct: (id: string) => Promise<string>;
   setProductDraft: (id: string) => Promise<void>;
   deleteProduct: (id: string) => Promise<void>;
+  /** Bulk publish / move to draft; resolves how many changed (a refused one stays as it was). */
+  setProductsStatus: (ids: string[], status: 'ACTIVE' | 'DRAFT') => Promise<number>;
+  /** Bulk delete; resolves how many were deleted. */
+  deleteProducts: (ids: string[]) => Promise<number>;
   adjustStock: (
     variantId: string,
     delta: number,
@@ -203,6 +207,8 @@ interface SellerState {
   replyReview: (id: string, text: string) => Promise<boolean>;
   /** A customer record the API just saved (`PATCH /api/clients/{id}`). */
   putCustomer: (c: ApiClient) => void;
+  /** Orders opened from the history that the workspace hadn't loaded (older than its window). */
+  rememberOrders: (orders: SellerOrder[]) => void;
   /** Local only (e.g. keeping a saved workspace's name in step with the API). */
   updateShop: (patch: Partial<SellerDb['shop']>) => void;
   /** Settings: shown at once, saved with `PATCH /api/businesses/{id}`, put back if refused. */
@@ -477,6 +483,30 @@ export const useSellerStore = create<SellerState>()(
         setProductDraft: async (id) => {
           upsertProduct(await setProductStatus(businessId(), id, 'DRAFT'));
         },
+        setProductsStatus: async (ids, status) => {
+          let n = 0;
+          for (const id of ids) {
+            try {
+              upsertProduct(await setProductStatus(businessId(), id, status));
+              n++;
+            } catch {
+              // Reported as "n of m" by the caller.
+            }
+          }
+          return n;
+        },
+        deleteProducts: async (ids) => {
+          let n = 0;
+          for (const id of ids) {
+            try {
+              await get().deleteProduct(id);
+              n++;
+            } catch {
+              // Reported as "n of m" by the caller.
+            }
+          }
+          return n;
+        },
         deleteProduct: async (id) => {
           await deleteProductApi(businessId(), id);
           patch((d) => {
@@ -562,6 +592,10 @@ export const useSellerStore = create<SellerState>()(
             return false;
           }
         },
+        rememberOrders: (os) =>
+          patch((d) => {
+            for (const o of os) if (!d.orders.some((x) => x.id === o.id)) d.orders.push(o);
+          }),
         putCustomer: (c) =>
           patch((d) => {
             const next = toCustomer(c);

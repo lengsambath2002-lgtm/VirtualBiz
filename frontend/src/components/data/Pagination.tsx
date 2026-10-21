@@ -5,17 +5,7 @@ import { useTranslations } from 'next-intl';
 import { cn } from '@/lib/utils/cn';
 
 import d from './data.module.css';
-import { PAGE_SIZES } from './useListQuery';
-
-/** Page numbers to show: first, last, and two either side of the current one, with gaps. */
-export function pageItems(page: number, pages: number): (number | 'gap')[] {
-  const out: (number | 'gap')[] = [];
-  for (let i = 0; i < pages; i++) {
-    if (i === 0 || i === pages - 1 || Math.abs(i - page) <= 2) out.push(i);
-    else if (out[out.length - 1] !== 'gap') out.push('gap');
-  }
-  return out;
-}
+import { PAGE_SIZES, pageItems } from './paging';
 
 /**
  * "41–60 of 1,284" with page numbers and a rows-per-page choice. Always shows the count, also when

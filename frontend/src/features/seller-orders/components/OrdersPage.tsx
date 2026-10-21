@@ -28,6 +28,7 @@ import { usePathname, useRouter } from '@/lib/i18n/navigation';
 import { formatPhone } from '@/lib/utils/phone';
 
 import { useOrderActions } from '../hooks/useOrderActions';
+import { OrderHistory } from './OrderHistory';
 import { SourcePill } from './SourcePill';
 
 const LATE = 30 * 60_000;
@@ -150,236 +151,248 @@ export function OrdersPage() {
           </button>
         ))}
       </div>
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-        <div className={s.search}>
-          <Ic name="search" size={18} />
-          <input
-            type="search"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder={t('searchPh')}
-            aria-label={t('searchLabel')}
-          />
-        </div>
-      </div>
-      <section className={s.panel}>
-        {selected.length > 0 && bulk && (
-          <div className={s.bulk}>
-            <b>{t('selected', { n: selected.length })}</b>
-            <button type="button" className={cx(s.btn, s.btnPrimary, s.btnSm)} onClick={runBulk}>
-              {t(bulk[1] as 'bulkAccept')}
-            </button>
-            <button
-              type="button"
-              className={cx(s.link, s.quiet, s.small)}
-              style={{ color: 'inherit' }}
-              onClick={() => setSel(new Set())}
-            >
-              {t('clear')}
-            </button>
-          </div>
-        )}
-        {list.length ? (
-          <>
-            <div className={s.ocards}>
-              {list.map((o) => {
-                const c = cust(o);
-                const n = nextStep(o);
-                return (
-                  <div
-                    key={o.id}
-                    className={s.oc2}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => act.open(o.id)}
-                    onKeyDown={(e) => e.key === 'Enter' && act.open(o.id)}
-                  >
-                    <Thumb p={prod(o.lines[0]?.variantId ?? '')} />
-                    <span style={{ minWidth: 0 }}>
-                      <b className={s.num}>{o.number}</b> · {c.name}
-                      <span className={cx(s.tiny, s.muted, s.block)}>
-                        {items(itemCount(o))} · {tm(o.method)} · {tp(payLabel(o))}
-                        {(o.status === 'NEW' || o.status === 'ACCEPTED') && (
-                          <>
-                            {' · '}
-                            <span className={cx(s.age, late(o) && s.late)}>
-                              {f.age(o.createdAt)}
-                            </span>
-                          </>
-                        )}
-                      </span>
-                    </span>
-                    <span style={{ textAlign: 'right' }}>
-                      <b className={s.num}>{f.money(o.total)}</b>
-                      <span className={s.block}>
-                        <StatusPill status={o.status} /> <SourcePill o={o} />
-                      </span>
-                    </span>
-                    {n && (
-                      <span className={s.oc2Act}>
-                        {o.status === 'NEW' && (
-                          <button
-                            type="button"
-                            className={cx(s.btn, s.btnGhost, s.btnSm)}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              void act.reject(o.id);
-                            }}
-                          >
-                            {t('reject.btn')}
-                          </button>
-                        )}
-                        <button
-                          type="button"
-                          className={cx(s.btn, s.btnPrimary, s.btnSm)}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            runNext(o);
-                          }}
-                        >
-                          {t(`next.${n[1]}` as 'next.accept')}
-                        </button>
-                      </span>
-                    )}
-                  </div>
-                );
-              })}
+      {tab === 'done' || tab === 'cancelled' || tab === 'all' ? (
+        <OrderHistory tab={tab} />
+      ) : (
+        <>
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <div className={s.search}>
+              <Ic name="search" size={18} />
+              <input
+                type="search"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder={t('searchPh')}
+                aria-label={t('searchLabel')}
+              />
             </div>
-            <div className={cx(s.tblWrap, s.odesk)}>
-              <table>
-                <thead>
-                  <tr>
-                    {bulk && (
-                      <th style={{ width: 36 }}>
-                        <input
-                          type="checkbox"
-                          aria-label={t('selectAll')}
-                          checked={selected.length === list.length}
-                          onChange={(e) =>
-                            setSel(e.target.checked ? new Set(list.map((o) => o.id)) : new Set())
-                          }
-                        />
-                      </th>
-                    )}
-                    <th>{t('col.order')}</th>
-                    <th>{t('col.customer')}</th>
-                    <th>{t('col.items')}</th>
-                    <th>{t('col.delivery')}</th>
-                    <th>{t('col.payment')}</th>
-                    <th>{t('col.status')}</th>
-                    <th className={s.r}>{t('col.total')}</th>
-                    {bulk && <th />}
-                  </tr>
-                </thead>
-                <tbody>
+          </div>
+          <section className={s.panel}>
+            {selected.length > 0 && bulk && (
+              <div className={s.bulk}>
+                <b>{t('selected', { n: selected.length })}</b>
+                <button
+                  type="button"
+                  className={cx(s.btn, s.btnPrimary, s.btnSm)}
+                  onClick={runBulk}
+                >
+                  {t(bulk[1] as 'bulkAccept')}
+                </button>
+                <button
+                  type="button"
+                  className={cx(s.link, s.quiet, s.small)}
+                  style={{ color: 'inherit' }}
+                  onClick={() => setSel(new Set())}
+                >
+                  {t('clear')}
+                </button>
+              </div>
+            )}
+            {list.length ? (
+              <>
+                <div className={s.ocards}>
                   {list.map((o) => {
                     const c = cust(o);
                     const n = nextStep(o);
-                    const first = o.lines[0];
                     return (
-                      <tr
+                      <div
                         key={o.id}
-                        className={s.clk}
+                        className={s.oc2}
+                        role="button"
                         tabIndex={0}
                         onClick={() => act.open(o.id)}
-                        onKeyDown={(e) =>
-                          e.key === 'Enter' && e.target === e.currentTarget && act.open(o.id)
-                        }
+                        onKeyDown={(e) => e.key === 'Enter' && act.open(o.id)}
                       >
-                        {bulk && (
-                          <td onClick={(e) => e.stopPropagation()}>
-                            <input
-                              type="checkbox"
-                              aria-label={t('selectOne', { no: o.number })}
-                              checked={sel.has(o.id)}
-                              onChange={(e) => {
-                                const next = new Set(sel);
-                                if (e.target.checked) next.add(o.id);
-                                else next.delete(o.id);
-                                setSel(next);
-                              }}
-                            />
-                          </td>
-                        )}
-                        <td>
-                          <b className={s.num}>{o.number}</b>
-                          <div className={cx(s.age, late(o) ? s.late : s.muted)}>
-                            {o.status === 'NEW' || o.status === 'ACCEPTED'
-                              ? t('waiting', { age: f.age(o.createdAt) })
-                              : f.fmtDT(o.createdAt)}
-                          </div>
-                        </td>
-                        <td>
-                          {c.name}
-                          <div className={cx(s.tiny, s.muted)}>{c.district}</div>
-                        </td>
-                        <td>
-                          <span style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                            <Thumb p={prod(first?.variantId ?? '')} size={28} />
-                            <span className={s.small}>
-                              {first?.title}
-                              {o.lines.length > 1 && (
-                                <span className={s.muted}> +{o.lines.length - 1}</span>
-                              )}
-                              <span className={cx(s.tiny, s.muted, s.block)}>
-                                {items(itemCount(o))}
-                              </span>
-                            </span>
+                        <Thumb p={prod(o.lines[0]?.variantId ?? '')} />
+                        <span style={{ minWidth: 0 }}>
+                          <b className={s.num}>{o.number}</b> · {c.name}
+                          <span className={cx(s.tiny, s.muted, s.block)}>
+                            {items(itemCount(o))} · {tm(o.method)} · {tp(payLabel(o))}
+                            {(o.status === 'NEW' || o.status === 'ACCEPTED') && (
+                              <>
+                                {' · '}
+                                <span className={cx(s.age, late(o) && s.late)}>
+                                  {f.age(o.createdAt)}
+                                </span>
+                              </>
+                            )}
                           </span>
-                        </td>
-                        <td>
-                          <span className={cx(s.pill, s.neutral)}>
-                            <Ic name={o.method === 'PICKUP' ? 'store' : 'truck'} size={12} />{' '}
-                            {tm(o.method)}
+                        </span>
+                        <span style={{ textAlign: 'right' }}>
+                          <b className={s.num}>{f.money(o.total)}</b>
+                          <span className={s.block}>
+                            <StatusPill status={o.status} /> <SourcePill o={o} />
                           </span>
-                        </td>
-                        <td>
-                          <PayPill o={o} />
-                        </td>
-                        <td>
-                          <StatusPill status={o.status} /> <SourcePill o={o} />
-                        </td>
-                        <td className={cx(s.r, s.num)}>
-                          <b>{f.money(o.total)}</b>
-                        </td>
-                        {bulk && (
-                          <td className={s.r} onClick={(e) => e.stopPropagation()}>
-                            {n && (
+                        </span>
+                        {n && (
+                          <span className={s.oc2Act}>
+                            {o.status === 'NEW' && (
                               <button
                                 type="button"
-                                className={cx(
-                                  s.btn,
-                                  o.status === 'NEW' ? s.btnPrimary : s.btnGhost,
-                                  s.btnSm,
-                                )}
-                                onClick={() => runNext(o)}
+                                className={cx(s.btn, s.btnGhost, s.btnSm)}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  void act.reject(o.id);
+                                }}
                               >
-                                {t(`next.${n[1]}` as 'next.accept')}
+                                {t('reject.btn')}
                               </button>
                             )}
-                          </td>
+                            <button
+                              type="button"
+                              className={cx(s.btn, s.btnPrimary, s.btnSm)}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                runNext(o);
+                              }}
+                            >
+                              {t(`next.${n[1]}` as 'next.accept')}
+                            </button>
+                          </span>
                         )}
-                      </tr>
+                      </div>
                     );
                   })}
-                </tbody>
-              </table>
-            </div>
-          </>
-        ) : (
-          <div className={s.empty}>
-            <Ic name="orders" size={30} />
-            <strong>
-              {query
-                ? t('empty.noMatch')
-                : tab === 'new' || tab === 'pack' || tab === 'ship'
-                  ? t(`empty.${tab}`)
-                  : t('empty.none')}
-            </strong>
-            <span>{tab === 'new' && !query ? t('empty.newHint') : ''}</span>
-          </div>
-        )}
-      </section>
+                </div>
+                <div className={cx(s.tblWrap, s.odesk)}>
+                  <table>
+                    <thead>
+                      <tr>
+                        {bulk && (
+                          <th style={{ width: 36 }}>
+                            <input
+                              type="checkbox"
+                              aria-label={t('selectAll')}
+                              checked={selected.length === list.length}
+                              onChange={(e) =>
+                                setSel(
+                                  e.target.checked ? new Set(list.map((o) => o.id)) : new Set(),
+                                )
+                              }
+                            />
+                          </th>
+                        )}
+                        <th>{t('col.order')}</th>
+                        <th>{t('col.customer')}</th>
+                        <th>{t('col.items')}</th>
+                        <th>{t('col.delivery')}</th>
+                        <th>{t('col.payment')}</th>
+                        <th>{t('col.status')}</th>
+                        <th className={s.r}>{t('col.total')}</th>
+                        {bulk && <th />}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {list.map((o) => {
+                        const c = cust(o);
+                        const n = nextStep(o);
+                        const first = o.lines[0];
+                        return (
+                          <tr
+                            key={o.id}
+                            className={s.clk}
+                            tabIndex={0}
+                            onClick={() => act.open(o.id)}
+                            onKeyDown={(e) =>
+                              e.key === 'Enter' && e.target === e.currentTarget && act.open(o.id)
+                            }
+                          >
+                            {bulk && (
+                              <td onClick={(e) => e.stopPropagation()}>
+                                <input
+                                  type="checkbox"
+                                  aria-label={t('selectOne', { no: o.number })}
+                                  checked={sel.has(o.id)}
+                                  onChange={(e) => {
+                                    const next = new Set(sel);
+                                    if (e.target.checked) next.add(o.id);
+                                    else next.delete(o.id);
+                                    setSel(next);
+                                  }}
+                                />
+                              </td>
+                            )}
+                            <td>
+                              <b className={s.num}>{o.number}</b>
+                              <div className={cx(s.age, late(o) ? s.late : s.muted)}>
+                                {o.status === 'NEW' || o.status === 'ACCEPTED'
+                                  ? t('waiting', { age: f.age(o.createdAt) })
+                                  : f.fmtDT(o.createdAt)}
+                              </div>
+                            </td>
+                            <td>
+                              {c.name}
+                              <div className={cx(s.tiny, s.muted)}>{c.district}</div>
+                            </td>
+                            <td>
+                              <span style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                                <Thumb p={prod(first?.variantId ?? '')} size={28} />
+                                <span className={s.small}>
+                                  {first?.title}
+                                  {o.lines.length > 1 && (
+                                    <span className={s.muted}> +{o.lines.length - 1}</span>
+                                  )}
+                                  <span className={cx(s.tiny, s.muted, s.block)}>
+                                    {items(itemCount(o))}
+                                  </span>
+                                </span>
+                              </span>
+                            </td>
+                            <td>
+                              <span className={cx(s.pill, s.neutral)}>
+                                <Ic name={o.method === 'PICKUP' ? 'store' : 'truck'} size={12} />{' '}
+                                {tm(o.method)}
+                              </span>
+                            </td>
+                            <td>
+                              <PayPill o={o} />
+                            </td>
+                            <td>
+                              <StatusPill status={o.status} /> <SourcePill o={o} />
+                            </td>
+                            <td className={cx(s.r, s.num)}>
+                              <b>{f.money(o.total)}</b>
+                            </td>
+                            {bulk && (
+                              <td className={s.r} onClick={(e) => e.stopPropagation()}>
+                                {n && (
+                                  <button
+                                    type="button"
+                                    className={cx(
+                                      s.btn,
+                                      o.status === 'NEW' ? s.btnPrimary : s.btnGhost,
+                                      s.btnSm,
+                                    )}
+                                    onClick={() => runNext(o)}
+                                  >
+                                    {t(`next.${n[1]}` as 'next.accept')}
+                                  </button>
+                                )}
+                              </td>
+                            )}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
+            ) : (
+              <div className={s.empty}>
+                <Ic name="orders" size={30} />
+                <strong>
+                  {query
+                    ? t('empty.noMatch')
+                    : tab === 'new' || tab === 'pack' || tab === 'ship'
+                      ? t(`empty.${tab}`)
+                      : t('empty.none')}
+                </strong>
+                <span>{tab === 'new' && !query ? t('empty.newHint') : ''}</span>
+              </div>
+            )}
+          </section>
+        </>
+      )}
     </>
   );
 }

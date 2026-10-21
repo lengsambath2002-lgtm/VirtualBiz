@@ -1,2 +1,3 @@
+export { CustomerList, type CustomerRow } from './components/CustomerList';
 export { EditCustomerDialog, type EditableCustomer } from './components/EditCustomerDialog';
-export { patchCustomer, type CustomerPatch } from './api';
+export { createCustomer, patchCustomer, type CustomerPatch } from './api';

@@ -5,7 +5,7 @@ import { useCallback, useMemo } from 'react';
 
 import { usePathname, useRouter } from '@/lib/i18n/navigation';
 
-export const PAGE_SIZES = [10, 20, 50, 100] as const;
+import { PAGE_SIZES } from './paging';
 
 export interface Sort {
   key: string;
@@ -46,7 +46,10 @@ export function useListQuery<K extends string>(
 
   const set = useCallback(
     (patch: { [P in K | 'page' | 'size' | 'sort']?: string | number | null }) => {
-      const next = new URLSearchParams(sp.toString());
+      // The current URL, not this render's: a debounced search may land after another change.
+      const next = new URLSearchParams(
+        typeof window === 'undefined' ? sp.toString() : window.location.search,
+      );
       if (!('page' in patch)) next.delete('page');
       for (const [k, v] of Object.entries(patch)) {
         const empty =

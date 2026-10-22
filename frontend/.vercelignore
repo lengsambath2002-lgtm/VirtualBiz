@@ -1,0 +1,10 @@
+# Never upload local secrets or build / test output to Vercel.
+.env
+.env.*
+!.env.example
+node_modules
+.next
+test-results
+tests/e2e/.report
+playwright-report
+coverage

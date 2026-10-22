@@ -83,7 +83,7 @@ for (const key of all) {
 const SAME_OK = new Set([
   'customerList.segment.vip',
   'seller.orderHistory.pay.KHQR',
-  'common.data.between',
+  'team.emailsPh',
   'receipt.method.KHQR',
   'receipt.share.telegram',
   'receipt.share.sms',

@@ -44,7 +44,16 @@ export function useTeamRefresh(businessId: string) {
   return () => qc.invalidateQueries({ queryKey: teamKey(businessId) });
 }
 
+/** `POST …/invites/batch`: the invites sent and each refused email with its reason code. */
+export interface TeamInviteBatch {
+  sent: TeamInvite[];
+  failed: { email: string; code: string; message: string }[];
+}
+export const MAX_INVITES = 20;
+
 export const teamApi = {
+  inviteMany: (businessId: string, input: { emails: string[]; role: TeamInvite['role'] }) =>
+    api.post<TeamInviteBatch>(`/businesses/${businessId}/invites/batch`, input, opts(businessId)),
   invite: (
     businessId: string,
     input: { email: string; name?: string; role: TeamInvite['role']; memberId?: string },

@@ -37,7 +37,7 @@
   "loadFailed": "Couldn't load the team.",
   "retry": "Try again",
   "inviteTitle": "Invite someone",
-  "inviteLead": "They get an email link (valid 7 days) to sign in with their own account.",
+  "inviteLead": "Invite by email. Each person gets a link (valid 7 days) and adds their own name when they join.",
   "giveLoginTitle": "Give {name} a login",
   "giveLoginLead": "They get an email link to create their own sign-in. Their calendar, shifts and history stay the same.",
   "name": "Name",
@@ -71,10 +71,24 @@
     "notFoundTitle": "Invite not found",
     "notFoundBody": "Check the link in your email, or ask the shop for a new invite.",
     "expiredTitle": "This invite can't be used",
-    "expiredBody": "It has expired, was already used, or was withdrawn. Ask the shop for a new one."
+    "expiredBody": "It has expired, was already used, or was withdrawn. Ask the shop for a new one.",
+    "errName": "Enter your name, as your team will see it.",
+    "namePh": "Your full name"
   },
   "readOnlySettings": "Only the owner or a manager can change settings. Ask them if something needs to change.",
   "ownerOnlyPayout": "Only the shop owner can change where payouts go.",
   "removedShow": "Show removed ({n})",
-  "removedHide": "Hide removed"
+  "removedHide": "Hide removed",
+  "emails": "Emails",
+  "emailsPh": "name@example.com, another@example.com",
+  "emailsHint": "Type or paste addresses; press Enter or a comma after each. Up to {max} at a time.",
+  "removeEmail": "Remove {email}",
+  "errNone": "Add at least one email.",
+  "errInvalid": "Fix or remove the addresses in red.",
+  "errMax": "Up to {max} people at a time.",
+  "sendN": "{n, plural, =0 {Send invite} one {Send invite} other {Send # invites}}",
+  "sending": "Sending…",
+  "sentMany": "{n, plural, =0 {No invites sent} one {Invite sent} other {# invites sent}}",
+  "sentManyBody": "Each person gets an email link (valid 7 days) and adds their own name when they join.",
+  "notSent": "{n, plural, one {# not sent} other {# not sent}}"
 }

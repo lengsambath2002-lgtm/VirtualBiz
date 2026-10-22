@@ -59,14 +59,17 @@ export function JoinPage({ token }: { token: string }) {
   if (!data) return <div className={j.wrap} aria-busy="true" />;
 
   const existing = data.accountExists && data.accountHasPassword;
+  // Invited by email alone, the invite's name is just the start of the address: ask for theirs.
+  const suggested = data.name === data.email.split('@')[0] ? '' : data.name;
   const submit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!existing && (name.trim() || suggested).length < 2) return setErr(t('errName'));
     setBusy(true);
     setErr('');
     try {
       const res = await api.post<AuthSession>(
         `/join/${encodeURIComponent(token)}/accept`,
-        { password, ...(existing ? {} : { name: name.trim() || data.name }) },
+        { password, ...(existing ? {} : { name: name.trim() || suggested }) },
         { auth: false },
       );
       session.signIn(res, 'PASSWORD');
@@ -121,7 +124,8 @@ export function JoinPage({ token }: { token: string }) {
               <span>{t('name')}</span>
               <input
                 autoComplete="name"
-                placeholder={data.name}
+                required={!suggested}
+                placeholder={suggested || t('namePh')}
                 maxLength={80}
                 value={name}
                 onChange={(e) => setName(e.target.value)}

@@ -291,3 +291,100 @@
     justify-content: flex-start;
   }
 }
+
+/* Invite: several addresses as chips in one box. */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  min-height: 44px;
+  padding: 6px 8px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--g-fill-strong);
+  cursor: text;
+}
+.chips:focus-within {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent);
+}
+.chipsBad {
+  border-color: var(--danger);
+}
+.chips input:not([type='radio']) {
+  flex: 1;
+  min-width: 160px;
+  min-height: 30px;
+  border: 0;
+  padding: 0 4px;
+  background: none;
+  outline: none;
+  box-shadow: none;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  padding: 3px 4px 3px 10px;
+  border-radius: 999px;
+  background: var(--sunk);
+  font-size: 13px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.chip button {
+  width: 20px;
+  height: 20px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+}
+.chip button:hover {
+  background: color-mix(in srgb, var(--ink) 10%, transparent);
+  color: var(--ink);
+}
+.chipBad {
+  background: color-mix(in srgb, var(--danger) 14%, transparent);
+  color: var(--danger);
+}
+.sentList,
+.notSent ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.sentList li {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 4px 8px;
+  align-items: start;
+}
+.sentList .devLink {
+  grid-column: 2;
+}
+.ok {
+  color: var(--ok, #1a7f4b);
+  font-weight: 700;
+}
+.sentEmail {
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.notSent {
+  display: grid;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--r-sm);
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+}
+.notSent li {
+  display: grid;
+}

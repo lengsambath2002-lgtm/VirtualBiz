@@ -18,10 +18,13 @@ import com.kosign.vbiz.business.payload.CreateBusinessRequest;
 import com.kosign.vbiz.business.payload.MemberInput;
 import com.kosign.vbiz.business.payload.MemberResponse;
 import com.kosign.vbiz.business.payload.MyBusinessResponse;
+import com.kosign.vbiz.business.payload.TeamInviteBatchInput;
+import com.kosign.vbiz.business.payload.TeamInviteBatchResponse;
 import com.kosign.vbiz.business.payload.TeamInviteInput;
 import com.kosign.vbiz.business.payload.TeamInviteResponse;
 import com.kosign.vbiz.business.payload.UpdateBusinessRequest;
 import com.kosign.vbiz.business.service.BusinessService;
+import com.kosign.vbiz.business.service.TeamInviteBatchService;
 import com.kosign.vbiz.business.service.TeamService;
 import com.kosign.vbiz.common.api.ApiResponse;
 import com.kosign.vbiz.common.api.BaseController;
@@ -40,6 +43,7 @@ public class BusinessController extends BaseController {
 
     private final BusinessService businesses;
     private final TeamService team;
+    private final TeamInviteBatchService inviteBatch;
 
     @PostMapping("/businesses")
     public ResponseEntity<ApiResponse<BusinessResponse>> create(@Valid @RequestBody CreateBusinessRequest req) {
@@ -82,6 +86,13 @@ public class BusinessController extends BaseController {
     public ResponseEntity<ApiResponse<TeamInviteResponse>> invite(@PathVariable UUID id,
             @Valid @RequestBody TeamInviteInput in) {
         return created(team.invite(CurrentUser.id(), id, in));
+    }
+
+    /** Several people by email, one role; each refused email is reported, the rest are sent. */
+    @PostMapping("/businesses/{id}/invites/batch")
+    public ResponseEntity<ApiResponse<TeamInviteBatchResponse>> inviteMany(@PathVariable UUID id,
+            @Valid @RequestBody TeamInviteBatchInput in) {
+        return ok(inviteBatch.invite(CurrentUser.id(), id, in));
     }
 
     @DeleteMapping("/businesses/{id}/invites/{inviteId}")

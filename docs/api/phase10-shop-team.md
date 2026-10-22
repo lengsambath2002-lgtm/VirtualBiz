@@ -24,6 +24,7 @@ button; only the owner can edit the payout account.
 | PATCH `/api/businesses/{id}/members/{memberId}` | any of `{name, title, color, shifts, active, role}` | the member. `role` (MANAGER / STAFF) owner only; a manager changes staff only; nobody deactivates the owner or themself |
 | GET `/api/businesses/{id}/invites` | | open invites (owner, manager) |
 | POST `/api/businesses/{id}/invites` | `{email, name?, role, memberId?}` | **201** invite. Owner invites MANAGER or STAFF, manager STAFF only. `memberId` gives an existing member without a login (a stylist on the calendar) this person's account. **409** when already on the team |
+| POST `/api/businesses/{id}/invites/batch` | `{emails: [1..20], role}` | **200** `{sent: [invite], failed: [{email, code, message}]}`. Several people by email alone, one role. Each address runs through the single invite (own transaction, rules, activity entry, email); a refused one (`VALIDATION_FAILED` not an email, `CONFLICT` already on the team, `FORBIDDEN` role) is reported and the rest are sent. The same address twice is sent once. The invite's name is the start of the address until the person joins and gives their own (the join page asks for it) |
 | DELETE `/api/businesses/{id}/invites/{inviteId}` | | open invites |
 
 Removing access is `active: false`: the person can't open the workspace any more

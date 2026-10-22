@@ -17,12 +17,20 @@ test.describe('Shop team', () => {
     await expect(panel.locator('strong', { hasText: 'Kry Sonita' })).toBeVisible();
     await panel.getByRole('button', { name: 'Invite someone' }).click();
     const dialog = page.getByRole('dialog', { name: 'Invite someone' });
-    await dialog.getByLabel('Name').fill('Vanna Cashier');
-    await dialog.getByLabel('Email').fill(email);
+    // Email only, several at once: typed, a comma, then a pasted list with a repeat and a typo.
+    const second = `second.${Date.now().toString(36)}@example.com`;
+    const emails = dialog.getByLabel('Emails');
+    await emails.fill(`${email},`);
+    await emails.fill(`${second} ${email} not-an-email`);
+    await emails.press('Enter');
+    await expect(dialog.getByText('Fix or remove the addresses in red.')).toBeVisible();
+    await dialog.getByRole('button', { name: 'Remove not-an-email' }).click();
+    await expect(dialog.getByRole('button', { name: /^Remove / })).toHaveCount(2);
     await expect(dialog.getByRole('radio', { name: /^Manager/ })).toBeVisible();
     await dialog.getByRole('radio', { name: /^Staff/ }).check();
-    await dialog.getByRole('button', { name: 'Send invite' }).click();
-    const link = (await page.getByTestId('team-invite-link').textContent())!.trim();
+    await dialog.getByRole('button', { name: 'Send 2 invites' }).click();
+    await expect(page.getByRole('heading', { name: '2 invites sent' })).toBeVisible();
+    const link = (await page.getByTestId('team-invite-link').first().textContent())!.trim();
     await page.getByRole('button', { name: 'Done' }).click();
     await expect(panel.getByText('Pending invites')).toBeVisible();
 
@@ -32,6 +40,10 @@ test.describe('Shop team', () => {
     await vanna.goto(link);
     await expect(vanna.getByRole('heading', { name: 'Join Nita Gadget Store' })).toBeVisible();
     await vanna.getByLabel('Choose a password').fill(PASS);
+    // Invited by email alone: they give their own name.
+    await vanna.getByRole('button', { name: 'Join Nita Gadget Store' }).click();
+    await expect(vanna.getByText('Enter your name, as your team will see it.')).toBeVisible();
+    await vanna.getByLabel('Your name').fill('Vanna Cashier');
     await vanna.getByRole('button', { name: 'Join Nita Gadget Store' }).click();
     await expect(vanna).toHaveURL(/\/en\/seller$/);
 

@@ -187,4 +187,35 @@ class TeamIntegrationTest extends IntegrationTest {
         assertThat(code(call(dana, "GET", "/api/businesses/" + NITA_GADGET_ID + "/invites", null)))
                 .isEqualTo("FORBIDDEN_TENANT");
     }
+
+    @Test
+    void several_people_are_invited_by_email_alone_and_refused_ones_are_reported() throws Exception {
+        Session owner = login(NITA, DEMO_PASSWORD);
+        String a = uniqueEmail("many");
+        String b = uniqueEmail("many");
+        JsonNode r = call(owner, "POST", "/api/businesses/" + NITA_GADGET_ID + "/invites/batch",
+                Map.of("emails", java.util.List.of(a, " " + b.toUpperCase() + " ", b, "not-an-email", NITA),
+                        "role", "STAFF"));
+        assertThat(code(r)).isEqualTo("SUCCESS");
+        JsonNode d = r.path("data");
+        // The same address twice is sent once; the name waits for the person to join.
+        assertThat(d.path("sent").size()).isEqualTo(2);
+        assertThat(d.path("sent").get(0).path("email").asText()).isEqualTo(a);
+        assertThat(d.path("sent").get(0).path("name").asText()).isEqualTo(a.substring(0, a.indexOf('@')));
+        assertThat(d.path("failed").size()).isEqualTo(2);
+        assertThat(d.path("failed").get(0).path("email").asText()).isEqualTo("not-an-email");
+        assertThat(d.path("failed").get(0).path("code").asText()).isEqualTo("VALIDATION_FAILED");
+        assertThat(d.path("failed").get(1).path("code").asText()).isEqualTo("CONFLICT");
+
+        // Each invite works on its own: the second person joins with their own name.
+        Session joined = session(mvc.perform(postJson("/api/join/"
+                + d.path("sent").get(1).path("devLink").asText().replace("/join/", "") + "/accept",
+                Map.of("name", "Second Person", "password", PASS))).andReturn());
+        assertThat(roleIn(call(joined, "GET", "/api/me/businesses", null), NITA_GADGET_ID)).isEqualTo("STAFF");
+
+        // More than 20 at once is refused outright.
+        assertThat(call(owner, "POST", "/api/businesses/" + NITA_GADGET_ID + "/invites/batch",
+                Map.of("emails", java.util.Collections.nCopies(21, uniqueEmail("x")), "role", "STAFF"))
+                .path("status").path("code").asText()).isEqualTo("VALIDATION_FAILED");
+    }
 }

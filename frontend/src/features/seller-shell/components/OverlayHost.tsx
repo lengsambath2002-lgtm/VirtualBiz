@@ -78,14 +78,16 @@ function SellerPalette() {
         match: (q: string) => (c.name + c.phone).toLowerCase().includes(q.replace(/\s/g, '')),
         run: () => useUi.getState().open({ kind: 'customer', id: c.id }),
       })),
-      ...NAV.map((n) => ({
-        id: `nav-${n.key}`,
-        group: t('pages'),
-        label: tn(n.key as 'home'),
-        icon: <Ic name={n.icon} size={18} />,
-        showWhenEmpty: true,
-        run: () => void go(n.href),
-      })),
+      ...[...NAV, { key: 'settings', href: '/seller/settings', icon: 'gear' as const }].map(
+        (n) => ({
+          id: `nav-${n.key}`,
+          group: t('pages'),
+          label: tn(n.key as 'home'),
+          icon: <Ic name={n.icon} size={18} />,
+          showWhenEmpty: true,
+          run: () => void go(n.href),
+        }),
+      ),
     ];
   }, [db, go, t, tn, ts]);
   return (

@@ -47,3 +47,14 @@
     display: none;
   }
 }
+
+/* The console's mark in the sidebar. */
+.mark {
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #3a1f5c, #6b3fa0);
+  color: #fff;
+  font-weight: 700;
+  font-size: 17px;
+}

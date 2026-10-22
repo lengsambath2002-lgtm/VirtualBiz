@@ -190,7 +190,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 20px;
+  padding: 8px 24px;
   height: 60px;
   min-width: 0;
   background: color-mix(in srgb, var(--bg) 62%, transparent);
@@ -247,8 +247,8 @@
 }
 .cmdk {
   flex: 1;
-  max-width: 420px;
-  margin-left: auto;
+  max-width: 520px;
+  margin-right: auto;
   height: 38px;
   border: 1px solid transparent;
   border-radius: 999px;
@@ -367,6 +367,7 @@
     padding: 0;
     justify-content: center;
     margin-left: auto;
+    margin-right: 0;
   }
   .biz span {
     display: none;

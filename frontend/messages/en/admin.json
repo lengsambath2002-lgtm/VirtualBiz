@@ -13,7 +13,14 @@
     "payouts": "Payouts",
     "audit": "Audit log",
     "settings": "Settings",
-    "logout": "Log out"
+    "logout": "Log out",
+    "sections": {
+      "marketplace": "Marketplace",
+      "money": "Money",
+      "platform": "Platform"
+    },
+    "viewMarketplace": "View marketplace",
+    "console": "Console"
   },
   "top": {
     "title": "VirtualBiz Admin",

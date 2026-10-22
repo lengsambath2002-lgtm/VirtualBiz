@@ -143,6 +143,7 @@ const IC = {
   ),
   upload: <path d="M12 16V4M7 9l5-5 5 5M4 16v4h16v-4" />,
   logout: <path d="M15 4h4v16h-4M10 17l5-5-5-5M15 12H3" />,
+  activity: <path d="M3 12h4l3-8 4 16 3-8h4" />,
 } satisfies Record<string, ReactNode>;
 
 export type IcName = keyof typeof IC;

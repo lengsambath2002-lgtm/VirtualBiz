@@ -11,6 +11,7 @@ import { Link, usePathname, useRouter } from '@/lib/i18n/navigation';
 import { AdminRail } from './AdminRail';
 import { AdminTopBar } from './AdminTopBar';
 import shell from './shell.module.css';
+import { sideNavFrame } from '@/components/layout/SideNav';
 
 /** The one overlay the console uses: the confirm / reason dialog. */
 function Overlay() {
@@ -41,10 +42,8 @@ function Console({ children }: { children: ReactNode }) {
   };
   return (
     <>
-      <div className={s.app}>
-        <div className={s.railCol}>
-          <AdminRail onLogout={() => void logout()} />
-        </div>
+      <div className={sideNavFrame}>
+        <AdminRail onLogout={() => void logout()} />
         <div className={s.main}>
           <AdminTopBar />
           <main className={s.page}>

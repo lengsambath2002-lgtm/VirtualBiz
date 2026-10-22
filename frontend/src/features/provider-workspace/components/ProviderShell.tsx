@@ -1,12 +1,18 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, type ReactNode } from 'react';
 
 import { useSession } from '@/lib/auth';
-import { Link, usePathname, useRouter } from '@/lib/i18n/navigation';
-import { useScrollMini } from '@/lib/hooks/useScrollMini';
+import { usePathname, useRouter } from '@/lib/i18n/navigation';
+import { photoBg } from '@/lib/utils/photo';
+import {
+  SideNav,
+  SideNavBrand,
+  sideNavFrame,
+  type SideNavSection,
+} from '@/components/layout/SideNav';
 
 import { k } from '@/features/provider-shared/cx';
 import { PIcon, type PIconName } from '@/features/provider-shared/components/Icon';
@@ -16,20 +22,26 @@ import { useProviderData } from '@/features/provider-shared/queries';
 import { StatusBanner } from '@/features/business-status';
 import { useData, useUi } from '@/features/provider-shared/store';
 import { setCalendarRange } from '@/features/provider-shared/util/time';
-import { pending } from '@/features/provider-shared/util/logic';
+import { initials, pending } from '@/features/provider-shared/util/logic';
 
 import { OverlayHost } from './OverlayHost';
 import { TopBar } from './TopBar';
 
-const NAV: [ProviderPage, PIconName, boolean][] = [
-  ['home', 'home', false],
-  ['calendar', 'cal', false],
-  ['sales', 'sales', false],
-  ['clients', 'users', false],
-  ['services', 'scissors', false],
-  ['team', 'team', true],
-  ['marketing', 'megaphone', true],
-  ['settings', 'gear', false],
+/** The workspace's destinations by group; `tab` ones fill the phone's bottom bar. */
+const NAV: {
+  section: 'main' | 'grow' | 'manage';
+  page: ProviderPage | 'activity';
+  icon: PIconName;
+  tab?: boolean;
+}[] = [
+  { section: 'main', page: 'home', icon: 'home', tab: true },
+  { section: 'main', page: 'calendar', icon: 'cal', tab: true },
+  { section: 'main', page: 'sales', icon: 'sales', tab: true },
+  { section: 'main', page: 'clients', icon: 'users', tab: true },
+  { section: 'main', page: 'services', icon: 'scissors' },
+  { section: 'grow', page: 'marketing', icon: 'megaphone' },
+  { section: 'manage', page: 'team', icon: 'team' },
+  { section: 'manage', page: 'activity', icon: 'activity' },
 ];
 
 const OPENED_KEY = 'vb-provider-opened';
@@ -127,7 +139,7 @@ function Workspace({ children }: { children: ReactNode }) {
 
   return (
     <div className={k('root')}>
-      <div className={k('app')}>
+      <div className={sideNavFrame}>
         <Rail />
         <div className={k('main')}>
           <TopBar />
@@ -145,71 +157,87 @@ function Workspace({ children }: { children: ReactNode }) {
 
 function Rail() {
   const t = useTranslations('provider');
+  const locale = useLocale();
   const d = useData();
-  const pathname = usePathname();
-  const mini = useScrollMini();
   const confirm = useUi((s) => s.confirm);
   const signOut = useSessionSignOut();
-  const nReq = pending(d).length;
-  const unrep = d.reviews.filter((r) => !r.reply).length;
-
+  const b = d.business;
+  const badge: Partial<Record<string, number>> = {
+    calendar: pending(d).length,
+    marketing: d.reviews.filter((r) => !r.reply).length,
+  };
+  const sections: SideNavSection[] = (['main', 'grow', 'manage'] as const).map((sec) => ({
+    key: sec,
+    ...(sec === 'main' ? {} : { title: t(`nav.sections.${sec}`) }),
+    items: NAV.filter((n) => n.section === sec).map((n) => ({
+      key: n.page,
+      href: n.page === 'activity' ? '/provider/activity' : pageHref(n.page),
+      label: t(`nav.${n.page}`),
+      icon: <PIcon name={n.icon} size={20} />,
+      badge: badge[n.page] ?? 0,
+      exact: n.page === 'home',
+      tab: !!n.tab,
+    })),
+  }));
   return (
-    <nav className={k('rail', mini && 'mini')} aria-label={t('nav.label')}>
-      <span className={k('logo-mark')} aria-hidden="true">
-        B
-      </span>
-      {NAV.map(([p, ic, hideM]) => {
-        const href = pageHref(p);
-        const on = pathname === href;
-        const badge = p === 'calendar' ? nReq : p === 'marketing' ? unrep : 0;
-        return (
-          <RailLink key={p} href={href} on={on} hideM={hideM}>
-            <PIcon name={ic} size={22} />
-            <span>{t(`nav.${p}`)}</span>
-            {badge > 0 && <span className={k('dotc')}>{badge}</span>}
-          </RailLink>
-        );
-      })}
-      <span className={k('sp')} />
-      <button
-        type="button"
-        className={k('hide-m')}
-        onClick={async () => {
-          const ok = await confirm({
-            title: t('shell.logoutTitle'),
-            body: t('shell.logoutBody'),
-            ok: t('shell.logoutOk'),
-            danger: true,
-          });
-          if (ok) signOut();
-        }}
-      >
-        <PIcon name="logout" size={22} />
-        <span>{t('nav.logOut')}</span>
-      </button>
-    </nav>
-  );
-}
-
-function RailLink({
-  href,
-  on,
-  hideM,
-  children,
-}: {
-  href: string;
-  on: boolean;
-  hideM: boolean;
-  children: ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      className={k(on && 'on', hideM && 'hide-m')}
-      aria-current={on ? 'page' : undefined}
-    >
-      {children}
-    </Link>
+    <SideNav
+      label={t('nav.label')}
+      sections={sections}
+      brand={(collapsed) => (
+        <SideNavBrand
+          collapsed={collapsed}
+          name={b.name}
+          mark={
+            <span
+              style={{
+                backgroundColor: '#ece5fb',
+                color: '#5634a0',
+                display: 'grid',
+                placeItems: 'center',
+                ...photoBg(b.logoUrl),
+              }}
+            >
+              {b.logoUrl ? null : initials(b.name)}
+            </span>
+          }
+          sub={
+            <>
+              <i className={k('dot', !b.online && 'off')} />
+              {b.online ? t('shell.onlineOn') : t('shell.onlinePaused')}
+            </>
+          }
+        />
+      )}
+      footer={[
+        {
+          key: 'settings',
+          href: pageHref('settings'),
+          label: t('nav.settings'),
+          icon: <PIcon name="gear" size={20} />,
+        },
+        {
+          key: 'view',
+          href: `/${locale}/shop/${b.id}`,
+          external: true,
+          label: t('nav.viewShop'),
+          icon: <PIcon name="globe" size={20} />,
+        },
+        {
+          key: 'logout',
+          label: t('nav.logOut'),
+          icon: <PIcon name="logout" size={20} />,
+          onClick: async () => {
+            const ok = await confirm({
+              title: t('shell.logoutTitle'),
+              body: t('shell.logoutBody'),
+              ok: t('shell.logoutOk'),
+              danger: true,
+            });
+            if (ok) signOut();
+          },
+        },
+      ]}
+    />
   );
 }
 

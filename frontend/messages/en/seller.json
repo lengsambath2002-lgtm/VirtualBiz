@@ -14,7 +14,14 @@
     "reviews": "Reviews",
     "settings": "Settings",
     "logout": "Log out",
-    "team": "Team"
+    "team": "Team",
+    "sections": {
+      "sell": "Sell",
+      "customers": "Customers",
+      "manage": "Manage"
+    },
+    "activity": "Activity log",
+    "viewShop": "View shop"
   },
   "common": {
     "close": "Close",

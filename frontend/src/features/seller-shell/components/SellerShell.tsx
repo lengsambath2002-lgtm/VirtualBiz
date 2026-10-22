@@ -5,6 +5,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, type ReactNode } from 'react';
 
 import { ErrorView } from '@/components/feedback';
+import { sideNavFrame } from '@/components/layout/SideNav';
 import { StatusBanner } from '@/features/business-status';
 import { usePaletteHotkey } from '@/features/command-palette';
 import {
@@ -145,10 +146,8 @@ function Workspace({ children }: { children: ReactNode }) {
 
   return (
     <>
-      <div className={s.app}>
-        <div className={s.railCol}>
-          <SellerRail onLogout={() => void logout()} />
-        </div>
+      <div className={sideNavFrame}>
+        <SellerRail onLogout={() => void logout()} />
         <div className={s.main}>
           <TopBar />
           <main className={s.page}>

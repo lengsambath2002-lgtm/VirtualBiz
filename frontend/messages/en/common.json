@@ -245,5 +245,12 @@
       "apply": "Apply",
       "clear": "Clear"
     }
+  },
+  "nav": {
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar",
+    "more": "More",
+    "close": "Close menu",
+    "tabs": "{name}: main pages"
   }
 }

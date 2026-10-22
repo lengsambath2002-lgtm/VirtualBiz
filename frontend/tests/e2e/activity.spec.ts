@@ -15,7 +15,7 @@ test.describe('Shop activity log', () => {
     await expect(dialog).toBeHidden();
 
     await page.goto('/en/provider/team');
-    await page.getByRole('link', { name: 'Activity log' }).click();
+    await page.getByRole('main').getByRole('link', { name: 'Activity log' }).click();
     await expect(page).toHaveURL(/\/provider\/activity/);
     const table = page.getByRole('table', { name: 'Activity log' });
     await expect(table.getByText(name)).toBeVisible({ timeout: 20_000 });

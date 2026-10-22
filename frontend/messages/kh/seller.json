@@ -14,7 +14,14 @@
     "reviews": "មតិវាយតម្លៃ",
     "settings": "ការកំណត់",
     "logout": "ចាកចេញ",
-    "team": "ក្រុមការងារ"
+    "team": "ក្រុមការងារ",
+    "sections": {
+      "sell": "លក់",
+      "customers": "អតិថិជន",
+      "manage": "គ្រប់គ្រង"
+    },
+    "activity": "កំណត់ហេតុសកម្មភាព",
+    "viewShop": "មើលហាង"
   },
   "common": {
     "close": "បិទ",

@@ -10,6 +10,7 @@ import { useRouter } from '@/lib/i18n/navigation';
 
 import shell from './shell.module.css';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { phoneOnly } from '@/components/layout/SideNav';
 
 const initials = (n: string) =>
   n
@@ -43,7 +44,7 @@ export function AdminTopBar() {
   };
   return (
     <header className={s.top}>
-      <div className={s.biz}>
+      <div className={cx(s.biz, phoneOnly)}>
         <span className={cx(s.lg, shell.logo)}>
           <Ic name="alert" size={18} />
         </span>

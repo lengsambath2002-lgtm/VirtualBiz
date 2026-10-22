@@ -22,6 +22,7 @@ import { useReasonText } from '@/features/seller-orders/hooks/useReasonText';
 import { formatUsd } from '@/lib/money';
 import { photoBg } from '@/lib/utils/photo';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { phoneOnly } from '@/components/layout/SideNav';
 
 const NEW_MENU: { key: 'product' | 'receive' | 'promo' | 'manual'; icon: IcName }[] = [
   { key: 'product', icon: 'box' },
@@ -90,7 +91,7 @@ export function TopBar() {
 
   return (
     <header className={s.top}>
-      <div className={s.biz}>
+      <div className={cx(s.biz, phoneOnly)}>
         <span className={s.lg} style={photoBg(shop.logoUrl)}>
           {shop.logoUrl ? null : initials(shop.name.replace(/\bStore\b/i, ''))}
         </span>

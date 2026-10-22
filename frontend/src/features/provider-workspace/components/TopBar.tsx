@@ -17,6 +17,7 @@ import { initials } from '@/features/provider-shared/util/logic';
 import { relKey, todayIso } from '@/features/provider-shared/util/time';
 import { photoBg } from '@/lib/utils/photo';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { phoneOnly } from '@/components/layout/SideNav';
 
 const NEW_MENU: [string, PIconName, Overlay][] = [
   ['appointment', 'cal', { t: 'apptForm', opts: {} }],
@@ -41,7 +42,7 @@ export function TopBar() {
 
   return (
     <header className={k('top')}>
-      <div className={k('biz')}>
+      <div className={`${k('biz')} ${phoneOnly}`}>
         <span className={k('lg')} style={photoBg(b.logoUrl)}>
           {b.logoUrl ? null : initials(b.name)}
         </span>

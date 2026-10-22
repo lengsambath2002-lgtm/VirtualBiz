@@ -13,7 +13,14 @@
     "payouts": "ការទូទាត់",
     "audit": "កំណត់ហេតុ",
     "settings": "ការកំណត់",
-    "logout": "ចាកចេញ"
+    "logout": "ចាកចេញ",
+    "sections": {
+      "marketplace": "ទីផ្សារ",
+      "money": "ប្រាក់",
+      "platform": "វេទិកា"
+    },
+    "viewMarketplace": "មើលទីផ្សារ",
+    "console": "កុងសូល"
   },
   "top": {
     "title": "ផ្ទាំងគ្រប់គ្រង VirtualBiz",

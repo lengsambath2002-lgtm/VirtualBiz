@@ -9,7 +9,14 @@
     "team": "Team",
     "marketing": "Marketing",
     "settings": "Settings",
-    "logOut": "Log out"
+    "logOut": "Log out",
+    "sections": {
+      "business": "Business",
+      "grow": "Grow",
+      "manage": "Manage"
+    },
+    "activity": "Activity log",
+    "viewShop": "View booking page"
   },
   "meta": {
     "title": "Service Provider"

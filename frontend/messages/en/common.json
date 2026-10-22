@@ -220,7 +220,6 @@
       "importAll": "Import {n} rows",
       "doneSummary": "Imported: {created} new, {updated} updated, {skipped} skipped."
     },
-    "between": "{from} – {to}",
     "since": "since {from}",
     "until": "until {to}",
     "views": {
@@ -234,6 +233,17 @@
       "delete": "Delete view",
       "tooMany": "You have 20 views for this list. Delete one first.",
       "failed": "Couldn't save the view."
+    },
+    "picker": {
+      "pick": "Pick a day",
+      "presets": "Quick ranges",
+      "prevMonth": "Previous month",
+      "nextMonth": "Next month",
+      "pickStart": "Pick the first day",
+      "pickEnd": "pick the last day",
+      "cancel": "Cancel",
+      "apply": "Apply",
+      "clear": "Clear"
     }
   }
 }

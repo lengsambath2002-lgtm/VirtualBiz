@@ -40,7 +40,12 @@ test('a provider downloads bookings for a period', async ({ page }) => {
   await signIn(page, '/provider/settings', DANA);
   const panel = page.getByRole('region', { name: 'Export data' });
   await expect(panel).toBeVisible({ timeout: 20_000 });
-  await panel.getByLabel('Period').selectOption('last90');
+  await panel.getByRole('button', { name: /^Period: / }).click();
+  await page
+    .getByRole('dialog', { name: 'Period' })
+    .getByRole('button', { name: 'Last 90 days' })
+    .click();
+  await expect(panel.getByRole('button', { name: 'Period: Last 90 days' })).toBeVisible();
   const [download] = await Promise.all([
     page.waitForEvent('download'),
     panel.getByRole('button', { name: 'Download Bookings as CSV' }).click(),

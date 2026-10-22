@@ -22,6 +22,7 @@ import {
   pending,
 } from '@/features/provider-shared/util/logic';
 import { calendarStarts, hm, isIsoDate, todayIso } from '@/features/provider-shared/util/time';
+import { DateRangePicker } from '@/components/data';
 
 const DURS = [15, 30, 45, 60, 90, 120, 240];
 
@@ -137,7 +138,16 @@ export function BlockForm(p: { date?: string; start?: number; staffId?: string }
             </select>
           </Field>
           <Field id="bdd" label={t('block.date')}>
-            <input type="date" id="bdd" value={date} onChange={(e) => setDate(e.target.value)} />
+            <DateRangePicker
+              id="bdd"
+              mode="single"
+              variant="field"
+              label={t('block.date')}
+              from={date}
+              to={date}
+              clearable={false}
+              onChange={(d) => setDate(d)}
+            />
           </Field>
         </div>
         <div className={k('g3')}>

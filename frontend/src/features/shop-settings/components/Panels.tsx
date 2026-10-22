@@ -4,6 +4,8 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useState, type ReactNode } from 'react';
 
+import { DateRangePicker } from '@/components/data';
+import { ppDay } from '@/lib/utils/dateRange';
 import { api, type ApiDistrict } from '@/lib/api';
 import type { Business, Closure, DeliveryZone, ShopPolicy, WeekRanges } from '@/lib/domain';
 import { policyOf } from '@/lib/shop';
@@ -438,12 +440,16 @@ export function HoursPanel({ business, save, canEdit }: PanelProps) {
           </div>
         ))}
         <div className={c.row}>
-          <input
-            type="date"
-            aria-label={t('closureDate')}
-            value={newDate}
-            onChange={(e) => setNewDate(e.target.value)}
-            style={{ minHeight: 36 }}
+          <DateRangePicker
+            mode="single"
+            variant="field"
+            className={c.closureDay}
+            label={t('closureDate')}
+            from={newDate}
+            to={newDate}
+            clearable={false}
+            min={ppDay(new Date())}
+            onChange={(d) => setNewDate(d)}
           />
           <input
             aria-label={t('closureReason')}

@@ -50,3 +50,28 @@ page), `FilterBar` / `SelectFilter` / `SegmentFilter` / `DateRangeFilter` (prese
 `lib/utils/dateRange`, or custom days) with removable chips, `ExportButton`, `ImportDialog` (CSV
 file → dry run with per-row problems → import all or only the good rows) and `useListQuery`, which
 keeps every filter, the sort, page and size in the URL.
+
+### Date picker
+
+`DateRangePicker` is the one way a date is chosen in the management screens (both workspaces and
+the console). A button shows the field and its value ("Placed: Last 30 days", "Placed: 1 Oct – 21
+Oct 2026"); it opens a calendar floating above the page (a portal, so dialogs don't clip it):
+
+- **Range** (`mode="range"`, default): presets on the left (Any time, Today, Last 7 / 30 / 90
+  days, This / Last month, Last 12 months), two months on the right. The first click picks the
+  start, the second the end (picked backwards, they swap); hovering previews the range. Apply
+  commits; Cancel, Escape or a click outside leaves the value as it was.
+- **Single** (`mode="single"`): one month; a click picks the day and closes. `clearable` adds
+  Clear; a Today shortcut is offered.
+- `min` / `max` disable days outside the allowed span; `variant="field"` looks like a form input
+  (with `id` for a `<label htmlFor>`); `variant="pill"` sits in a filter bar.
+- Keyboard: arrows move by day / week, Page Up / Down by month, Enter picks, Escape closes only
+  the calendar (not the dialog around it). Phones get a bottom sheet with one month.
+- Month and weekday names come from `Intl` in the app's language (km-KH for Khmer); values are
+  `YYYY-MM-DD` Phnom Penh days, as the list contract expects. Filter chips use the same wording
+  (`formatDays`).
+
+Used by: every list's date filter (`DateRangeFilter`), Settings → Export data's period, shop and
+platform promotion start / end (platform codes pair it with a time), provider deals, the
+calendar's "Go to date", new appointments and blocked time, shop closure days and the register's
+receipts day.

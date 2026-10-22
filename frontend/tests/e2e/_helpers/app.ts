@@ -94,3 +94,15 @@ export function trackErrors(page: Page) {
   });
   return errors;
 }
+
+/** Picks `day` (YYYY-MM-DD) in the shared date picker named `label` ("Starts", "Period"…). */
+export async function pickDay(page: Page, label: string, day: string) {
+  await page.getByRole('button', { name: new RegExp(`^${label}: `) }).click();
+  const cal = page.getByRole('dialog', { name: label });
+  // Flip months until the day shows (it opens on the picked day, or today).
+  for (let i = 0; i < 24 && !(await cal.locator(`[data-day="${day}"]`).count()); i++) {
+    const shown = await cal.locator('[data-day]').first().getAttribute('data-day');
+    await cal.getByRole('button', { name: shown! < day ? 'Next month' : 'Previous month' }).click();
+  }
+  await cal.locator(`[data-day="${day}"]`).first().click();
+}

@@ -60,6 +60,7 @@ import {
   topOf,
   weekStart,
 } from '@/features/provider-shared/util/time';
+import { DateRangePicker } from '@/components/data';
 
 interface Drag {
   id: string;
@@ -538,14 +539,14 @@ function CalendarGrid() {
           <PIcon name="right" />
         </button>
         <h1 className={k('num')}>{label}</h1>
-        <input
-          type="date"
-          aria-label={t('calendar.jump')}
-          className={k('select')}
-          style={{ width: 150 }}
-          value={date}
-          onChange={(e) => {
-            if (isIsoDate(e.target.value)) nav({ date: e.target.value });
+        <DateRangePicker
+          mode="single"
+          label={t('calendar.jump')}
+          from={date}
+          to={date}
+          clearable={false}
+          onChange={(d) => {
+            if (isIsoDate(d)) nav({ date: d });
           }}
         />
         <div className={k('r')}>

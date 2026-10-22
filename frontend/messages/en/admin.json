@@ -443,7 +443,9 @@
       "usageLimit": "Total uses",
       "startsAt": "Starts",
       "endsAt": "Ends",
-      "endsHint": "The code stops working by itself at this time; no need to end it."
+      "endsHint": "The code stops working by itself at this time; no need to end it.",
+      "startTime": "Start time",
+      "endTime": "End time"
     },
     "type": {
       "PERCENT": "Percent off",

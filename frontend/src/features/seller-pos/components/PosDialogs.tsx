@@ -29,7 +29,7 @@ import { useSession } from '@/lib/auth';
 import { cashChange, formatCashChange, khrRate, round2 } from '@/lib/money';
 import { acceptedMethods, policyOf, vatIncluded } from '@/lib/shop';
 import { ShareReceipt } from '@/features/receipt-share';
-import { Pagination } from '@/components/data';
+import { DateRangePicker, Pagination } from '@/components/data';
 import { ErrorView } from '@/components/feedback';
 import { ppDay } from '@/lib/utils/dateRange';
 
@@ -692,14 +692,17 @@ export function ReceiptsDialog() {
           />
         </div>
         <div className={s.field}>
-          <input
-            type="date"
-            value={day}
+          <DateRangePicker
+            mode="single"
+            variant="field"
+            label={t('day')}
+            from={day}
+            to={day}
+            clearable={false}
             max={ppDay(new Date())}
             disabled={!!q.trim()}
-            aria-label={t('day')}
-            onChange={(e) => {
-              if (e.target.value) setDay(e.target.value);
+            onChange={(d) => {
+              setDay(d);
               setPage(0);
             }}
           />

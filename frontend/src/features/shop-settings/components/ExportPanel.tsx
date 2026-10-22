@@ -6,7 +6,8 @@ import { useState } from 'react';
 import { apiDownload, isApiError, saveBlob } from '@/lib/api';
 import type { BusinessType } from '@/lib/domain';
 import { cn } from '@/lib/utils/cn';
-import { rangeOf } from '@/lib/utils/dateRange';
+import { DateRangePicker } from '@/components/data';
+import { ppDay, rangeOf } from '@/lib/utils/dateRange';
 
 import c from './settings.module.css';
 
@@ -17,7 +18,6 @@ const KINDS: Record<BusinessType, Kind[]> = {
 };
 const DATED: Kind[] = ['orders', 'sales', 'appointments'];
 const RANGES = ['last7', 'last30', 'last90', 'thisMonth', 'lastMonth', 'last365'] as const;
-type Range = (typeof RANGES)[number];
 
 /**
  * "Export data" (docs/api/phase14-customers-exports.md): CSV files of the shop's records for a
@@ -33,14 +33,14 @@ export function ExportPanel({
   canExport: boolean;
 }) {
   const t = useTranslations('shopSettings.export');
-  const [range, setRange] = useState<Range>('last30');
+  const [range, setRange] = useState(() => rangeOf('last30'));
   const [busy, setBusy] = useState<Kind | null>(null);
   const [note, setNote] = useState<{ ok: boolean; text: string } | null>(null);
 
   const download = async (kind: Kind) => {
     setBusy(kind);
     setNote(null);
-    const q = DATED.includes(kind) ? `?${new URLSearchParams(rangeOf(range))}` : '';
+    const q = DATED.includes(kind) ? `?${new URLSearchParams(range)}` : '';
     try {
       const { blob, filename } = await apiDownload(`/exports/${kind}${q}`, { businessId });
       const name = filename ?? `${kind}.csv`;
@@ -64,16 +64,19 @@ export function ExportPanel({
           <p className={c.muted}>{t('ownerOnly')}</p>
         ) : (
           <>
-            <label className={c.field} style={{ maxWidth: 260 }}>
+            <div className={c.field} style={{ maxWidth: 320 }}>
               <span>{t('range')}</span>
-              <select value={range} onChange={(e) => setRange(e.target.value as Range)}>
-                {RANGES.map((r) => (
-                  <option key={r} value={r}>
-                    {t(`ranges.${r}`)}
-                  </option>
-                ))}
-              </select>
-            </label>
+              <DateRangePicker
+                label={t('range')}
+                variant="field"
+                from={range.from}
+                to={range.to}
+                clearable={false}
+                presets={RANGES}
+                max={ppDay(new Date())}
+                onChange={(from, to) => setRange({ from, to })}
+              />
+            </div>
             <ul className={c.exports}>
               {KINDS[type].map((k) => (
                 <li key={k} className={c.export}>

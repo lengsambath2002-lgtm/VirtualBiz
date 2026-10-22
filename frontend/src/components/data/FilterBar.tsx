@@ -1,13 +1,14 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { apiDownload, isApiError, saveBlob } from '@/lib/api';
 import { cn } from '@/lib/utils/cn';
-import { isDay, presetOf, RANGE_PRESETS, rangeOf, type RangePreset } from '@/lib/utils/dateRange';
+import { isDay, presetOf } from '@/lib/utils/dateRange';
 
 import d from './data.module.css';
+import { DateRangePicker, formatDays } from './DateRangePicker';
 import { SavedViews } from './SavedViews';
 
 export interface ActiveFilter {
@@ -190,62 +191,7 @@ export function DateRangeFilter({
   label?: string;
 }) {
   const t = useTranslations('common.data');
-  const has = isDay(from) && isDay(to);
-  const preset = has ? presetOf({ from, to }) : null;
-  const [custom, setCustom] = useState(has && !preset);
-  const mode = custom ? 'custom' : (preset ?? '');
-  return (
-    <div className={cn(d.range, has && d.selectOn)}>
-      <label className={d.select}>
-        <span aria-hidden>{label ?? t('date')}</span>
-        <select
-          aria-label={label ?? t('date')}
-          value={mode}
-          onChange={(e) => {
-            const v = e.target.value;
-            if (v === 'custom') {
-              setCustom(true);
-              if (!has) onChange(rangeOf('last30').from, rangeOf('last30').to);
-            } else {
-              setCustom(false);
-              if (!v) onChange('', '');
-              else {
-                const r = rangeOf(v as RangePreset);
-                onChange(r.from, r.to);
-              }
-            }
-          }}
-        >
-          <option value="">{t('anyTime')}</option>
-          {RANGE_PRESETS.map((p) => (
-            <option key={p} value={p}>
-              {t(`ranges.${p}`)}
-            </option>
-          ))}
-          <option value="custom">{t('ranges.custom')}</option>
-        </select>
-      </label>
-      {custom && (
-        <span className={d.days}>
-          <input
-            type="date"
-            aria-label={t('from')}
-            value={from}
-            max={to || undefined}
-            onChange={(e) => e.target.value && onChange(e.target.value, to || e.target.value)}
-          />
-          <span aria-hidden>–</span>
-          <input
-            type="date"
-            aria-label={t('to')}
-            value={to}
-            min={from || undefined}
-            onChange={(e) => e.target.value && onChange(from || e.target.value, e.target.value)}
-          />
-        </span>
-      )}
-    </div>
-  );
+  return <DateRangePicker from={from} to={to} onChange={onChange} label={label ?? t('date')} />;
 }
 
 /**
@@ -340,16 +286,17 @@ export function chipsFor<K extends string>(
 /** Words a date filter for its chip: "Placed: Last 30 days", or the two days. */
 export function useRangeLabel(what?: string) {
   const t = useTranslations('common.data');
+  const locale = useLocale();
   return (from: string, to: string) => {
     const name = what ?? t('date');
     const preset = isDay(from) && isDay(to) ? presetOf({ from, to }) : null;
     const when = preset
       ? t(`ranges.${preset}`)
       : from && to
-        ? t('between', { from, to })
+        ? formatDays(from, to, locale)
         : from
-          ? t('since', { from })
-          : t('until', { to });
+          ? t('since', { from: formatDays(from, from, locale) })
+          : t('until', { to: formatDays(to, to, locale) });
     return `${name}: ${when}`;
   };
 }

@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
 
-import { FilterBar, SegmentFilter, useListQuery } from '@/components/data';
+import { DateRangePicker, FilterBar, SegmentFilter, useListQuery } from '@/components/data';
 import { EmptyRow } from '@/components/feedback';
 import {
   cx,
@@ -428,16 +428,34 @@ export function PromoForm({ id }: { id?: string }) {
         <div className={s.g3}>
           <div className={s.field}>
             <label htmlFor="pf-start">{t('starts')}</label>
-            <input
+            <DateRangePicker
               id="pf-start"
-              type="date"
-              value={start}
-              onChange={(e) => setStart(e.target.value)}
+              mode="single"
+              variant="field"
+              label={t('starts')}
+              from={start}
+              to={start}
+              clearable={false}
+              onChange={(d) => {
+                setStart(d);
+                if (end && d > end) setEnd(d);
+              }}
             />
           </div>
           <div className={fieldCls('p2')}>
             <label htmlFor="pf-end">{t('ends')}</label>
-            <input id="pf-end" type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
+            <DateRangePicker
+              id="pf-end"
+              mode="single"
+              variant="field"
+              label={t('ends')}
+              from={end}
+              to={end}
+              clearable={false}
+              min={start || undefined}
+              invalid={!!errs.p2}
+              onChange={(d) => setEnd(d)}
+            />
             <div className={s.err}>{errs.p2}</div>
             {!errs.p2 && <span className={s.hint}>{t('endsHint')}</span>}
           </div>

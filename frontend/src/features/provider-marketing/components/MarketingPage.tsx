@@ -14,6 +14,7 @@ import { useData, useProviderStore, useUi } from '@/features/provider-shared/sto
 import type { ProviderDeal } from '@/features/provider-shared/types';
 import { dealStatus, firstName } from '@/features/provider-shared/util/logic';
 import { addDays, fmtD, isIsoDate, todayIso } from '@/features/provider-shared/util/time';
+import { DateRangePicker } from '@/components/data';
 
 const STATUS_TONE = { live: 'ok', scheduled: 'info', ended: 'neutral' } as const;
 
@@ -317,10 +318,33 @@ export function DealForm({ id }: { id?: string }) {
             />
           </Field>
           <Field id="ds" label={t('marketing.starts')}>
-            <input type="date" id="ds" value={start} onChange={(e) => setStart(e.target.value)} />
+            <DateRangePicker
+              id="ds"
+              mode="single"
+              variant="field"
+              label={t('marketing.starts')}
+              from={start}
+              to={start}
+              clearable={false}
+              onChange={(d) => {
+                setStart(d);
+                if (end && d > end) setEnd(d);
+              }}
+            />
           </Field>
           <Field id="de" label={t('marketing.ends')} error={err.de ?? ''}>
-            <input type="date" id="de" value={end} onChange={(e) => setEnd(e.target.value)} />
+            <DateRangePicker
+              id="de"
+              mode="single"
+              variant="field"
+              label={t('marketing.ends')}
+              from={end}
+              to={end}
+              clearable={false}
+              min={start || undefined}
+              invalid={!!err.de}
+              onChange={(d) => setEnd(d)}
+            />
           </Field>
         </div>
         <Field label={t('marketing.appliesTo')} error={err.dv ?? ''}>

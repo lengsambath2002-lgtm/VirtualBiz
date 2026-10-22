@@ -300,3 +300,9 @@
   background: var(--sunk);
   color: var(--muted);
 }
+
+/* The closure day's picker beside its reason. */
+.closureDay {
+  width: 190px;
+  flex: 0 0 auto;
+}

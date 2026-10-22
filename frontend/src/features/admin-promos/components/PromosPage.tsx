@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useLocale, useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
 
+import { DateRangePicker } from '@/components/data';
 import { adminApi, useAdminAction, usePromos } from '@/features/admin-shared/api';
 import {
   DataTable,
@@ -236,22 +237,53 @@ function PromoForm({ promo, onClose }: { promo: PlatformPromo | null; onClose: (
           {field(
             'startsAt',
             t('f.startsAt'),
-            <input
-              id="pr-startsAt"
-              type="datetime-local"
-              value={f.startsAt}
-              onChange={(e) => set('startsAt', e.target.value)}
-            />,
+            <div style={{ display: 'flex', gap: 8 }}>
+              <DateRangePicker
+                id="pr-startsAt"
+                mode="single"
+                variant="field"
+                label={t('f.startsAt')}
+                from={f.startsAt.slice(0, 10)}
+                to={f.startsAt.slice(0, 10)}
+                clearable={false}
+                onChange={(d) => set('startsAt', `${d}T${f.startsAt.slice(11, 16) || '00:00'}`)}
+              />
+              <input
+                type="time"
+                aria-label={t('f.startTime')}
+                style={{ width: 120 }}
+                value={f.startsAt.slice(11, 16)}
+                onChange={(e) =>
+                  e.target.value && set('startsAt', `${f.startsAt.slice(0, 10)}T${e.target.value}`)
+                }
+              />
+            </div>,
           )}
           {field(
             'endsAt',
             t('f.endsAt'),
-            <input
-              id="pr-endsAt"
-              type="datetime-local"
-              value={f.endsAt}
-              onChange={(e) => set('endsAt', e.target.value)}
-            />,
+            <div style={{ display: 'flex', gap: 8 }}>
+              <DateRangePicker
+                id="pr-endsAt"
+                mode="single"
+                variant="field"
+                label={t('f.endsAt')}
+                from={f.endsAt.slice(0, 10)}
+                to={f.endsAt.slice(0, 10)}
+                clearable={false}
+                min={f.startsAt.slice(0, 10) || undefined}
+                onChange={(d) => set('endsAt', `${d}T${f.endsAt.slice(11, 16) || '00:00'}`)}
+              />
+              <input
+                type="time"
+                aria-label={t('f.endTime')}
+                style={{ width: 120 }}
+                value={f.endsAt.slice(11, 16)}
+                onChange={(e) =>
+                  e.target.value && set('endsAt', `${f.endsAt.slice(0, 10)}T${e.target.value}`)
+                }
+              />
+            </div>,
             t('f.endsHint'),
           )}
         </div>

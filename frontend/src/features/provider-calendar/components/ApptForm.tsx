@@ -31,6 +31,7 @@ import {
 } from '@/features/provider-shared/util/time';
 import { usePathname, useRouter } from '@/lib/i18n/navigation';
 import { useSearchParams } from 'next/navigation';
+import { DateRangePicker } from '@/components/data';
 
 /** New / edit / walk-in appointment (prototype `apptForm`). */
 export function ApptForm({ opts }: { opts: ApptFormOpts }) {
@@ -326,7 +327,16 @@ export function ApptForm({ opts }: { opts: ApptFormOpts }) {
         </div>
         <div className={k('g2')}>
           <Field id="dt" label={t('form.date')}>
-            <input type="date" id="dt" value={date} onChange={(e) => setDate(e.target.value)} />
+            <DateRangePicker
+              id="dt"
+              mode="single"
+              variant="field"
+              label={t('form.date')}
+              from={date}
+              to={date}
+              clearable={false}
+              onChange={(d) => setDate(d)}
+            />
           </Field>
           <Field id="tm" label={t('form.start')}>
             <select id="tm" value={start} onChange={(e) => setStart(Number(e.target.value))}>

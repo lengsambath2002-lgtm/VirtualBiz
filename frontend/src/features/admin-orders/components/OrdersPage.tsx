@@ -31,7 +31,7 @@ export function OrdersPage() {
   const tl = useTranslations('admin.lists');
   const f = useAdminFmt();
   const router = useRouter();
-  const list = useListQuery(KEYS, { sort: '-placed', size: 20 });
+  const list = useListQuery(KEYS, { sort: '-placed' });
   const { values: v } = list;
   const { data, isPending, isFetching, error, refetch } = useOrders(
     Object.fromEntries(new URLSearchParams(list.apiQuery())),

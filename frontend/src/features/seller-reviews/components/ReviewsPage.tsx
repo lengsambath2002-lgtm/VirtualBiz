@@ -3,7 +3,14 @@
 import { useTranslations } from 'next-intl';
 import { useState } from 'react';
 
-import { FilterBar, SegmentFilter, SelectFilter, useListQuery } from '@/components/data';
+import {
+  FilterBar,
+  Pagination,
+  SegmentFilter,
+  SelectFilter,
+  useListQuery,
+  usePagedRows,
+} from '@/components/data';
 import { EmptyView } from '@/components/feedback';
 import {
   cx,
@@ -38,6 +45,7 @@ export function ReviewsPage() {
           .toLowerCase()
           .includes(needle),
     );
+  const paged = usePagedRows(shown);
   const unreplied = db.reviews.filter((r) => !r.reply).length;
   return (
     <>
@@ -79,7 +87,7 @@ export function ReviewsPage() {
         {!!db.reviews.length && !shown.length && (
           <EmptyView title={t('noMatch')} body={t('noMatchBody')} />
         )}
-        {shown.map((r) => {
+        {paged.rows.map((r) => {
           const p = db.products.find((x) => x.id === r.targetId);
           return (
             <div key={r.id} className={s.rv}>
@@ -124,6 +132,7 @@ export function ReviewsPage() {
             </div>
           );
         })}
+        {shown.length > 0 && <Pagination {...paged.pager} />}
       </section>
     </>
   );

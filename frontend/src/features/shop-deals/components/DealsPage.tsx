@@ -7,6 +7,7 @@ import { Link } from '@/lib/i18n/navigation';
 import { cn } from '@/lib/utils/cn';
 
 import { ProductCard } from '@/features/shop-shared/components/cards';
+import { ShowMore, useShowMore } from '@/features/shop-shared/components/ShowMore';
 import { Crumbs, Ph } from '@/features/shop-shared/components/ui';
 import { useFmt, useShopData } from '@/features/shop-shared/hooks';
 import s from '@/features/shop-shared/shop.module.css';
@@ -22,6 +23,7 @@ export function DealsPage() {
   const promoLabel = usePromoLabel();
   const { deals, items, promos, shop } = useShopData();
   const onSale = items.filter((i) => i.off);
+  const shownSale = useShowMore(onSale, 12);
   const codes = promos.filter((p) => p.code);
   return (
     <>
@@ -62,10 +64,11 @@ export function DealsPage() {
             <h2>{t('onSale')}</h2>
           </div>
           <div className={s.grid}>
-            {onSale.map((it) => (
+            {shownSale.rows.map((it) => (
               <ProductCard key={it.id} it={it} />
             ))}
           </div>
+          <ShowMore {...shownSale.more} />
         </section>
       )}
       {codes.length > 0 && (

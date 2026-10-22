@@ -75,3 +75,22 @@ Used by: every list's date filter (`DateRangeFilter`), Settings → Export data'
 platform promotion start / end (platform codes pair it with a time), provider deals, the
 calendar's "Go to date", new appointments and blocked time, shop closure days and the register's
 receipts day.
+
+### Every list pages
+
+Every table and list of records pages, **10 rows by default** (`DEFAULT_PAGE_SIZE`; 20, 50 or 100
+on request; the API's own default `PageQuery.DEFAULT_SIZE` is 10 too):
+
+- Server-paged lists use `useListQuery` + `Pagination` (console lists, order / sale / appointment
+  history, customers, stock history, activity, notifications, category suggestions).
+- Lists the screen already holds use `usePagedRows(rows, {resetOn, prefix})` + `Pagination`: the
+  seller's open order tabs (they used to stop at 60), products, inventory, promotions and reviews;
+  the provider's services (paged in category order), retail products, deals and reviews; the
+  customer's orders, bookings and saved items. The page and size are in the URL (`?page=2&size=20`,
+  `prefix` for a second list: `?rpage=`); a new search or filter goes back to the first page; a page
+  past the end shows the last one.
+- The marketplace's grids and reviews (a shop's products and reviews, an item's reviews, the deals
+  page) show 12 (reviews 8–10) and **Show more**; Explore loads pages as it scrolls.
+- Short previews stay short and link to the full list: the home pages' new orders and booking
+  requests (5, then "See all N"), the account sidebar's businesses (5, then "Show all N"), the
+  workspace switcher (a search and a scrolling list past 6 shops).

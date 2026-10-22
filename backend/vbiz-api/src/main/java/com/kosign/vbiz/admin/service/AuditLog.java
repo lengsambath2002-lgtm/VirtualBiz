@@ -97,7 +97,7 @@ public class AuditLog {
     /** Page and size from query parameters (size 1–100, default 20). */
     public static int[] paging(Integer page, Integer size) {
         int p = page == null || page < 0 ? 0 : page;
-        int s = size == null ? 20 : Math.max(1, Math.min(100, size));
+        int s = size == null ? com.kosign.vbiz.common.list.PageQuery.DEFAULT_SIZE : Math.max(1, Math.min(100, size));
         return new int[] {p, s};
     }
 }

@@ -5,7 +5,7 @@ import { useCallback, useMemo } from 'react';
 
 import { usePathname, useRouter } from '@/lib/i18n/navigation';
 
-import { PAGE_SIZES } from './paging';
+import { DEFAULT_PAGE_SIZE, PAGE_SIZES } from './paging';
 
 export interface Sort {
   key: string;
@@ -24,7 +24,7 @@ export function useListQuery<K extends string>(
   const sp = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const defaultSize = opts.size ?? 20;
+  const defaultSize = opts.size ?? DEFAULT_PAGE_SIZE;
   const defaultSort = opts.sort ?? '';
 
   const values = useMemo(

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { Pagination, usePagedRows } from '@/components/data';
 import { EmptyView } from '@/components/feedback';
 import { api, isApiError } from '@/lib/api';
 import type { Service } from '@/lib/domain';
@@ -136,6 +137,10 @@ export function ServicesPage() {
   const shown = d.services.filter(
     (s) => (cat === 'all' || s.category === cat) && (!q || s.name.toLowerCase().includes(q)),
   );
+  // A page at a time, in category order; retail products page on their own (`?rpage=`).
+  const grouped = cats.flatMap((cg) => shown.filter((s) => s.category === cg));
+  const paged = usePagedRows(grouped, { resetOn: [query, cat] });
+  const retail = usePagedRows(d.products, { prefix: 'r' });
   // Completed bookings in the last 30 days, and the most any service had (the bars' full width).
   const booked = new Map(
     d.services.map((s) => [
@@ -250,7 +255,9 @@ export function ServicesPage() {
       )}
       {cats.map((cg) => {
         const list = shown.filter((s) => s.category === cg);
-        if (!list.length) return null;
+        // This page's services of the category; the heading counts and switches all of them.
+        const rows = paged.rows.filter((s) => s.category === cg);
+        if (!rows.length) return null;
         return (
           <section key={cg} className={k('panel')}>
             <div className={c.panelH}>
@@ -325,7 +332,7 @@ export function ServicesPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {list.map((s) => {
+                  {rows.map((s) => {
                     const team = s.staffIds.flatMap((id) => d.staff.find((m) => m.id === id) ?? []);
                     const n = booked.get(s.id) ?? 0;
                     return (
@@ -437,6 +444,7 @@ export function ServicesPage() {
           </section>
         );
       })}
+      {grouped.length > 0 && <Pagination {...paged.pager} />}
       <section className={k('panel')}>
         <div className={c.panelH}>
           <h2>
@@ -447,7 +455,7 @@ export function ServicesPage() {
         </div>
         {d.products.length ? (
           <div className={c.shelf}>
-            {d.products.map((p) => {
+            {retail.rows.map((p) => {
               const stock = p.variants.reduce((n, v) => n + v.stock, 0);
               return (
                 <div key={p.id} className={c.item}>
@@ -468,6 +476,7 @@ export function ServicesPage() {
         ) : (
           <EmptyView title={t('services.noRetail')} body={t('services.noRetailBody')} />
         )}
+        {d.products.length > 0 && <Pagination {...retail.pager} />}
       </section>
     </>
   );

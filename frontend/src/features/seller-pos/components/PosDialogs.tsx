@@ -29,7 +29,7 @@ import { useSession } from '@/lib/auth';
 import { cashChange, formatCashChange, khrRate, round2 } from '@/lib/money';
 import { acceptedMethods, policyOf, vatIncluded } from '@/lib/shop';
 import { ShareReceipt } from '@/features/receipt-share';
-import { DateRangePicker, Pagination } from '@/components/data';
+import { DateRangePicker, DEFAULT_PAGE_SIZE, Pagination } from '@/components/data';
 import { ErrorView } from '@/components/feedback';
 import { ppDay } from '@/lib/utils/dateRange';
 
@@ -664,7 +664,7 @@ export function ReceiptsDialog() {
   const query = new URLSearchParams({
     ...(q.trim() ? { q: q.trim() } : { from: day, to: day }),
     page: String(page),
-    size: '20',
+    size: String(DEFAULT_PAGE_SIZE),
   }).toString();
   const { data, error, refetch } = useQuery({
     queryKey: ['seller', 'receipts', db.shop.id, query],
@@ -733,7 +733,7 @@ export function ReceiptsDialog() {
               <b className={s.num}>{f.money(saleNet(sl))}</b>
             </button>
           ))}
-          <Pagination page={page} size={20} total={data.total} onPage={setPage} />
+          <Pagination page={page} size={DEFAULT_PAGE_SIZE} total={data.total} onPage={setPage} />
         </div>
       ) : (
         <div className={s.empty}>

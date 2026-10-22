@@ -30,6 +30,9 @@ import {
 } from '@/features/provider-shared/util/time';
 
 /** Home: greeting, KPIs, next up, approvals, 14-day chart, top services (prototype `P.home`). */
+/** The home page lists the first few; the full list is a click away. */
+const HOME_LIMIT = 5;
+
 export function HomePage() {
   const f = useFmt();
   const { t, locale } = f;
@@ -184,7 +187,7 @@ export function HomePage() {
             <span className={k('tiny muted')}>{t('home.autoOff')}</span>
           </div>
           {req.length ? (
-            req.map((a) => {
+            req.slice(0, HOME_LIMIT).map((a) => {
               const c = d.clients.find((x) => x.id === a.clientId);
               const cl = conflicts(d, a);
               return (
@@ -235,6 +238,16 @@ export function HomePage() {
             <div className={k('empty')}>
               <strong>{t('home.allCaught')}</strong>
             </div>
+          )}
+          {req.length > HOME_LIMIT && (
+            <button
+              type="button"
+              className={k('link small')}
+              style={{ justifySelf: 'start' }}
+              onClick={() => ui.open({ t: 'requests' })}
+            >
+              {t('home.seeAllRequests', { n: req.length })}
+            </button>
           )}
         </section>
       </div>

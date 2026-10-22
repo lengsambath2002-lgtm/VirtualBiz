@@ -6,12 +6,15 @@ import com.kosign.vbiz.common.api.StatusCode;
 import com.kosign.vbiz.common.error.BusinessException;
 
 /**
- * Paging and sorting from a list request ({@code ?page=0&size=20&sort=-total}). {@code page} is
- * 0-based; {@code size} 1–100 (default 20); {@code sort} is one of the list's keys, {@code -} for
+ * Paging and sorting from a list request ({@code ?page=0&size=10&sort=-total}). {@code page} is
+ * 0-based; {@code size} 1–100 (default 10); {@code sort} is one of the list's keys, {@code -} for
  * descending. Each list maps its sort keys to the SQL it orders by, so nothing from the request
  * reaches the query text.
  */
 public record PageQuery(int page, int size, String sortKey, boolean desc, String orderBy) {
+
+    /** Rows per page when the request names none (the apps' default too). */
+    public static final int DEFAULT_SIZE = 10;
 
     public static final int MAX_SIZE = 100;
 
@@ -23,7 +26,7 @@ public record PageQuery(int page, int size, String sortKey, boolean desc, String
     public static PageQuery of(Integer page, Integer size, String sort, Map<String, String> sorts, String defaultSort,
             String tieBreak) {
         int p = page == null || page < 0 ? 0 : page;
-        int s = size == null ? 20 : Math.max(1, Math.min(MAX_SIZE, size));
+        int s = size == null ? DEFAULT_SIZE : Math.max(1, Math.min(MAX_SIZE, size));
         String raw = sort == null || sort.isBlank() ? defaultSort : sort.trim();
         boolean desc = raw.startsWith("-");
         String key = desc ? raw.substring(1) : raw;

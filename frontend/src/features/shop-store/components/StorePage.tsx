@@ -10,6 +10,7 @@ import { Link } from '@/lib/i18n/navigation';
 import { cn } from '@/lib/utils/cn';
 
 import { Ic } from '@/features/shop-shared/components/Ic';
+import { ShowMore, useShowMore } from '@/features/shop-shared/components/ShowMore';
 import { OpenLabel, ProductCard, itemHref } from '@/features/shop-shared/components/cards';
 import {
   ReviewItem,
@@ -69,6 +70,8 @@ function StoreView({ sh }: { sh: ShopView }) {
   const its = items.filter((i) => i.shop === sh.id);
   const evs = deals.filter((e) => e.shop === sh.id);
   const rv = its.flatMap((i) => rowsFor(i.id)).sort((a, b) => b.at - a.at);
+  const shownItems = useShowMore(its, 12, tab);
+  const shownReviews = useShowMore(rv, 10, tab);
   const today = hoursOn(sh);
   const hoursText = useHoursText(sh);
 
@@ -161,11 +164,14 @@ function StoreView({ sh }: { sh: ShopView }) {
       </div>
       {tab === 'items' ? (
         its.length ? (
-          <div className={s.grid}>
-            {its.map((it) => (
-              <ProductCard key={it.id} it={it} />
-            ))}
-          </div>
+          <>
+            <div className={s.grid}>
+              {shownItems.rows.map((it) => (
+                <ProductCard key={it.id} it={it} />
+              ))}
+            </div>
+            <ShowMore {...shownItems.more} />
+          </>
         ) : (
           <div className={cn(s.panel, s.glassMat)}>
             <EmptyView
@@ -186,7 +192,7 @@ function StoreView({ sh }: { sh: ShopView }) {
           ) : (
             !rv.length && <EmptyView title={t('noReviews')} body={t('noReviewsBody')} />
           )}
-          {rv.map((x) => {
+          {shownReviews.rows.map((x) => {
             const it = item(x.itemId);
             return (
               <ReviewItem
@@ -205,6 +211,7 @@ function StoreView({ sh }: { sh: ShopView }) {
               />
             );
           })}
+          <ShowMore {...shownReviews.more} />
         </div>
       ) : (
         <div className={cn(s.panel, s.glassMat)}>

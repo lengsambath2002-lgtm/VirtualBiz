@@ -19,6 +19,7 @@ import {
   type SellerProduct,
 } from '@/features/seller-shared';
 import type { Variant } from '@/lib/domain';
+import { Pagination, usePagedRows } from '@/components/data';
 import { Link, useRouter } from '@/lib/i18n/navigation';
 
 import { ScanResult } from './InventoryDialogs';
@@ -59,6 +60,7 @@ export function InventoryPage() {
       inF(filter, p, v) &&
       (!query || `${p.title} ${vname(v)} ${v.sku} ${v.barcode}`.toLowerCase().includes(query)),
   );
+  const paged = usePagedRows(rows, { resetOn: [filter, query] });
   const value = pairs.reduce((x, [, v]) => x + v.stock * (v.cost || 0), 0);
   const units = db.products.reduce((x, p) => x + stockOf(p), 0);
   const quick = useSellerStore((st) => st.quickAdjust);
@@ -137,7 +139,7 @@ export function InventoryPage() {
                 </tr>
               </thead>
               <tbody>
-                {rows.map(([p, v]) => {
+                {paged.rows.map(([p, v]) => {
                   const label = `${p.title} ${vname(v)}`;
                   return (
                     <tr key={v.id}>
@@ -199,6 +201,7 @@ export function InventoryPage() {
                 })}
               </tbody>
             </table>
+            <Pagination {...paged.pager} />
           </div>
         ) : (
           <div className={s.empty}>

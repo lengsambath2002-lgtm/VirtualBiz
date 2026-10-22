@@ -3,7 +3,14 @@
 import { useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
 
-import { DateRangePicker, FilterBar, SegmentFilter, useListQuery } from '@/components/data';
+import {
+  DateRangePicker,
+  FilterBar,
+  Pagination,
+  SegmentFilter,
+  useListQuery,
+  usePagedRows,
+} from '@/components/data';
 import { EmptyRow } from '@/components/feedback';
 import {
   cx,
@@ -68,6 +75,7 @@ export function PromotionsPage() {
   const shown = db.promos
     .filter((p) => !v.state || stateOf(p) === v.state)
     .filter((p) => !needle || `${p.name} ${p.code ?? ''}`.toLowerCase().includes(needle));
+  const paged = usePagedRows(shown);
   const countOf = (st: PromotionState) => db.promos.filter((p) => stateOf(p) === st).length;
 
   return (
@@ -125,7 +133,7 @@ export function PromotionsPage() {
               {!!db.promos.length && !shown.length && (
                 <EmptyRow cols={6} title={t('noMatch')} body={t('noMatchBody')} />
               )}
-              {shown.map((p) => {
+              {paged.rows.map((p) => {
                 const st = stateOf(p);
                 return (
                   <tr key={p.id}>
@@ -182,6 +190,7 @@ export function PromotionsPage() {
             </tbody>
           </table>
         </div>
+        <Pagination {...paged.pager} />
       </section>
     </>
   );

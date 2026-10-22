@@ -24,6 +24,7 @@ import {
   type SellerOrder,
   useMethodName,
 } from '@/features/seller-shared';
+import { Pagination, usePagedRows } from '@/components/data';
 import { usePathname, useRouter } from '@/lib/i18n/navigation';
 import { formatPhone } from '@/lib/utils/phone';
 
@@ -86,8 +87,10 @@ export function OrdersPage() {
       )
         .toLowerCase()
         .includes(query);
-    })
-    .slice(0, 60);
+    });
+  // A page at a time (the open tabs; done and cancelled orders page on the server).
+  const paged = usePagedRows(list, { resetOn: [query] });
+  const rows = paged.rows;
   const cnt = (k: OrderTab) => db.orders.filter((o) => k === 'all' || tabOf(o) === k).length;
   const bulk = (
     {
@@ -191,7 +194,7 @@ export function OrdersPage() {
             {list.length ? (
               <>
                 <div className={s.ocards}>
-                  {list.map((o) => {
+                  {rows.map((o) => {
                     const c = cust(o);
                     const n = nextStep(o);
                     return (
@@ -263,10 +266,10 @@ export function OrdersPage() {
                             <input
                               type="checkbox"
                               aria-label={t('selectAll')}
-                              checked={selected.length === list.length}
+                              checked={rows.length > 0 && rows.every((o) => sel.has(o.id))}
                               onChange={(e) =>
                                 setSel(
-                                  e.target.checked ? new Set(list.map((o) => o.id)) : new Set(),
+                                  e.target.checked ? new Set(rows.map((o) => o.id)) : new Set(),
                                 )
                               }
                             />
@@ -283,7 +286,7 @@ export function OrdersPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      {list.map((o) => {
+                      {rows.map((o) => {
                         const c = cust(o);
                         const n = nextStep(o);
                         const first = o.lines[0];
@@ -376,6 +379,7 @@ export function OrdersPage() {
                     </tbody>
                   </table>
                 </div>
+                <Pagination {...paged.pager} />
               </>
             ) : (
               <div className={s.empty}>

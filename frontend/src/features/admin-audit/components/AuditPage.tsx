@@ -70,7 +70,7 @@ const ACTIONS = [
 export function AuditPage() {
   const t = useTranslations('admin.audit');
   const tl = useTranslations('admin.lists');
-  const list = useListQuery(KEYS, { size: 50 });
+  const list = useListQuery(KEYS);
   const { values: v } = list;
   const { data, isPending, error, refetch } = useAudit(
     Object.fromEntries(new URLSearchParams(list.apiQuery())),

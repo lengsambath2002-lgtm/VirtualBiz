@@ -34,9 +34,11 @@ test.describe('Console lists', () => {
     await expect(page.getByText('Fulfilment: Pickup')).toBeVisible();
     await expect(table.locator('tbody tr').first()).toContainText('Pickup');
 
-    await page.getByLabel('Rows per page').selectOption('10');
-    await expect(page).toHaveURL(/size=10/);
+    // 10 rows by default; more on request, kept in the URL.
     await expect.poll(() => table.locator('tbody tr').count()).toBeLessThanOrEqual(10);
+    await page.getByLabel('Rows per page').selectOption('20');
+    await expect(page).toHaveURL(/size=20/);
+    await expect.poll(() => table.locator('tbody tr').count()).toBeLessThanOrEqual(20);
 
     await page.reload();
     await expect(page.getByText('Fulfilment: Pickup')).toBeVisible({ timeout: 20_000 });

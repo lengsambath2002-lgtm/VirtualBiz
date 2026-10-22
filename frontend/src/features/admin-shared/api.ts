@@ -74,8 +74,11 @@ export const useStaffInvites = () =>
   useAdminQuery<StaffInvite[]>(['staffInvites'], '/staff/invites');
 export const useCategories = () => useAdminQuery<AdminCategory[]>(['categories'], '/categories');
 /** Shops' category suggestions waiting for a decision. */
-export const useCategoryRequests = () =>
-  useAdminQuery<Page<CategoryRequest>>(['categoryRequests'], '/category-requests?size=50');
+export const useCategoryRequests = (page = 0, size = 10) =>
+  useAdminQuery<Page<CategoryRequest>>(
+    ['categoryRequests', page, size],
+    `/category-requests?page=${page}&size=${size}`,
+  );
 
 export const useShops = (p: Params) =>
   useAdminQuery<Page<ShopRow>>(['shops', p], `/businesses${qs(p)}`);

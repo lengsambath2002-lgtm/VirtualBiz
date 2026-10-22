@@ -15,9 +15,11 @@ test.describe('Shop lists', () => {
     await expect(page).toHaveURL(/sort=-total/);
     await page.getByRole('combobox', { name: /^Delivery/ }).selectOption('PICKUP');
     await expect(page.getByText('Delivery: Pickup')).toBeVisible();
-    await page.getByLabel('Rows per page').selectOption('10');
-    await expect(page).toHaveURL(/size=10/);
+    // 10 rows by default; more on request, kept in the URL.
     await expect.poll(() => table.locator('tbody tr').count()).toBeLessThanOrEqual(10);
+    await page.getByLabel('Rows per page').selectOption('20');
+    await expect(page).toHaveURL(/size=20/);
+    await expect.poll(() => table.locator('tbody tr').count()).toBeLessThanOrEqual(20);
 
     const first = table.locator('tbody tr[tabindex="0"]').first();
     const number = (await first.locator('td').first().innerText()).match(/VB-\d+/)![0];

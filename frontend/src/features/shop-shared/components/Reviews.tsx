@@ -13,6 +13,7 @@ import { hueOf, initials } from '../rules';
 import s from '../shop.module.css';
 import { useMyReviews } from '../reviews';
 import { QUICK_TAGS, writeReview, type QuickTag } from './sheets';
+import { ShowMore, useShowMore } from './ShowMore';
 import { Pill, StarRow, tintClass } from './ui';
 
 export interface ReviewRow {
@@ -136,6 +137,7 @@ export function ReviewsBlock({ itemId, shopName }: { itemId: string; shopName: s
   const r = rowsFor(itemId);
   const avg = r.length ? r.reduce((a, x) => a + x.stars, 0) / r.length : 0;
   const list = filt ? r.filter((x) => x.stars === filt) : r;
+  const shown = useShowMore(list, 8, filt);
   return (
     <section className={s.sec} id="reviews">
       <div className={s.secH}>
@@ -190,7 +192,12 @@ export function ReviewsBlock({ itemId, shopName }: { itemId: string; shopName: s
         </div>
         <div>
           {list.length ? (
-            list.map((x) => <ReviewItem key={x.key} r={x} shopName={shopName} />)
+            <>
+              {shown.rows.map((x) => (
+                <ReviewItem key={x.key} r={x} shopName={shopName} />
+              ))}
+              <ShowMore {...shown.more} />
+            </>
           ) : (
             <p className={s.muted} style={{ padding: '12px 0' }}>
               {t('noneWithRating')}

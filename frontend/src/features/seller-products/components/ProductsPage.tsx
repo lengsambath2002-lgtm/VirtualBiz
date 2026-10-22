@@ -20,7 +20,13 @@ import {
   type SellerProduct,
   useCollectionName,
 } from '@/features/seller-shared';
-import { ExportButton, ImportDialog, type ImportReport } from '@/components/data';
+import {
+  ExportButton,
+  ImportDialog,
+  Pagination,
+  usePagedRows,
+  type ImportReport,
+} from '@/components/data';
 import { EmptyView } from '@/components/feedback';
 import { useMyRole } from '@/features/account-switcher';
 import { api } from '@/lib/api';
@@ -92,6 +98,8 @@ export function ProductsPage() {
         return (a < b ? -1 : a > b ? 1 : 0) * sort.dir;
       })
     : list;
+  const paged = usePagedRows(sortedList, { resetOn: [filter, cat, query, sort] });
+  const pageRows = paged.rows;
   const ariaSort = (k: SortKey) =>
     sort?.key === k ? (sort.dir === 1 ? 'ascending' : 'descending') : undefined;
   const sortHead = (k: SortKey, label: string) => (
@@ -271,11 +279,9 @@ export function ProductsPage() {
                       <input
                         type="checkbox"
                         aria-label={t('selectAll')}
-                        checked={!!sortedList.length && selected.length === sortedList.length}
+                        checked={pageRows.length > 0 && pageRows.every((p) => sel.has(p.id))}
                         onChange={(e) =>
-                          setSel(
-                            e.target.checked ? new Set(sortedList.map((p) => p.id)) : new Set(),
-                          )
+                          setSel(e.target.checked ? new Set(pageRows.map((p) => p.id)) : new Set())
                         }
                       />
                     </th>
@@ -296,7 +302,7 @@ export function ProductsPage() {
                 </tr>
               </thead>
               <tbody>
-                {sortedList.map((p) => {
+                {pageRows.map((p) => {
                   const st = pStock(p);
                   const open = () => void go(`/seller/products/${p.id}`);
                   const v0 = p.variants[0];
@@ -425,6 +431,7 @@ export function ProductsPage() {
                 })}
               </tbody>
             </table>
+            <Pagination {...paged.pager} />
           </div>
         ) : (
           <EmptyView

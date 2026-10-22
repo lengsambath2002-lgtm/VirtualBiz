@@ -38,6 +38,9 @@ const TYPE_LABEL: Record<BusinessType, 'productShop' | 'serviceProvider'> = {
 };
 
 /** Square business logo (initials on the type's tint) with a small type badge. */
+/** More shops than this get a search and a scrolling list. */
+const MANY = 6;
+
 export function BusinessLogo({
   b,
   size = 40,
@@ -77,6 +80,8 @@ export function ProfileSwitcher({
   const { user } = useSession();
   const { data: businesses = [], isLoading } = useMyBusinesses();
   const [switching, setSwitching] = useState<{ name: string; logo: React.ReactNode } | null>(null);
+  // Many shops: find one by name, in a list that scrolls instead of filling the screen.
+  const [find, setFind] = useState('');
   if (!user) return null;
 
   const go = (
@@ -148,35 +153,54 @@ export function ProfileSwitcher({
       {isLoading ? (
         <div className={s.skel} aria-hidden="true" />
       ) : businesses.length ? (
-        businesses.map((b) => {
-          const on = isActive({ kind: 'business', id: b.id });
-          return (
-            <button
-              key={b.id}
-              type="button"
-              role="menuitemradio"
-              aria-checked={on}
-              className={s.row}
-              onClick={() =>
-                on
-                  ? onNavigate?.()
-                  : go({ kind: 'business', b }, b.name, <BusinessLogo b={b} size={64} />)
-              }
-            >
-              <BusinessLogo b={b} />
-              <span className={s.text}>
-                <strong>{b.name}</strong>
-                <small>
-                  {t(TYPE_LABEL[b.type])}
-                  <span className={cn(s.tag, b.role === 'OWNER' && s.tagOwner)}>
-                    {t(`roles.${b.role}`)}
-                  </span>
-                </small>
-              </span>
-              {on && <Icon name="check" size={18} className={s.tick} />}
-            </button>
-          );
-        })
+        <>
+          {businesses.length > MANY && (
+            <input
+              type="search"
+              className={s.find}
+              value={find}
+              placeholder={t('find')}
+              aria-label={t('find')}
+              onChange={(e) => setFind(e.target.value)}
+              onKeyDown={(e) => e.stopPropagation()}
+            />
+          )}
+          <div className={cn(businesses.length > MANY && s.scroll)}>
+            {businesses
+              .filter(
+                (b) => !find.trim() || b.name.toLowerCase().includes(find.trim().toLowerCase()),
+              )
+              .map((b) => {
+                const on = isActive({ kind: 'business', id: b.id });
+                return (
+                  <button
+                    key={b.id}
+                    type="button"
+                    role="menuitemradio"
+                    aria-checked={on}
+                    className={s.row}
+                    onClick={() =>
+                      on
+                        ? onNavigate?.()
+                        : go({ kind: 'business', b }, b.name, <BusinessLogo b={b} size={64} />)
+                    }
+                  >
+                    <BusinessLogo b={b} />
+                    <span className={s.text}>
+                      <strong>{b.name}</strong>
+                      <small>
+                        {t(TYPE_LABEL[b.type])}
+                        <span className={cn(s.tag, b.role === 'OWNER' && s.tagOwner)}>
+                          {t(`roles.${b.role}`)}
+                        </span>
+                      </small>
+                    </span>
+                    {on && <Icon name="check" size={18} className={s.tick} />}
+                  </button>
+                );
+              })}
+          </div>
+        </>
       ) : (
         <p className={s.none}>{t('noShops')}</p>
       )}

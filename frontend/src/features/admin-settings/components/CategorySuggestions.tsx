@@ -1,6 +1,9 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
+import { useEffect, useState } from 'react';
+
+import { Pagination } from '@/components/data';
 
 import { adminApi, useAdminAction, useCategoryRequests } from '@/features/admin-shared/api';
 import { useAct } from '@/features/admin-shared/hooks/useAct';
@@ -30,7 +33,13 @@ export function CategorySuggestions({
   const f = useAdminFmt();
   const act = useAct();
   const run = useAdminAction((fn: () => Promise<unknown>) => fn());
-  const { data } = useCategoryRequests();
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
+  const { data } = useCategoryRequests(page, size);
+  // Deciding the last suggestion on a page goes back a page.
+  useEffect(() => {
+    if (data && !data.items.length && page > 0) setPage((p) => p - 1);
+  }, [data, page]);
   if (!data?.items.length) return null;
   const label = (c: AdminCategory) => (locale === 'kh' ? c.nameKh : c.name);
 
@@ -157,6 +166,16 @@ export function CategorySuggestions({
           </tbody>
         </table>
       </div>
+      <Pagination
+        page={page}
+        size={size}
+        total={data.total}
+        onPage={setPage}
+        onSize={(n) => {
+          setSize(n);
+          setPage(0);
+        }}
+      />
     </section>
   );
 }

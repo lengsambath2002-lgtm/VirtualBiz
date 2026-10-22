@@ -68,6 +68,9 @@ function BarChart({ data, t0 }: { data: { d: number; v: number }[]; t0: number }
   );
 }
 
+/** The home page lists the first few; the full list is a click away. */
+const HOME_LIMIT = 5;
+
 export function OrderRow({ o }: { o: SellerOrder }) {
   const t = useTranslations('seller.orders');
   const tm = useTranslations('seller.method');
@@ -282,9 +285,14 @@ export function HomePage() {
               {t('allOrders')}
             </Link>
           </div>
-          {nNew.map((o) => (
+          {nNew.slice(0, HOME_LIMIT).map((o) => (
             <OrderRow key={o.id} o={o} />
           ))}
+          {nNew.length > HOME_LIMIT && (
+            <Link className={cx(s.link, s.small)} href="/seller/orders?tab=new">
+              {t('seeAllNew', { n: nNew.length })}
+            </Link>
+          )}
         </section>
       )}
     </>

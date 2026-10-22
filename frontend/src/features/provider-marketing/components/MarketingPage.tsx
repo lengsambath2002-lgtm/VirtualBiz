@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
+import { Pagination, usePagedRows } from '@/components/data';
 import { EmptyView } from '@/components/feedback';
 import { ClientAvatar, Stars } from '@/features/provider-shared/components/Bits';
 import { PIcon } from '@/features/provider-shared/components/Icon';
@@ -31,6 +32,9 @@ export function MarketingPage() {
   const update = useProviderStore((s) => s.update);
   const actions = useActions();
   const search = useSearchParams();
+  // Each tab pages on its own (`?dpage=` deals, `?rpage=` reviews).
+  const deals = usePagedRows(d.deals, { prefix: 'd' });
+  const reviews = usePagedRows(d.reviews, { prefix: 'r' });
   // `?tab=reviews` (the sidebar's count) opens the reviews to reply to.
   useEffect(() => {
     if (search.get('tab') === 'reviews') ui.set({ mkTab: 'reviews' });
@@ -82,7 +86,7 @@ export function MarketingPage() {
       {ui.mkTab === 'deals' ? (
         <section className={k('panel')}>
           {d.deals.length ? (
-            d.deals.map((deal) => {
+            deals.rows.map((deal) => {
               const st = dealStatus(deal, today);
               return (
                 <div
@@ -166,13 +170,14 @@ export function MarketingPage() {
               <strong>{t('marketing.noDeals')}</strong>
             </div>
           )}
+          {d.deals.length > 0 && <Pagination {...deals.pager} />}
         </section>
       ) : (
         <section className={k('panel')}>
           {!d.reviews.length && (
             <EmptyView title={t('marketing.noReviews')} body={t('marketing.noReviewsBody')} />
           )}
-          {d.reviews.map((r) => {
+          {reviews.rows.map((r) => {
             const c = { name: r.authorName };
             const s = d.services.find((x) => x.id === r.targetId);
             return (
@@ -206,6 +211,7 @@ export function MarketingPage() {
               </div>
             );
           })}
+          {d.reviews.length > 0 && <Pagination {...reviews.pager} />}
         </section>
       )}
     </>

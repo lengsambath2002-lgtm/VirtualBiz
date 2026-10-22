@@ -70,7 +70,7 @@ export function RecentChanges() {
   const db = useDb();
   const f = useFmt();
   const th = useTranslations('stockHistory');
-  const list = useListQuery(KEYS, { size: 10 });
+  const list = useListQuery(KEYS);
   const { values: v } = list;
   const query = new URLSearchParams(
     Object.entries({

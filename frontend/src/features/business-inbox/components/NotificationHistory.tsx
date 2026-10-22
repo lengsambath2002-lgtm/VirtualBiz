@@ -43,7 +43,7 @@ export function NotificationHistory({
 }) {
   const t = useTranslations('inbox');
   const qc = useQueryClient();
-  const list = useListQuery(['unread'] as const, { size: 20 });
+  const list = useListQuery(['unread'] as const);
   const unread = list.values.unread === 'true';
   const query = new URLSearchParams({
     unread: String(unread),

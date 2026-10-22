@@ -13,6 +13,7 @@ import {
   sideNavFrame,
   type SideNavSection,
 } from '@/components/layout/SideNav';
+import { WorkspaceLoading } from '@/components/feedback';
 
 import { k } from '@/features/provider-shared/cx';
 import { PIcon, type PIconName } from '@/features/provider-shared/components/Icon';
@@ -97,9 +98,7 @@ export function ProviderShell({ children }: { children: ReactNode }) {
   if (!signedIn || !ready) {
     return (
       <div className={k('root')}>
-        <p className={k('srOnly')} role="status">
-          {t('shell.loading')}
-        </p>
+        <WorkspaceLoading />
       </div>
     );
   }

@@ -138,3 +138,39 @@
   display: grid;
   align-content: center;
 }
+
+/* WorkspaceLoading: centred on the screen while a workspace loads. */
+.loadingScreen {
+  min-height: 100dvh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+  color: var(--ink);
+  font-size: 15px;
+}
+.spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 3px solid var(--line);
+  border-top-color: var(--ink);
+  animation: spin 0.8s linear infinite;
+}
+.loadingSlow {
+  max-width: 320px;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation-duration: 2.4s;
+  }
+}

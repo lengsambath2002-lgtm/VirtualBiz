@@ -92,3 +92,6 @@ db/backups/*.dump
 # Playwright HTML report and run output
 frontend/tests/e2e/.report/
 frontend/test-results/
+
+# Vercel CLI project link (local only)
+.vercel

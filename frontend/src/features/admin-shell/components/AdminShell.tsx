@@ -11,6 +11,7 @@ import { Link, usePathname, useRouter } from '@/lib/i18n/navigation';
 import { AdminRail } from './AdminRail';
 import { AdminTopBar } from './AdminTopBar';
 import shell from './shell.module.css';
+import { WorkspaceLoading } from '@/components/feedback';
 import { sideNavFrame } from '@/components/layout/SideNav';
 
 /** The one overlay the console uses: the confirm / reason dialog. */
@@ -88,14 +89,14 @@ export function AdminShell({ children }: { children: ReactNode }) {
   return (
     <div className={s.root} data-overlay-root>
       {!session.ready || !session.user ? (
-        <div className={shell.loading} aria-busy="true" />
+        <WorkspaceLoading />
       ) : session.user.platformRole ? (
         <StaffGate>
           <Console>{children}</Console>
         </StaffGate>
       ) : !session.validated ? (
         // A user saved before they became staff: wait for the server's copy before saying no.
-        <div className={shell.loading} aria-busy="true" />
+        <WorkspaceLoading />
       ) : (
         <Denied />
       )}

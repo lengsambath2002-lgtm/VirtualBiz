@@ -149,7 +149,9 @@
     "reference": "Reference: {ref}",
     "loading": "Loading…",
     "unavailableTitle": "Can't reach VirtualBiz right now",
-    "unavailableBody": "The server may be starting up. Wait a moment, then try again."
+    "unavailableBody": "The server may be starting up. Wait a moment, then try again.",
+    "opening": "Opening your workspace…",
+    "openingSlow": "Taking longer than usual: the server may be starting up. It only takes a moment."
   },
   "data": {
     "search": "Search",

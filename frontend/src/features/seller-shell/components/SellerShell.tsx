@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, type ReactNode } from 'react';
 
-import { ErrorView } from '@/components/feedback';
+import { ErrorView, WorkspaceLoading } from '@/components/feedback';
 import { sideNavFrame } from '@/components/layout/SideNav';
 import { StatusBanner } from '@/features/business-status';
 import { usePaletteHotkey } from '@/features/command-palette';
@@ -23,7 +23,6 @@ import { usePathname, useRouter } from '@/lib/i18n/navigation';
 
 import { OverlayHost } from './OverlayHost';
 import { SellerRail } from './SellerRail';
-import shell from './shell.module.css';
 import { TopBar } from './TopBar';
 
 /** Global workspace behaviour: Esc, Ctrl+K, 1-hour auto-cancel, offline sync, leave guard. */
@@ -193,7 +192,7 @@ export function SellerShell({ children, fontClass }: { children: ReactNode; font
           homeLabel={t('home')}
         />
       ) : (
-        <div className={shell.loading} aria-busy="true" />
+        <WorkspaceLoading />
       )}
     </div>
   );

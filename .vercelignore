@@ -1,0 +1,14 @@
+# Vercel builds only the web app (project Root Directory: frontend). Upload nothing else, and no
+# local secrets or build / test output.
+/*
+!/frontend
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+frontend/node_modules
+frontend/.next
+frontend/.vercel
+frontend/test-results
+frontend/tests/e2e/.report
+frontend/playwright-report
+frontend/coverage

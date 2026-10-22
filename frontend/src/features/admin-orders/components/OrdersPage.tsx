@@ -111,6 +111,7 @@ export function OrdersPage() {
           options={[
             { value: '', label: ta('common.all') },
             { value: 'open', label: t('filter.open') },
+            { value: 'stuck', label: t('filter.stuck') },
             { value: 'NEW', label: ta('orderStatus.NEW') },
             { value: 'DELIVERED', label: ta('orderStatus.DELIVERED') },
             { value: 'PICKED_UP', label: ta('orderStatus.PICKED_UP') },
@@ -119,6 +120,11 @@ export function OrdersPage() {
             { value: 'unpaid', label: t('filter.unpaid') },
           ]}
         />
+        {v.status === 'stuck' && (
+          <p className={s.muted} role="note" style={{ margin: 0, fontSize: 13 }}>
+            {t('stuckHint')}
+          </p>
+        )}
         <FilterBar
           views="admin.orders"
           q={v.q}

@@ -11,7 +11,10 @@ async function setPolicy(page: Page, footer: string, vat: string, card: boolean)
   await panel.getByLabel('Receipt footer').fill(footer);
   await panel.getByLabel('VAT rate (%)').fill(vat);
   await panel.getByRole('checkbox', { name: /^Card/ }).setChecked(card);
-  await panel.getByRole('button', { name: 'Save' }).click();
+  const save = panel.getByRole('button', { name: 'Save' });
+  // Already set (an earlier run stopped before putting the defaults back): nothing to save.
+  if (await save.isDisabled()) return;
+  await save.click();
   await expect(panel.getByRole('status')).toHaveText('Saved');
 }
 

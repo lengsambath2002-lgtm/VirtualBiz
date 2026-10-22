@@ -6,6 +6,7 @@ import { SideNav, SideNavBrand, type SideNavSection } from '@/components/layout/
 import { useOverview } from '@/features/admin-shared/api';
 import { Ic, type IcName } from '@/features/seller-shared';
 import { useSession } from '@/lib/auth';
+import { rangeOf } from '@/lib/utils/dateRange';
 
 import shell from './shell.module.css';
 
@@ -32,6 +33,7 @@ export const ADMIN_NAV: {
 /** The console's sidebar; badges show the work queues. */
 export function AdminRail({ onLogout }: { onLogout: () => void }) {
   const t = useTranslations('admin.nav');
+  const tc = useTranslations('common.nav');
   const tt = useTranslations('admin.top');
   const locale = useLocale();
   const { user } = useSession();
@@ -41,6 +43,13 @@ export function AdminRail({ onLogout }: { onLogout: () => void }) {
     orders: q?.stuckOrders ?? 0,
     reviews: q?.lowReviews7d ?? 0,
     payouts: q?.payoutShops ?? 0,
+  };
+  // Each count opens the list filtered to exactly what it counts.
+  const queue: Partial<Record<Key, string>> = {
+    shops: '/admin/shops?verification=PENDING',
+    orders: '/admin/orders?status=stuck',
+    reviews: `/admin/reviews?status=low&${new URLSearchParams(rangeOf('last7'))}`,
+    payouts: '/admin/payouts?due=payable',
   };
   const sections: SideNavSection[] = (['main', 'marketplace', 'money', 'platform'] as const).map(
     (sec) => ({
@@ -52,6 +61,12 @@ export function AdminRail({ onLogout }: { onLogout: () => void }) {
         label: t(n.key),
         icon: <Ic name={n.icon} size={20} />,
         badge: badge[n.key] ?? 0,
+        ...(badge[n.key]
+          ? {
+              badgeHint: t(`hints.${n.key as 'shops'}`, { n: badge[n.key]! }),
+              badgeHref: queue[n.key],
+            }
+          : {}),
         exact: n.href === '/admin',
         tab: !!n.tab,
       })),
@@ -85,11 +100,11 @@ export function AdminRail({ onLogout }: { onLogout: () => void }) {
           icon: <Ic name="gear" size={20} />,
         },
         {
-          key: 'view',
-          href: `/${locale}/home`,
+          key: 'explore',
+          href: `/${locale}/search`,
           external: true,
-          label: t('viewMarketplace'),
-          icon: <Ic name="store" size={20} />,
+          label: tc('explore'),
+          icon: <Ic name="search" size={20} />,
         },
         {
           key: 'logout',

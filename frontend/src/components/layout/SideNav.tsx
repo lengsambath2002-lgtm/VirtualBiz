@@ -16,6 +16,10 @@ export interface SideNavItem {
   icon: ReactNode;
   /** Count shown beside the label (a dot when the sidebar is collapsed); hidden when 0. */
   badge?: number;
+  /** What the count is, in words ("12 shops waiting for an ID check"): hover text and its name. */
+  badgeHint?: string;
+  /** The list filtered to exactly what the count counts; clicking the count opens it. */
+  badgeHref?: string;
   /** Active only on this exact path (a workspace's home), not its children. */
   exact?: boolean;
   /** One of the few destinations in the phone's bottom bar. */
@@ -105,23 +109,44 @@ export function SideNav({
   const moreBadge = all.filter((i) => !i.tab).reduce((n, i) => n + (i.badge ?? 0), 0);
   const moreOn = !tabs.some((i) => isOn(pathname, i));
 
+  const count = (n: number) => (n > 99 ? '99+' : String(n));
   const item = (i: SideNavItem) => {
     const on = isOn(pathname, i);
-    return (
+    const hint = i.badge ? i.badgeHint : undefined;
+    const link = (
       <Link
         key={i.key}
         href={i.href}
-        className={cn(L.item, on && L.on)}
+        className={cn(L.item, on && L.on, !!i.badge && !!i.badgeHref && L.withCount)}
         aria-current={on ? 'page' : undefined}
-        title={collapsed ? i.label : undefined}
+        title={collapsed ? (hint ? `${i.label} · ${hint}` : i.label) : undefined}
       >
         <span className={L.icon} aria-hidden>
           {i.icon}
           {!!i.badge && <i className={L.dot} />}
         </span>
         <span className={L.text}>{i.label}</span>
-        {!!i.badge && <span className={L.count}>{i.badge > 99 ? '99+' : i.badge}</span>}
+        {!!i.badge && !i.badgeHref && (
+          <span className={L.count} title={hint}>
+            {count(i.badge)}
+          </span>
+        )}
       </Link>
+    );
+    if (!i.badge || !i.badgeHref) return link;
+    // The count is its own link to the filtered list, so it says what it counts and shows it.
+    return (
+      <div key={i.key} className={L.row}>
+        {link}
+        <Link
+          href={i.badgeHref}
+          className={cn(L.count, L.countLink)}
+          aria-label={hint ?? count(i.badge)}
+          title={hint}
+        >
+          {count(i.badge)}
+        </Link>
+      </div>
     );
   };
   const action = (a: SideNavItem | SideNavAction) => {
@@ -224,7 +249,11 @@ export function SideNav({
             >
               <span className={L.icon} aria-hidden>
                 {i.icon}
-                {!!i.badge && <b className={L.tabBadge}>{i.badge > 99 ? '99+' : i.badge}</b>}
+                {!!i.badge && (
+                  <b className={L.tabBadge} title={i.badgeHint}>
+                    {count(i.badge)}
+                  </b>
+                )}
               </span>
               <span>{i.label}</span>
             </Link>

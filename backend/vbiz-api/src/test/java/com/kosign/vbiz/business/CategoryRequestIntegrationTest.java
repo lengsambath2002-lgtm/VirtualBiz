@@ -57,8 +57,10 @@ class CategoryRequestIntegrationTest extends BookingTestSupport {
         assertThat(code(admin(admin, "POST", "/api/admin/category-requests/" + r.path("id").asText() + "/approve",
                 null))).isEqualTo("CONFLICT");
 
-        // Put the demo shop back where it was.
+        // Put the demo shop back where it was, and remove the category, so other tests count the seeded
+        // categories only.
         jdbc.update("update business set category_id = ? where id = ?::uuid", was, GLOW_BEAUTY_ID);
+        jdbc.update("delete from category where id = ?", cat);
     }
 
     @Test

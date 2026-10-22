@@ -133,6 +133,13 @@ function CalendarGrid() {
   const qsNow = search.toString();
   const live = useRef({ qs: qsNow, date, view, staff: staffF });
   if (live.current.qs !== qsNow) live.current = { qs: qsNow, date, view, staff: staffF };
+  // `?requests=1` (the sidebar's count) opens the booking requests to answer.
+  useEffect(() => {
+    if (search.get('requests') !== '1') return;
+    ui.open({ t: 'requests' });
+    router.replace(calendarHref(live.current));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
   const nav = (p: { date?: string; view?: CalendarView; staff?: string }) => {
     const next = { ...live.current, ...p };
     live.current = { ...next, qs: live.current.qs };

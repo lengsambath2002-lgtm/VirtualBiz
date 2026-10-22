@@ -392,6 +392,11 @@ public class AdminQueries {
         }
         if ("open".equals(f.status())) {
             w.and("o.status IN ('NEW', 'ACCEPTED', 'PACKED', 'SHIPPED')");
+        } else if ("stuck".equals(f.status())) {
+            // The overview's "stuck" queue (queueCounts): still new after 30 minutes, or accepted /
+            // packed more than a day ago.
+            w.and("((o.status = 'NEW' AND o.placed_at < now() - interval '30 minutes')"
+                    + " OR (o.status IN ('ACCEPTED', 'PACKED') AND o.placed_at < now() - interval '1 day'))");
         } else if ("unpaid".equals(f.status())) {
             w.and("o.placed_at IS NULL");
         } else if (notBlank(f.status())) {

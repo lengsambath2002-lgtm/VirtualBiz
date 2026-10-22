@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 import { EmptyView } from '@/components/feedback';
 import { ClientAvatar, Stars } from '@/features/provider-shared/components/Bits';
@@ -29,6 +30,12 @@ export function MarketingPage() {
   const unrep = d.reviews.filter((r) => !r.reply).length;
   const update = useProviderStore((s) => s.update);
   const actions = useActions();
+  const search = useSearchParams();
+  // `?tab=reviews` (the sidebar's count) opens the reviews to reply to.
+  useEffect(() => {
+    if (search.get('tab') === 'reviews') ui.set({ mkTab: 'reviews' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
 
   return (
     <>

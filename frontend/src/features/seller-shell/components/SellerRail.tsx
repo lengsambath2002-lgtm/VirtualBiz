@@ -41,6 +41,7 @@ export const NAV: {
 /** The seller workspace's sidebar (bottom bar and drawer on phones). */
 export function SellerRail({ onLogout }: { onLogout: () => void }) {
   const t = useTranslations('seller.nav');
+  const tc = useTranslations('common.nav');
   const tt = useTranslations('seller.top');
   const locale = useLocale();
   const db = useDb();
@@ -49,6 +50,12 @@ export function SellerRail({ onLogout }: { onLogout: () => void }) {
     orders: db.orders.filter((o) => o.status === 'NEW').length,
     inventory: lowVars(db.products).length,
     reviews: db.reviews.filter((r) => !r.reply).length,
+  };
+  // Each count opens the list filtered to exactly what it counts.
+  const queue: Partial<Record<Key, string>> = {
+    orders: '/seller/orders?tab=new',
+    inventory: '/seller/inventory?f=low',
+    reviews: '/seller/reviews?replied=no',
   };
   const sections: SideNavSection[] = (['main', 'customers', 'manage'] as const).map((sec) => ({
     key: sec,
@@ -59,6 +66,12 @@ export function SellerRail({ onLogout }: { onLogout: () => void }) {
       label: t(n.key),
       icon: <Ic name={n.icon} size={20} />,
       badge: badge[n.key] ?? 0,
+      ...(badge[n.key]
+        ? {
+            badgeHint: t(`hints.${n.key as 'orders'}`, { n: badge[n.key]! }),
+            badgeHref: queue[n.key],
+          }
+        : {}),
       exact: n.href === '/seller',
       tab: !!n.tab,
     })),
@@ -92,11 +105,11 @@ export function SellerRail({ onLogout }: { onLogout: () => void }) {
           icon: <Ic name="gear" size={20} />,
         },
         {
-          key: 'view',
-          href: `/${locale}/shop/${shop.id}`,
+          key: 'explore',
+          href: `/${locale}/search`,
           external: true,
-          label: t('viewShop'),
-          icon: <Ic name="store" size={20} />,
+          label: tc('explore'),
+          icon: <Ic name="search" size={20} />,
         },
         {
           key: 'logout',

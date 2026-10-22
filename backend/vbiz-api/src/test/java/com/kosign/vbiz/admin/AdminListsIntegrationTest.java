@@ -84,6 +84,16 @@ class AdminListsIntegrationTest extends OrderTestSupport {
     }
 
     @Test
+    void the_stuck_filter_lists_exactly_what_the_overview_counts() throws Exception {
+        Session admin = login(ADMIN, DEMO_PASSWORD);
+        long counted = getJson(admin, "/api/admin/overview").path("data").path("queues").path("stuckOrders")
+                .asLong();
+        JsonNode stuck = getJson(admin, "/api/admin/orders?status=stuck&size=100").path("data");
+        assertThat(stuck.path("total").asLong()).isEqualTo(counted);
+        stuck.path("items").forEach(o -> assertThat(o.path("status").asText()).isIn("NEW", "ACCEPTED", "PACKED"));
+    }
+
+    @Test
     void an_export_is_the_filtered_list_as_csv_and_is_audited() throws Exception {
         Session admin = login(ADMIN, DEMO_PASSWORD);
         long pickup = getJson(admin, "/api/admin/orders?method=PICKUP").path("data").path("total").asLong();

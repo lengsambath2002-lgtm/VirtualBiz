@@ -21,7 +21,11 @@
       "manage": "Manage"
     },
     "activity": "Activity log",
-    "viewShop": "View shop"
+    "hints": {
+      "orders": "{n, plural, one {# new order} other {# new orders}} waiting to be accepted",
+      "inventory": "{n, plural, one {# product is} other {# products are}} low or out of stock",
+      "reviews": "{n, plural, one {# review} other {# reviews}} without a reply"
+    }
   },
   "common": {
     "close": "Close",

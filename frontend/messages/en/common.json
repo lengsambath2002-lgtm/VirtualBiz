@@ -251,6 +251,7 @@
     "expand": "Expand sidebar",
     "more": "More",
     "close": "Close menu",
-    "tabs": "{name}: main pages"
+    "tabs": "{name}: main pages",
+    "explore": "Explore"
   }
 }

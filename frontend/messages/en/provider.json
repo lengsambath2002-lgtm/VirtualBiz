@@ -16,7 +16,10 @@
       "manage": "Manage"
     },
     "activity": "Activity log",
-    "viewShop": "View booking page"
+    "hints": {
+      "calendar": "{n, plural, one {# booking request} other {# booking requests}} to answer",
+      "marketing": "{n, plural, one {# review} other {# reviews}} without a reply"
+    }
   },
   "meta": {
     "title": "Service Provider"

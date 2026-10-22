@@ -157,6 +157,7 @@ function Workspace({ children }: { children: ReactNode }) {
 
 function Rail() {
   const t = useTranslations('provider');
+  const tc = useTranslations('common.nav');
   const locale = useLocale();
   const d = useData();
   const confirm = useUi((s) => s.confirm);
@@ -165,6 +166,11 @@ function Rail() {
   const badge: Partial<Record<string, number>> = {
     calendar: pending(d).length,
     marketing: d.reviews.filter((r) => !r.reply).length,
+  };
+  // Each count opens what it counts: the requests to answer, the reviews to reply to.
+  const queue: Partial<Record<string, string>> = {
+    calendar: '/provider/calendar?requests=1',
+    marketing: '/provider/marketing?tab=reviews',
   };
   const sections: SideNavSection[] = (['main', 'grow', 'manage'] as const).map((sec) => ({
     key: sec,
@@ -175,6 +181,12 @@ function Rail() {
       label: t(`nav.${n.page}`),
       icon: <PIcon name={n.icon} size={20} />,
       badge: badge[n.page] ?? 0,
+      ...(badge[n.page]
+        ? {
+            badgeHint: t(`nav.hints.${n.page as 'calendar'}`, { n: badge[n.page]! }),
+            badgeHref: queue[n.page],
+          }
+        : {}),
       exact: n.page === 'home',
       tab: !!n.tab,
     })),
@@ -216,11 +228,11 @@ function Rail() {
           icon: <PIcon name="gear" size={20} />,
         },
         {
-          key: 'view',
-          href: `/${locale}/shop/${b.id}`,
+          key: 'explore',
+          href: `/${locale}/search`,
           external: true,
-          label: t('nav.viewShop'),
-          icon: <PIcon name="globe" size={20} />,
+          label: tc('explore'),
+          icon: <PIcon name="search" size={20} />,
         },
         {
           key: 'logout',

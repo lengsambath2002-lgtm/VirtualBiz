@@ -170,6 +170,28 @@
   place-items: center;
   font-variant-numeric: tabular-nums;
 }
+.row {
+  position: relative;
+}
+/* Room for the count link laid over the item's right end. */
+.withCount {
+  padding-right: 52px;
+}
+.countLink {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  text-decoration: none;
+  transition: box-shadow 0.15s ease;
+}
+.countLink:hover {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--danger, #e5484d) 22%, transparent);
+}
+.countLink:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
 .dot {
   position: absolute;
   top: -2px;
@@ -234,6 +256,7 @@
 .collapsed .brandText,
 .collapsed .text,
 .collapsed .count,
+.collapsed .countLink,
 .collapsed .ext,
 .collapsed .heading {
   display: none;
@@ -257,6 +280,7 @@
   .side .brandText,
   .side .text,
   .side .count,
+  .side .countLink,
   .side .ext,
   .side .heading,
   .side .handle {

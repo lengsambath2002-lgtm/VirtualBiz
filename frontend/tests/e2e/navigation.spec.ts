@@ -33,12 +33,20 @@ test.describe('Workspace navigation', () => {
       .click();
   });
 
-  test('the provider sidebar opens the booking page in a new tab', async ({ page }) => {
-    await signIn(page, '/provider/clients', DANA);
-    const nav = page.getByRole('navigation', { name: 'Provider workspace' });
-    const view = nav.getByRole('link', { name: 'View booking page' });
-    await expect(view).toHaveAttribute('target', '_blank', { timeout: 20_000 });
-    await expect(view).toHaveAttribute('href', /\/en\/shop\//);
+  test('every workspace ends with Settings, Explore and Log out', async ({ page }) => {
+    for (const [path, name, account] of [
+      ['/seller', 'Seller workspace', undefined],
+      ['/provider/clients', 'Provider workspace', DANA],
+      ['/admin', 'Admin console', ADMIN],
+    ] as const) {
+      await signIn(page, path, account);
+      const nav = page.getByRole('navigation', { name });
+      await expect(nav.getByRole('link', { name: 'Settings' })).toBeVisible({ timeout: 20_000 });
+      const explore = nav.getByRole('link', { name: 'Explore' });
+      await expect(explore).toHaveAttribute('href', '/en/search');
+      await expect(explore).toHaveAttribute('target', '_blank');
+      await expect(nav.getByRole('button', { name: 'Log out' })).toBeVisible();
+    }
   });
 
   test('the console groups its pages and shows queue counts', async ({ page }) => {
@@ -49,6 +57,24 @@ test.describe('Workspace navigation', () => {
     });
     await nav.getByRole('link', { name: /^Audit log/ }).click();
     await expect(page).toHaveURL(/\/admin\/audit/);
+  });
+
+  test('a count says what it counts and opens exactly those rows', async ({ page }) => {
+    await signIn(page, '/admin', ADMIN);
+    const nav = page.getByRole('navigation', { name: 'Admin console' });
+    const stuck = nav.getByRole('link', { name: /orders? (is|are) stuck/ });
+    await expect(stuck).toBeVisible({ timeout: 20_000 });
+    const n = Number((await stuck.textContent())!.replace('+', ''));
+    await stuck.click();
+    await expect(page).toHaveURL(/\/admin\/orders\?status=stuck/);
+    await expect(page.getByRole('note')).toContainText('Stuck orders');
+    if (n < 99) {
+      await expect(page.getByRole('navigation', { name: 'Pages' })).toContainText(`of ${n}`);
+    }
+
+    const waiting = nav.getByRole('link', { name: /waiting for an ID check/ });
+    await waiting.click();
+    await expect(page).toHaveURL(/verification=PENDING/);
   });
 
   test('on a phone the bottom bar has the main pages and More opens the rest', async ({ page }) => {

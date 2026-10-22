@@ -19,8 +19,13 @@
       "money": "Money",
       "platform": "Platform"
     },
-    "viewMarketplace": "View marketplace",
-    "console": "Console"
+    "console": "Console",
+    "hints": {
+      "shops": "{n, plural, one {# shop is} other {# shops are}} waiting for an ID check",
+      "orders": "{n, plural, one {# order is} other {# orders are}} stuck: not accepted within 30 minutes, or not sent out within a day",
+      "reviews": "{n, plural, one {# low review} other {# low reviews}} (1–2 stars) in the last 7 days",
+      "payouts": "{n, plural, one {# shop is} other {# shops are}} owed a payout"
+    }
   },
   "top": {
     "title": "VirtualBiz Admin",
@@ -335,7 +340,8 @@
     "statusLabel": "Status",
     "filter": {
       "open": "In progress",
-      "unpaid": "Awaiting payment"
+      "unpaid": "Awaiting payment",
+      "stuck": "Stuck"
     },
     "scopedShop": "Showing one shop's orders.",
     "scopedCustomer": "Showing one customer's orders.",
@@ -348,7 +354,8 @@
       "status": "Status",
       "payment": "Payment",
       "total": "Total"
-    }
+    },
+    "stuckHint": "Stuck orders: still new 30 minutes after they were placed, or accepted / packed and not sent out within a day. Ask the shop or cancel for the customer."
   },
   "order": {
     "back": "← All orders",

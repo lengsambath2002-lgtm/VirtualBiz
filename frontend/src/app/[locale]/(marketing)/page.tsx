@@ -18,7 +18,7 @@ import {
 import { DEFAULT_LOCALE, isLocale } from '@/lib/i18n/config';
 import type { ApiCategory, ApiDistrict } from '@/lib/api';
 import { serverGet } from '@/lib/api/server';
-import { DEFAULT_PLATFORM_SETTINGS, type PlatformSettings } from '@/lib/platform';
+import { DEFAULT_PLATFORM_SETTINGS, type PlatformSettings } from '@/lib/platform/settings';
 
 export default async function LandingPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
@@ -28,7 +28,14 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
     serverGet<ApiCategory[]>('/meta/categories?marketplace=true'),
     serverGet<PlatformSettings>('/meta/settings', 60),
   ]);
-  const { commissionPct, payoutDelayDays, khrPerUsd } = settings ?? DEFAULT_PLATFORM_SETTINGS;
+  // Each figure falls back on its own: no API (a build without one) or a partial answer still
+  // renders the page.
+  const d = DEFAULT_PLATFORM_SETTINGS;
+  const num = (v: unknown, fallback: number) =>
+    Number.isFinite(Number(v)) && v !== null ? Number(v) : fallback;
+  const commissionPct = num(settings?.commissionPct, d.commissionPct);
+  const payoutDelayDays = num(settings?.payoutDelayDays, d.payoutDelayDays);
+  const khrPerUsd = num(settings?.khrPerUsd, d.khrPerUsd);
 
   return (
     <LandingShell>
@@ -38,7 +45,7 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
         <PaymentStrip />
         <CustomersSection categories={toLandingCategories(categories ?? [])} />
         <BusinessBand />
-        <PricingSection commissionPct={Number(commissionPct)} payoutDays={payoutDelayDays} />
+        <PricingSection commissionPct={commissionPct} payoutDays={payoutDelayDays} />
         <OpenShopSection />
         <FaqSection payoutDays={payoutDelayDays} />
         <FinalCta />

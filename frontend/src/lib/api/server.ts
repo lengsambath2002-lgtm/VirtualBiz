@@ -18,8 +18,10 @@ export async function serverGet<T>(path: string, revalidate = 300): Promise<T | 
     const res = await fetch(`${BACKEND}/api${path}`, {
       headers: { Accept: 'application/json' },
       next: { revalidate },
+      // An API that is down (or absent, as in a frontend-only build) answers null quickly.
+      signal: AbortSignal.timeout(5000),
     });
-    if (!res.ok) return null;
+    if (!res.ok || !res.headers.get('content-type')?.includes('json')) return null;
     const env = (await res.json()) as ApiResponse<T>;
     return env.data ?? null;
   } catch {

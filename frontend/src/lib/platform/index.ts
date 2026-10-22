@@ -4,19 +4,9 @@ import { useQuery } from '@tanstack/react-query';
 
 import { api } from '@/lib/api';
 
-/** `GET /api/meta/settings`: the platform numbers a super-admin sets from the console. */
-export interface PlatformSettings {
-  commissionPct: number;
-  payoutDelayDays: number;
-  khrPerUsd: number;
-}
+import { DEFAULT_PLATFORM_SETTINGS, type PlatformSettings } from './settings';
 
-/** Shown until the settings load (the values VirtualBiz launched with). */
-export const DEFAULT_PLATFORM_SETTINGS: PlatformSettings = {
-  commissionPct: 5,
-  payoutDelayDays: 1,
-  khrPerUsd: 4100,
-};
+export { DEFAULT_PLATFORM_SETTINGS, type PlatformSettings };
 
 /** The platform settings (public, cached for 5 minutes). Never undefined: defaults until loaded. */
 export function usePlatformSettings(): PlatformSettings {

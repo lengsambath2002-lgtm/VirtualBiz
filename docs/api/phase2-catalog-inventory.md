@@ -53,7 +53,7 @@ A shop is listed when it is `online`, not `REJECTED`, and has at least one listi
 | `lat`, `lng` | The customer's point (exact location or district centre) for distance |
 | `district` | The customer's district (name or id): zone fee for `freeDel`, and the distance origin when `lat`/`lng` are absent |
 
-`SearchResult` = `{items: MarketItem[], shops: MarketShop[]}`. `items` honour every filter and `sort`; `shops` honour `q`, `category`, `open`, `rating` and `type` (product / service) and are always nearest first. Distance is the haversine km from the origin to the shop's pin (min 0.1, one decimal); a shop without a pin falls back to the district `km` difference. Unknown `type`/`sort` values are ignored (defaults).
+`SearchResult` = `{items: MarketItem[], shops: MarketShop[], itemTotal, shopTotal, page, size}`: one page (`page` from 0, `size` 1–60, default 24) of each list, and how many match in all. Explore loads the next page as the customer scrolls near the end (a "Show more" button does the same), shows a failed page with a retry, and says when everything is shown. `items` honour every filter and `sort`; `shops` honour `q`, `category`, `open`, `rating` and `type` (product / service) and are always nearest first. Distance is the haversine km from the origin to the shop's pin (min 0.1, one decimal); a shop without a pin falls back to the district `km` difference. Unknown `type`/`sort` values are ignored (defaults).
 
 ### Shapes
 

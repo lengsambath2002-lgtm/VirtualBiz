@@ -17,5 +17,11 @@ public record SearchQuery(
         String sort,
         Double lat,
         Double lng,
-        String district) {
+        String district,
+        int page,
+        int size) {
+
+    /** Results per page when none is asked for, and the most a page may hold. */
+    public static final int DEFAULT_SIZE = 24;
+    public static final int MAX_SIZE = 60;
 }

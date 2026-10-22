@@ -85,11 +85,19 @@ public class MarketplaceController extends BaseController {
             @RequestParam(required = false) String sort,
             @RequestParam(required = false) Double lat,
             @RequestParam(required = false) Double lng,
-            @RequestParam(required = false) String district) {
+            @RequestParam(required = false) String district,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "" + SearchQuery.DEFAULT_SIZE) int size) {
+        if (page < 0) {
+            throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "page", "0 or more");
+        }
+        if (size < 1 || size > SearchQuery.MAX_SIZE) {
+            throw BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "size", "1 to " + SearchQuery.MAX_SIZE);
+        }
         List<String> cats = category == null ? List.of()
                 : Arrays.stream(category.split(",")).map(String::trim).filter(s -> !s.isEmpty()).toList();
         return ok(market.search(new SearchQuery(q, type, cats, amount(min, "min"), amount(max, "max"), rating,
-                flag(sale), flag(open), flag(freeDel), sort, lat, lng, district)));
+                flag(sale), flag(open), flag(freeDel), sort, lat, lng, district, page, size)));
     }
 
     @GetMapping("/deals")

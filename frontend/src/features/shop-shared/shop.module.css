@@ -2478,3 +2478,42 @@
   display: grid;
   gap: 16px;
 }
+
+/* Explore: results load a page at a time (docs/api/phase2-catalog-inventory.md § Search). */
+.results {
+  position: relative;
+  display: grid;
+  gap: 18px;
+  transition: opacity 0.15s ease;
+}
+.resultsUpdating > :not(.updating) {
+  opacity: 0.5;
+  pointer-events: none;
+}
+.updating {
+  position: sticky;
+  top: 76px;
+  z-index: 3;
+  justify-self: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: var(--g-shadow-float);
+}
+.more {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 8px 0 24px;
+  text-align: center;
+}
+.moreFail {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--danger, #c93636);
+  font-size: 14px;
+}

@@ -199,7 +199,15 @@ public class MarketplaceService {
                 .filter(b -> q.rating() == null || b.getRating().doubleValue() >= q.rating())
                 .filter(b -> kind == null || b.getType().name().equals(kind))
                 .map(b -> shop(b, s, o, now)).toList();
-        return new SearchResultResponse(items.stream().map(i -> item(i, s)).toList(), sortByDistance(shops, o));
+        List<MarketShopResponse> nearFirst = sortByDistance(shops, o);
+        long from = (long) q.page() * q.size();
+        return new SearchResultResponse(
+                slice(items, from, q.size()).stream().map(i -> item(i, s)).toList(),
+                slice(nearFirst, from, q.size()), items.size(), nearFirst.size(), q.page(), q.size());
+    }
+
+    private static <T> List<T> slice(List<T> all, long from, int size) {
+        return from >= all.size() ? List.of() : all.subList((int) from, (int) Math.min(all.size(), from + size));
     }
 
     // ── snapshot & shaping ───────────────────────────────────────────────────────────

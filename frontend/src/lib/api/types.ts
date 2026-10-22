@@ -238,9 +238,14 @@ export interface MarketDeal {
   endsAt: string;
 }
 
+/** One page of `GET /api/marketplace/search` (`page`, `size`), with the totals of every match. */
 export interface SearchResult {
   items: MarketItem[];
   shops: MarketShop[];
+  itemTotal: number;
+  shopTotal: number;
+  page: number;
+  size: number;
 }
 
 /** `GET /api/me/saved`. */

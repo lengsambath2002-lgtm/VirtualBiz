@@ -133,6 +133,18 @@ class MarketplaceIntegrationTest extends IntegrationTest {
         assertThat(data("/api/marketplace/search").path("items").get(0).path("slug").asText()).isEqualTo("rice");
         // LIKE wildcards are literal
         assertThat(data("/api/marketplace/search", "q", "%").path("items").size()).isZero();
+
+        // Pages: 24 by default; the totals count every match; pages don't overlap.
+        JsonNode first = data("/api/marketplace/search", "size", "5");
+        long total = first.path("itemTotal").asLong();
+        assertThat(total).isGreaterThan(5);
+        assertThat(first.path("items").size()).isEqualTo(5);
+        assertThat(data("/api/marketplace/search").path("items").size()).isEqualTo((int) Math.min(24, total));
+        JsonNode second = data("/api/marketplace/search", "size", "5", "page", "1");
+        List<String> firstIds = new java.util.ArrayList<>();
+        first.path("items").forEach(i -> firstIds.add(i.path("id").asText()));
+        second.path("items").forEach(i -> assertThat(firstIds).doesNotContain(i.path("id").asText()));
+        assertThat(data("/api/marketplace/search", "size", "5", "page", "100000").path("items").size()).isZero();
     }
 
     @Test

@@ -237,7 +237,15 @@
     "showResults": "{count, plural, one {Show # result} other {Show # results}}",
     "noResults": "No results",
     "noResultsFor": "No results for “{q}”",
-    "noResultsHint": "Check the spelling, or remove some filters."
+    "noResultsHint": "Check the spelling, or remove some filters.",
+    "updating": "Updating results…",
+    "showing": "Showing {shown} of {total}",
+    "showMore": "Show more",
+    "loadingMore": "Loading more…",
+    "moreFailed": "Couldn't load more results.",
+    "allShown": "{total, plural, one {That's the only result} other {That's all # results}}",
+    "backToTop": "Back to top",
+    "retry": "Try again"
   },
   "product": {
     "photo": "Photo {n}",

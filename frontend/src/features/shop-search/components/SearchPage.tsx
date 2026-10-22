@@ -17,7 +17,7 @@ import { useFmt, useShopData } from '@/features/shop-shared/hooks';
 import s from '@/features/shop-shared/shop.module.css';
 import { useShopStore } from '@/features/shop-shared/store';
 
-import { useSearch } from '../hooks/useSearch';
+import { SEARCH_PAGE, useSearch } from '../hooks/useSearch';
 import {
   parseSearch,
   searchHref,
@@ -289,7 +289,20 @@ export function SearchPage() {
   const setType = (type: SearchType) =>
     router.push(searchHref({ ...f, type, cats: [], sort: 'best' }));
 
-  const { items, shops, loading, error, retry } = useSearch(f, area, here);
+  const {
+    items,
+    shops,
+    itemTotal,
+    shopTotal,
+    loading,
+    updating,
+    error,
+    retry,
+    hasMore,
+    loadingMore,
+    moreFailed,
+    loadMore,
+  } = useSearch(f, area, here);
   const chips: [string, string, () => void][] = [];
   if (f.q) chips.push(['q', `“${f.q}”`, () => go({ q: '' })]);
   f.cats.forEach((c) =>
@@ -307,7 +320,8 @@ export function SearchPage() {
   if (f.freeDel) chips.push(['freeDel', t('lowestFee'), () => go({ freeDel: false })]);
 
   const showShops = f.type === 'shop';
-  const n = showShops ? shops.length : items.length;
+  const n = showShops ? shopTotal : itemTotal;
+  const shown = showShops ? shops.length : items.length;
   const single = f.cats.length === 1 ? fm.category(f.cats[0]!) : null;
   const title = f.q ? t('resultsFor', { q: f.q }) : (single ?? t('explore'));
 
@@ -337,7 +351,7 @@ export function SearchPage() {
                   <>
                     {' · '}
                     <button className={cn(s.link, s.quiet)} onClick={() => setType('shop')}>
-                      {t('matchingShops', { count: shops.length })}
+                      {t('matchingShops', { count: shopTotal })}
                     </button>
                   </>
                 ) : null}
@@ -409,19 +423,39 @@ export function SearchPage() {
               ))}
             </div>
           ) : n ? (
-            showShops ? (
-              <div className={cn(s.shops, s.shopsAuto)}>
-                {shops.map((sh) => (
-                  <ShopCard key={sh.id} sh={sh} />
-                ))}
-              </div>
-            ) : (
-              <div className={cn(s.grid, s.g4)}>
-                {items.map((it) => (
-                  <ProductCard key={it.id} it={it} />
-                ))}
-              </div>
-            )
+            <div className={cn(s.results, updating && s.resultsUpdating)} aria-busy={updating}>
+              {updating && (
+                <span className={s.updating} role="status">
+                  {t('updating')}
+                </span>
+              )}
+              {showShops ? (
+                <div className={cn(s.shops, s.shopsAuto)}>
+                  {shops.map((sh) => (
+                    <ShopCard key={sh.id} sh={sh} />
+                  ))}
+                </div>
+              ) : (
+                <div className={cn(s.grid, s.g4)}>
+                  {items.map((it) => (
+                    <ProductCard key={it.id} it={it} />
+                  ))}
+                  {loadingMore &&
+                    Array.from({ length: 4 }, (_, i) => (
+                      <div key={`more-${i}`} className={s.skel} aria-hidden />
+                    ))}
+                </div>
+              )}
+              <MoreResults
+                shown={shown}
+                total={n}
+                hasMore={hasMore}
+                loadingMore={loadingMore}
+                failed={moreFailed}
+                paused={updating}
+                onMore={loadMore}
+              />
+            </div>
           ) : (
             <div className={cn(s.empty, s.glassMat)}>
               <Ic name="search" size={30} />
@@ -436,9 +470,76 @@ export function SearchPage() {
           )}
         </section>
       </div>
-      {drawer && (
-        <FiltersDrawer f={f} go={go} count={items.length} onClose={() => setDrawer(false)} />
-      )}
+      {drawer && <FiltersDrawer f={f} go={go} count={n} onClose={() => setDrawer(false)} />}
     </>
+  );
+}
+
+/**
+ * The end of the results: loads the next page as it scrolls into view (and on "Show more", for
+ * keyboards and when scrolling is off), shows a failed page with a retry, and says when every
+ * result is shown, with a way back to the top.
+ */
+function MoreResults({
+  shown,
+  total,
+  hasMore,
+  loadingMore,
+  failed,
+  paused,
+  onMore,
+}: {
+  shown: number;
+  total: number;
+  hasMore: boolean;
+  loadingMore: boolean;
+  failed: boolean;
+  paused: boolean;
+  onMore: () => void;
+}) {
+  const t = useTranslations('shop.search');
+  const end = useRef<HTMLDivElement>(null);
+  const auto = hasMore && !loadingMore && !failed && !paused;
+  useEffect(() => {
+    const el = end.current;
+    if (!el || !auto || typeof IntersectionObserver === 'undefined') return;
+    const io = new IntersectionObserver((es) => es.some((e) => e.isIntersecting) && onMore(), {
+      rootMargin: '600px 0px',
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [auto, onMore]);
+
+  return (
+    <div ref={end} className={s.more}>
+      <span className={cn(s.muted, s.small, 'num')} aria-live="polite">
+        {hasMore ? t('showing', { shown, total }) : t('allShown', { total })}
+      </span>
+      {failed ? (
+        <span className={s.moreFail} role="alert">
+          {t('moreFailed')}
+          <button className={cn(s.btn, s.btnGhost, s.btnSm)} onClick={onMore}>
+            {t('retry')}
+          </button>
+        </span>
+      ) : hasMore ? (
+        <button
+          className={cn(s.btn, s.btnGhost, s.btnSm)}
+          disabled={loadingMore || paused}
+          onClick={onMore}
+        >
+          {loadingMore ? t('loadingMore') : t('showMore')}
+        </button>
+      ) : (
+        shown > SEARCH_PAGE && (
+          <button
+            className={cn(s.btn, s.btnGhost, s.btnSm)}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          >
+            {t('backToTop')}
+          </button>
+        )
+      )}
+    </div>
   );
 }

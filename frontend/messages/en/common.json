@@ -76,7 +76,8 @@
     "network": "Can’t reach VirtualBiz. Check your connection and try again.",
     "imageType": "Use a JPEG, PNG or WebP image.",
     "imageSize": "That image is too large (8 MB at most).",
-    "suspended": "This account is suspended. Contact VirtualBiz support for help."
+    "suspended": "This account is suspended. Contact VirtualBiz support for help.",
+    "unavailable": "Can't reach VirtualBiz right now. The server may be starting up; try again in a moment."
   },
   "image": {
     "change": "Change photo",
@@ -146,7 +147,9 @@
     "offlineBody": "Check your internet connection, then try again.",
     "retry": "Try again",
     "reference": "Reference: {ref}",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "unavailableTitle": "Can't reach VirtualBiz right now",
+    "unavailableBody": "The server may be starting up. Wait a moment, then try again."
   },
   "data": {
     "search": "Search",

@@ -19,6 +19,11 @@ export interface ApiResponse<T> {
 
 /** Codes the client produces itself (no envelope to read one from). */
 export const NETWORK_ERROR = 'NETWORK_ERROR';
+/**
+ * The API didn't answer itself: a gateway or proxy error (502 / 503 / 504, or a 5xx without the
+ * API's reply), e.g. the server is starting up or down. Worth a retry in a moment.
+ */
+export const UNAVAILABLE = 'SERVICE_UNAVAILABLE';
 export const BAD_RESPONSE = 'BAD_RESPONSE';
 
 export class ApiError extends Error {
@@ -148,7 +153,9 @@ async function read<T>(res: Response): Promise<T> {
     }
   }
   if (res.ok && (!text || env)) return (env?.data ?? undefined) as T;
-  const code = env?.status?.code ?? (res.ok ? BAD_RESPONSE : `HTTP_${res.status}`);
+  const code =
+    env?.status?.code ??
+    (res.ok ? BAD_RESPONSE : res.status >= 500 ? UNAVAILABLE : `HTTP_${res.status}`);
   throw new ApiError(code, res.status, env?.error?.details ?? [], env?.common?.requestId);
 }
 
@@ -228,10 +235,12 @@ export const api = {
 /** `common.errors.*` key for an error no screen handles specifically. */
 export const fallbackErrorKey = (
   e: unknown,
-): 'errors.network' | 'errors.generic' | 'errors.suspended' =>
+): 'errors.network' | 'errors.generic' | 'errors.suspended' | 'errors.unavailable' =>
   e instanceof ApiError && e.code === NETWORK_ERROR
     ? 'errors.network'
-    : // A suspended account is told so by every sign-in method (docs/api/phase7-admin.md).
-      e instanceof ApiError && e.code === 'ACCOUNT_SUSPENDED'
-      ? 'errors.suspended'
-      : 'errors.generic';
+    : e instanceof ApiError && e.code === UNAVAILABLE
+      ? 'errors.unavailable'
+      : // A suspended account is told so by every sign-in method (docs/api/phase7-admin.md).
+        e instanceof ApiError && e.code === 'ACCOUNT_SUSPENDED'
+        ? 'errors.suspended'
+        : 'errors.generic';

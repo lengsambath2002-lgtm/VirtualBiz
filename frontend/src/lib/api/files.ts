@@ -52,6 +52,7 @@ export const imageErrorKey = (
 ):
   | 'errors.imageType'
   | 'errors.imageSize'
+  | 'errors.unavailable'
   | 'errors.network'
   | 'errors.generic'
   | 'errors.suspended' =>

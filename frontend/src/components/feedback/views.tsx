@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import type { ReactNode } from 'react';
 
-import { ApiError, isApiError, NETWORK_ERROR } from '@/lib/api';
+import { ApiError, isApiError, NETWORK_ERROR, UNAVAILABLE } from '@/lib/api';
 import { Link } from '@/lib/i18n/navigation';
 
 import { feedbackButton, StatusView } from './StatusView';
@@ -69,13 +69,15 @@ export function ErrorView({
   const offline =
     (error instanceof ApiError && error.code === NETWORK_ERROR) ||
     (typeof navigator !== 'undefined' && navigator.onLine === false);
+  // The server is starting or briefly down: not the page's fault, and a retry soon works.
+  const unavailable = !offline && error instanceof ApiError && error.code === UNAVAILABLE;
   const ref = reference ?? (error instanceof ApiError ? error.requestId : undefined);
   return (
     <StatusView
       kind={offline ? 'offline' : 'error'}
       size={size}
-      title={offline ? t('offlineTitle') : t('errorTitle')}
-      body={offline ? t('offlineBody') : t('errorBody')}
+      title={offline ? t('offlineTitle') : unavailable ? t('unavailableTitle') : t('errorTitle')}
+      body={offline ? t('offlineBody') : unavailable ? t('unavailableBody') : t('errorBody')}
       actions={
         <>
           {retry && (

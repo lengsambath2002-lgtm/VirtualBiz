@@ -1,17 +1,27 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+
+import { Pagination } from '@/components/data';
 import { LoadFailed } from '@/components/feedback';
 import { useState } from 'react';
 
-import { adminApi, useAdminAction, useIdPhoto, useShop } from '@/features/admin-shared/api';
+import {
+  adminApi,
+  useAdminAction,
+  useIdPhoto,
+  useShop,
+  useShopActivity,
+} from '@/features/admin-shared/api';
 import { AuditList } from '@/features/admin-shared/components/AuditList';
 import { OrdersTable } from '@/features/admin-shared/components/OrdersTable';
 import {
   Avatar,
+  Empty,
   KV,
   Loading,
   PageHead,
+  PanelError,
   Pill,
   VerificationPill,
 } from '@/features/admin-shared/components/ui';
@@ -242,6 +252,7 @@ export function ShopPage({ id }: { id: string }) {
             </div>
             <AuditList rows={d.history} />
           </section>
+          <ShopActivity id={id} />
         </div>
         <div style={{ display: 'grid', gap: 16 }}>
           <section className={s.panel}>
@@ -303,5 +314,52 @@ export function ShopPage({ id }: { id: string }) {
         </div>
       </div>
     </>
+  );
+}
+
+/** What the shop's own team did (its activity log), ten at a time. */
+function ShopActivity({ id }: { id: string }) {
+  const t = useTranslations('admin.shop');
+  const ta = useTranslations('activity');
+  const f = useAdminFmt();
+  const [page, setPage] = useState(0);
+  const { data, error, refetch } = useShopActivity(id, page);
+  return (
+    <section className={s.panel}>
+      <div className={s.panelH}>
+        <h2>{t('teamActivity')}</h2>
+      </div>
+      {error && !data ? (
+        <PanelError error={error} retry={() => void refetch()} />
+      ) : !data ? (
+        <Loading />
+      ) : !data.items.length ? (
+        <Empty title={ta('empty')} sub={ta('emptyBody')} />
+      ) : (
+        <div className={s.tblWrap}>
+          <table>
+            <tbody>
+              {data.items.map((e) => (
+                <tr key={e.id}>
+                  <td className={cx(s.small, s.num)} style={{ whiteSpace: 'nowrap' }}>
+                    {f.dateTime(e.at)}
+                  </td>
+                  <td className={s.small}>{e.actorName}</td>
+                  <td className={s.small}>
+                    {ta.has(`actions.${e.action}` as 'actions.DATA_EXPORTED')
+                      ? ta(`actions.${e.action}` as 'actions.DATA_EXPORTED')
+                      : e.action}
+                    {e.targetLabel && (
+                      <span className={cx(s.tiny, s.muted, s.block)}>{e.targetLabel}</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {data && <Pagination page={page} size={10} total={data.total} onPage={setPage} />}
+    </section>
   );
 }

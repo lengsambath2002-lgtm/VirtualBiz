@@ -4,6 +4,17 @@ import type { BusinessType } from '@/lib/domain';
 export type PlatformRole = 'ADMIN' | 'SUPER_ADMIN';
 export type Verification = 'PENDING' | 'VERIFIED' | 'REJECTED';
 
+/** One row of a shop's activity log. */
+export interface ShopActivityEntry {
+  id: string;
+  actorName: string;
+  action: string;
+  targetType: string;
+  targetLabel?: string | null;
+  details: Record<string, string | number | boolean>;
+  at: string;
+}
+
 export interface Page<T> {
   items: T[];
   total: number;

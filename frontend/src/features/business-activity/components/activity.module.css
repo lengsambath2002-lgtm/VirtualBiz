@@ -1,0 +1,75 @@
+/* The shop activity log: the same page in both workspaces. */
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+.title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 650;
+}
+.head p {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: var(--g-fill-strong);
+  color: var(--ink);
+}
+.panel {
+  background: var(--g-fill);
+  -webkit-backdrop-filter: var(--g-blur);
+  backdrop-filter: var(--g-blur);
+  border: 1px solid var(--g-brd);
+  box-shadow: var(--g-hi), var(--g-shadow);
+  border-radius: var(--r-md);
+  overflow: hidden;
+}
+.num {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.tag {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 550;
+  white-space: nowrap;
+}
+.good {
+  background: var(--ok-soft);
+  color: var(--ok);
+}
+.bad {
+  background: var(--sale-soft);
+  color: var(--sale);
+}
+.neutral {
+  background: var(--sunk);
+  color: var(--ink);
+}
+.target {
+  display: grid;
+  gap: 2px;
+}
+.sub {
+  font-size: 12px;
+  color: var(--muted);
+}

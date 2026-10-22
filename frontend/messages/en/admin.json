@@ -241,7 +241,8 @@
     "team": "Team ({n})",
     "inactive": "Inactive",
     "missing": "Shop not found",
-    "backList": "All shops"
+    "backList": "All shops",
+    "teamActivity": "Team activity in this shop"
   },
   "users": {
     "title": "Users",

@@ -19,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.activity.service.ShopActivityLog;
 import com.kosign.vbiz.inventory.service.InventoryService;
 import com.kosign.vbiz.payment.domain.PaymentMethod;
 import com.kosign.vbiz.order.service.OrderService;
@@ -74,6 +75,7 @@ public class ExportService {
     static final int MAX_DAYS = 366;
     private static final int DEFAULT_DAYS = 30;
 
+    private final ShopActivityLog activity;
     private final WorkspaceAccess access;
     private final OrderRepository orders;
     private final OrderLineRepository orderLines;
@@ -94,7 +96,7 @@ public class ExportService {
     public record Export(String filename, byte[] csv, int rows) {
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Export export(String kindName, LocalDate fromDay, LocalDate toDay) {
         return export(kindName, fromDay, toDay, OrderFilters.NONE);
     }
@@ -104,7 +106,7 @@ public class ExportService {
         static final OrderFilters NONE = new OrderFilters(null, null, null, null, null);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public Export export(String kindName, LocalDate fromDay, LocalDate toDay, OrderFilters of) {
         ExportKind kind = ExportKind.of(kindName)
                 .orElseThrow(() -> BusinessException.withDetail(StatusCode.VALIDATION_FAILED, "kind",
@@ -134,6 +136,9 @@ public class ExportService {
         String name = w.business().getSlug() + "-" + kind.path() + range + ".csv";
         log.info("EXPORT {} business={} by={} ({}) rows={}{}", kind, b, w.userId(), w.actorName(), csv.rows(),
                 kind.dated() ? " range=" + from + ".." + to : "");
+        activity.record(w, ShopActivityLog.DATA_EXPORTED, "DATA", kind.path(), kind.path(),
+                ShopActivityLog.details("rows", csv.rows(), "from", kind.dated() ? from : null,
+                        "to", kind.dated() ? to : null));
         return new Export(name, csv.bytes(), csv.rows());
     }
 

@@ -15,6 +15,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.kosign.vbiz.activity.service.ShopActivityLog;
 import com.kosign.vbiz.account.domain.User;
 import com.kosign.vbiz.account.service.UserService;
 import com.kosign.vbiz.business.domain.BookingSettings;
@@ -55,6 +56,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BusinessService {
 
+    private final ShopActivityLog activity;
     private final BusinessRepository businesses;
     private final BusinessMemberRepository members;
     private final BusinessDocumentRepository documents;
@@ -175,7 +177,11 @@ public class BusinessService {
         m.setRole(MemberRole.STAFF);
         m.setName(memberName(in.name()));
         applyMember(m, in);
-        return BusinessMapper.toMember(members.saveAndFlush(m));
+        BusinessMember saved = members.saveAndFlush(m);
+        BusinessMember me = requireMember(userId, businessId);
+        activity.record(businessId, userId, me.getName(), ShopActivityLog.TEAM_ADDED, "MEMBER", saved.getId(),
+                saved.getName(), Map.of("role", saved.getRole().name()));
+        return BusinessMapper.toMember(saved);
     }
 
     /**
@@ -196,6 +202,8 @@ public class BusinessService {
         if (me.getRole() == MemberRole.MANAGER && m.getRole() != MemberRole.STAFF && !self) {
             throw BusinessException.withDetail(StatusCode.FORBIDDEN, "memberId", "Managers change staff only");
         }
+        MemberRole roleBefore = m.getRole();
+        boolean activeBefore = m.isActive();
         if (in.role() != null && in.role() != m.getRole()) {
             if (me.getRole() != MemberRole.OWNER) {
                 throw BusinessException.withDetail(StatusCode.FORBIDDEN, "role", "Only the owner sets roles");
@@ -214,7 +222,17 @@ public class BusinessService {
                     m.getRole() == MemberRole.OWNER ? "The owner stays active" : "You can't remove yourself");
         }
         applyMember(m, in);
-        return BusinessMapper.toMember(members.saveAndFlush(m));
+        BusinessMember saved = members.saveAndFlush(m);
+        if (saved.getRole() != roleBefore) {
+            activity.record(businessId, userId, me.getName(), ShopActivityLog.TEAM_ROLE_CHANGED, "MEMBER",
+                    saved.getId(), saved.getName(), Map.of("from", roleBefore.name(), "to", saved.getRole().name()));
+        }
+        if (saved.isActive() != activeBefore) {
+            activity.record(businessId, userId, me.getName(),
+                    saved.isActive() ? ShopActivityLog.TEAM_RESTORED : ShopActivityLog.TEAM_REMOVED, "MEMBER",
+                    saved.getId(), saved.getName(), Map.of());
+        }
+        return BusinessMapper.toMember(saved);
     }
 
     /** Owner or manager. Staff get {@code FORBIDDEN}. */
@@ -299,7 +317,10 @@ public class BusinessService {
         if (req.policy() != null && !req.policy().isNull()) {
             b.setPolicy(validate(merge(b.getPolicy(), req.policy(), ShopPolicy.class, "policy")));
         }
-        return BusinessMapper.toResponse(businesses.saveAndFlush(b));
+        Business saved = businesses.saveAndFlush(b);
+        activity.record(businessId, userId, m.getName(), ShopActivityLog.SETTINGS_CHANGED, "SHOP", businessId,
+                saved.getName(), Map.of("fields", ShopActivityLog.sentFields(req)));
+        return BusinessMapper.toResponse(saved);
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────────────

@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.activity.service.ShopActivityLog;
 import com.kosign.vbiz.customer.repository.ClientQueries;
 import com.kosign.vbiz.customer.payload.ClientRow;
 import com.kosign.vbiz.common.list.PageResponse;
@@ -41,6 +42,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ClientService {
 
+    private final ShopActivityLog activity;
     private final ClientRepository clients;
     private final UserRepository users;
     private final WorkspaceAccess access;
@@ -84,7 +86,10 @@ public class ClientService {
         if (in.district() != null && !in.district().isBlank()) {
             c.setDistrict(reference.canonicalDistrict(in.district()));
         }
-        return toResponse(clients.saveAndFlush(c));
+        Client saved = clients.saveAndFlush(c);
+        activity.record(w, ShopActivityLog.CUSTOMER_ADDED, "CUSTOMER", saved.getId(), saved.getName(),
+                Map.of("fields", ShopActivityLog.sentFields(in)));
+        return toResponse(saved);
     }
 
     @Transactional
@@ -114,7 +119,10 @@ public class ClientService {
         if (in.district() != null) {
             c.setDistrict(in.district().isBlank() ? null : reference.canonicalDistrict(in.district()));
         }
-        return toResponse(clients.saveAndFlush(c));
+        Client saved = clients.saveAndFlush(c);
+        activity.record(w, ShopActivityLog.CUSTOMER_EDITED, "CUSTOMER", saved.getId(), saved.getName(),
+                Map.of("fields", ShopActivityLog.sentFields(in)));
+        return toResponse(saved);
     }
 
     // ── For bookings and sales ────────────────────────────────────────────────────────

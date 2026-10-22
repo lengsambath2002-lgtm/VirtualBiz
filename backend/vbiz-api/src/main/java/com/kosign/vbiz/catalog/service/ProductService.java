@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.activity.service.ShopActivityLog;
 import com.kosign.vbiz.business.service.WorkspaceAccess;
 import com.kosign.vbiz.business.service.WorkspaceAccess.Workspace;
 import com.kosign.vbiz.catalog.domain.Collection;
@@ -47,6 +48,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProductService {
 
+    private final ShopActivityLog activity;
     private final WorkspaceAccess access;
     private final ProductRepository products;
     private final ProductVariantRepository variants;
@@ -93,6 +95,8 @@ public class ProductService {
         for (int i = 0; i < created.size(); i++) {
             open(w, created.get(i), in.variants().get(i).stock(), null);
         }
+        activity.record(w, ShopActivityLog.PRODUCT_CREATED, "PRODUCT", p.getId(), p.getTitle(),
+                Map.of("variants", created.size(), "status", p.getStatus().name()));
         return get(w, p);
     }
 
@@ -136,6 +140,7 @@ public class ProductService {
         }
         variants.flush();
         opening.forEach((v, qty) -> open(w, v, qty, "newVariant"));
+        activity.record(w, ShopActivityLog.PRODUCT_UPDATED, "PRODUCT", p.getId(), p.getTitle(), Map.of());
         return get(w, p);
     }
 
@@ -143,8 +148,13 @@ public class ProductService {
     public SellerProductResponse setStatus(UUID id, ProductStatus status) {
         Workspace w = access.manager();
         Product p = require(w, id);
+        ProductStatus before = p.getStatus();
         p.setStatus(status);
         products.saveAndFlush(p);
+        if (before != status) {
+            activity.record(w, ShopActivityLog.PRODUCT_STATUS, "PRODUCT", p.getId(), p.getTitle(),
+                    Map.of("from", before.name(), "to", status.name()));
+        }
         return get(w, p);
     }
 
@@ -201,6 +211,7 @@ public class ProductService {
         p.setDeletedAt(clock.instant());
         variants.findLiveByProductIds(List.of(p.getId())).forEach(v -> v.setDeletedAt(clock.instant()));
         products.saveAndFlush(p);
+        activity.record(w, ShopActivityLog.PRODUCT_DELETED, "PRODUCT", p.getId(), p.getTitle(), Map.of());
     }
 
     // ── helpers ──────────────────────────────────────────────────────────────────────

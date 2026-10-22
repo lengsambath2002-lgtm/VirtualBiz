@@ -1,5 +1,7 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
+
 import { Fragment, useState } from 'react';
 
 import { EmptyView } from '@/components/feedback';
@@ -10,6 +12,8 @@ import { StaffAvatar } from '@/features/provider-shared/components/Bits';
 import { PIcon } from '@/features/provider-shared/components/Icon';
 import { Field, Modal } from '@/features/provider-shared/components/Overlay';
 import { addMember, patchMember } from '@/features/provider-shared/api';
+import { ActivityLog } from '@/features/business-activity';
+import { Link } from '@/lib/i18n/navigation';
 import { k } from '@/features/provider-shared/cx';
 import { useActions } from '@/features/provider-shared/hooks/useActions';
 import { useFmt } from '@/features/provider-shared/hooks/useFmt';
@@ -35,6 +39,7 @@ export function TeamPage() {
   const d = useData();
   const ui = useUi();
   const roleLabel = useRoleLabel();
+  const ta = useTranslations('activity');
   const from7 = addDays(todayIso(), -7);
   return (
     <>
@@ -43,14 +48,19 @@ export function TeamPage() {
           <h1>{t('team.title')}</h1>
           <p className={k('muted')}>{t('team.sub')}</p>
         </div>
-        <button
-          type="button"
-          className={k('btn btn-primary')}
-          onClick={() => ui.open({ t: 'staffForm' })}
-        >
-          <PIcon name="plus" size={18} />
-          {t('team.add')}
-        </button>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <Link href="/provider/activity" className={k('btn btn-ghost')}>
+            {ta('open')}
+          </Link>
+          <button
+            type="button"
+            className={k('btn btn-primary')}
+            onClick={() => ui.open({ t: 'staffForm' })}
+          >
+            <PIcon name="plus" size={18} />
+            {t('team.add')}
+          </button>
+        </div>
       </div>
       {!d.staff.length && (
         <section className={k('panel')}>
@@ -306,4 +316,10 @@ export function StaffForm({ id }: { id?: string }) {
       </form>
     </Modal>
   );
+}
+
+/** `/provider/activity`: who did what in this shop (owners and managers). */
+export function ActivityPage() {
+  const d = useData();
+  return <ActivityLog businessId={d.business.id} />;
 }

@@ -12,6 +12,7 @@ import java.util.Set;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.activity.service.ShopActivityLog;
 import com.kosign.vbiz.business.service.WorkspaceAccess;
 import com.kosign.vbiz.business.service.WorkspaceAccess.Workspace;
 import com.kosign.vbiz.common.error.BusinessException;
@@ -34,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ClientImportService {
 
+    private final ShopActivityLog activity;
     private final WorkspaceAccess access;
     private final ClientRepository clients;
     private final ReferenceDataService reference;
@@ -130,6 +132,10 @@ public class ClientImportService {
                 save.add(c);
             }
             clients.saveAllAndFlush(save);
+        }
+        if (apply) {
+            activity.record(w, ShopActivityLog.DATA_IMPORTED, "DATA", "customers", "customers",
+                    Map.of("rows", rows.size(), "created", created, "updated", updated, "skipped", same + bad));
         }
         return new ImportReport(rows.size(), created, updated, same + bad, errors, apply);
     }

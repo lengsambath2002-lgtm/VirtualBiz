@@ -133,6 +133,13 @@ public class AdminController extends BaseController {
         return ok(businesses.get(id));
     }
 
+    @GetMapping("/businesses/{id}/activity")
+    public ResponseEntity<ApiResponse<PageResponse<com.kosign.vbiz.activity.payload.ShopActivityResponse>>> activity(
+            @PathVariable UUID id, @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
+        return ok(businesses.activity(id, page, size));
+    }
+
     @GetMapping("/businesses/{id}/id-photo")
     public ResponseEntity<ApiResponse<IdPhotoResponse>> idPhoto(@PathVariable UUID id) {
         return ok(businesses.idPhoto(id));

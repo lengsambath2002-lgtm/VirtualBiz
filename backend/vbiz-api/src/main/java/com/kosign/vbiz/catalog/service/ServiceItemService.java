@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.Clock;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -11,6 +12,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.activity.service.ShopActivityLog;
 import com.kosign.vbiz.common.list.BulkResult;
 import com.kosign.vbiz.booking.service.BookingRules;
 import com.kosign.vbiz.business.domain.BookingSettings;
@@ -37,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ServiceItemService {
 
+    private final ShopActivityLog activity;
     private final WorkspaceAccess access;
     private final MembershipService membership;
     private final ServiceItemRepository services;
@@ -66,7 +69,9 @@ public class ServiceItemService {
         apply(w, s, in);
         s.setSlug(slugs.unique(s.getName()));
         ensureCategory(w, s.getCategory());
-        return CatalogMapper.toProvider(services.saveAndFlush(s));
+        ServiceItem saved = services.saveAndFlush(s);
+        activity.record(w, ShopActivityLog.SERVICE_CREATED, "SERVICE", saved.getId(), saved.getName(), Map.of());
+        return CatalogMapper.toProvider(saved);
     }
 
     @Transactional
@@ -77,7 +82,9 @@ public class ServiceItemService {
             apply(w, s, in);
             ensureCategory(w, s.getCategory());
         }
-        return CatalogMapper.toProvider(services.saveAndFlush(s));
+        ServiceItem saved = services.saveAndFlush(s);
+        activity.record(w, ShopActivityLog.SERVICE_UPDATED, "SERVICE", saved.getId(), saved.getName(), Map.of());
+        return CatalogMapper.toProvider(saved);
     }
 
     /** Online booking on or off for several services at once (docs/api/phase17-more-lists.md). */
@@ -96,6 +103,8 @@ public class ServiceItemService {
             done++;
         }
         services.flush();
+        activity.record(w, ShopActivityLog.SERVICES_ONLINE, "SERVICE", null, null,
+                Map.of("online", online, "count", done));
         return new BulkResult(done, failed);
     }
 
@@ -105,6 +114,7 @@ public class ServiceItemService {
         ServiceItem s = require(w, id);
         s.setDeletedAt(clock.instant());
         services.saveAndFlush(s);
+        activity.record(w, ShopActivityLog.SERVICE_DELETED, "SERVICE", s.getId(), s.getName(), Map.of());
     }
 
     /**

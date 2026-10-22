@@ -8,6 +8,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.activity.service.ShopActivityLog;
 import com.kosign.vbiz.business.service.WorkspaceAccess;
 import com.kosign.vbiz.business.service.WorkspaceAccess.Workspace;
 import com.kosign.vbiz.catalog.domain.Product;
@@ -45,6 +47,7 @@ public class PromotionService {
     static final ZoneId PHNOM_PENH = ZoneId.of("Asia/Phnom_Penh");
     static final Pattern CODE = Pattern.compile("^[A-Z0-9]{3,20}$");
 
+    private final ShopActivityLog activity;
     private final PromotionRepository promotions;
     private final ProductRepository products;
     private final CollectionRepository collections;
@@ -71,7 +74,10 @@ public class PromotionService {
         p.setBusinessId(w.businessId());
         p.setUses(0);
         apply(w, p, in);
-        return toResponse(promotions.saveAndFlush(p), clock.instant());
+        Promotion saved = promotions.saveAndFlush(p);
+        activity.record(w, ShopActivityLog.PROMOTION_CREATED, "PROMOTION", saved.getId(), saved.getName(),
+                ShopActivityLog.details("type", saved.getType().name(), "value", saved.getValue()));
+        return toResponse(saved, clock.instant());
     }
 
     @Transactional
@@ -79,7 +85,9 @@ public class PromotionService {
         Workspace w = access.manager();
         Promotion p = own(w, id);
         apply(w, p, in);
-        return toResponse(promotions.saveAndFlush(p), clock.instant());
+        Promotion saved = promotions.saveAndFlush(p);
+        activity.record(w, ShopActivityLog.PROMOTION_UPDATED, "PROMOTION", saved.getId(), saved.getName(), Map.of());
+        return toResponse(saved, clock.instant());
     }
 
     /** "End now": it stops at the end of yesterday (Phnom Penh), as the prototype does. */
@@ -94,7 +102,9 @@ public class PromotionService {
         if (p.getStartsAt().isAfter(endOfYesterday)) {
             p.setStartsAt(endOfYesterday.minusMillis(1));
         }
-        return new PromotionResponse.Ended(toResponse(promotions.saveAndFlush(p), clock.instant()), previous);
+        Promotion saved = promotions.saveAndFlush(p);
+        activity.record(w, ShopActivityLog.PROMOTION_ENDED, "PROMOTION", saved.getId(), saved.getName(), Map.of());
+        return new PromotionResponse.Ended(toResponse(saved, clock.instant()), previous);
     }
 
     private Promotion own(Workspace w, UUID id) {

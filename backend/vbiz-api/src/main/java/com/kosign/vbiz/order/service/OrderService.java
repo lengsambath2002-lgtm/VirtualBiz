@@ -22,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.activity.service.ShopActivityLog;
 import com.kosign.vbiz.payment.domain.PaymentMethod;
 import com.kosign.vbiz.order.domain.OrderSource;
 import com.kosign.vbiz.order.repository.OrderSpecs;
@@ -90,6 +91,7 @@ public class OrderService {
     private static final int SELLER_LIMIT = 500;
     private static final int CUSTOMER_LIMIT = 200;
 
+    private final ShopActivityLog activity;
     private final OrderRepository orders;
     private final OrderLineRepository lines;
     private final OrderEventRepository events;
@@ -278,6 +280,8 @@ public class OrderService {
                 }
             }
         }
+        activity.record(w, ShopActivityLog.ORDER_REJECTED, "ORDER", o.getNumber(), o.getNumber(),
+                Map.of("reason", reason, "markSoldOut", markSoldOut));
         return views.view(o);
     }
 
@@ -353,6 +357,8 @@ public class OrderService {
         payments.settleCancelled(o.getId(), o.getCancelReason());
         notifier.returned(o, w.business().getName());
         notifier.changed(o, paymentStatus(o));
+        activity.record(w, ShopActivityLog.ORDER_RETURNED, "ORDER", o.getNumber(), o.getNumber(),
+                Map.of("reason", reason, "restock", restock, "total", o.getTotal()));
         return views.view(o);
     }
 

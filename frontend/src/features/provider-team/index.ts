@@ -1,1 +1,1 @@
-export { StaffForm, TeamPage } from './components/TeamPage';
+export { ActivityPage, StaffForm, TeamPage } from './components/TeamPage';

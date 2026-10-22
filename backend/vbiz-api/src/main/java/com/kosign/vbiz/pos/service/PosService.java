@@ -21,6 +21,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.activity.service.ShopActivityLog;
 import com.kosign.vbiz.pos.repository.SaleSpecs;
 import com.kosign.vbiz.common.list.PageResponse;
 import com.kosign.vbiz.common.list.PageQuery;
@@ -76,6 +77,7 @@ public class PosService {
     static final Duration OFFLINE_LIMIT = Duration.ofDays(7);
     static final int DEFAULT_DAYS = 31;
 
+    private final ShopActivityLog activity;
     private final PosShiftRepository shifts;
     private final PosCashMoveRepository moves;
     private final SaleRepository sales;
@@ -353,6 +355,8 @@ public class PosService {
             writer.writeAll(writes, i -> "lines[" + i + "]");
         }
         changed(w, "sale", s.getId());
+        activity.record(w, ShopActivityLog.SALE_REFUNDED, "SALE", s.getNumber(), s.getNumber(),
+                ShopActivityLog.details("amount", amount, "restock", in.restock()));
         return views(List.of(s)).get(0);
     }
 

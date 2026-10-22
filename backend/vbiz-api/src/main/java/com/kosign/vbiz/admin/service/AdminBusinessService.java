@@ -10,6 +10,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.activity.service.ShopActivityLog;
 import com.kosign.vbiz.account.repository.UserRepository;
 import com.kosign.vbiz.admin.payload.ListParams;
 import com.kosign.vbiz.admin.domain.AuditTarget;
@@ -45,6 +46,7 @@ public class AdminBusinessService {
 
     private final AdminAccess access;
     private final AdminQueries queries;
+    private final ShopActivityLog shopActivity;
     private final AuditLog audit;
     private final BusinessRepository businesses;
     private final BusinessDocumentRepository documents;
@@ -70,6 +72,16 @@ public class AdminBusinessService {
     /** Orders and GMV columns count the last 30 days. */
     public Instant recentSince() {
         return clock.instant().minus(RECENT);
+    }
+
+    /** What people did inside a shop (its own activity log), for support and investigations. */
+    @Transactional(readOnly = true)
+    public com.kosign.vbiz.common.list.PageResponse<com.kosign.vbiz.activity.payload.ShopActivityResponse> activity(
+            UUID id, Integer page, Integer size) {
+        access.require();
+        require(id);
+        return shopActivity.pageOf(id, new ShopActivityLog.Filter(null, null, null, null, null, null, null), page,
+                size);
     }
 
     @Transactional(readOnly = true)

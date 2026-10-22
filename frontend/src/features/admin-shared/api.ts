@@ -13,6 +13,7 @@ import { api } from '@/lib/api';
 import { useSession } from '@/lib/auth';
 
 import type {
+  ShopActivityEntry,
   AdminCategory,
   AuditEntry,
   CategoryInput,
@@ -76,6 +77,12 @@ export const useCategories = () => useAdminQuery<AdminCategory[]>(['categories']
 export const useShops = (p: Params) =>
   useAdminQuery<Page<ShopRow>>(['shops', p], `/businesses${qs(p)}`);
 export const useShop = (id: string) => useAdminQuery<ShopDetail>(['shop', id], `/businesses/${id}`);
+/** A shop's own activity log (what its team did), for support. */
+export const useShopActivity = (id: string, page: number) =>
+  useAdminQuery<Page<ShopActivityEntry>>(
+    ['shopActivity', id, page],
+    `/businesses/${id}/activity?page=${page}&size=10`,
+  );
 export const useIdPhoto = (id: string, enabled: boolean) =>
   useAdminQuery<{ contentType: string; size: number; dataUrl: string; uploadedAt: string }>(
     ['idPhoto', id],

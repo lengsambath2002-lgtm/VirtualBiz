@@ -3,12 +3,14 @@ package com.kosign.vbiz.business.service;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.activity.service.ShopActivityLog;
 import com.kosign.vbiz.account.domain.User;
 import com.kosign.vbiz.account.repository.UserRepository;
 import com.kosign.vbiz.auth.domain.SignInMethod;
@@ -48,6 +50,7 @@ public class TeamService {
 
     public static final String PATH = "/join/";
 
+    private final ShopActivityLog activity;
     private final BusinessRepository businesses;
     private final BusinessMemberRepository members;
     private final BusinessInviteRepository invites;
@@ -114,6 +117,8 @@ public class TeamService {
         i.setInvitedByName(me.getName());
         i.setExpiresAt(now.plus(props.inviteTtl()));
         invites.saveAndFlush(i);
+        activity.record(businessId, userId, me.getName(), ShopActivityLog.TEAM_INVITED, "MEMBER", i.getId(), email,
+                Map.of("role", in.role().name()));
         mailer.sendInvite(email, i.getName(), b.getName(), me.getName(), in.role().name(),
                 props.appUrl() + "/en" + PATH + token);
         return view(i, now, props.exposeDevLinks() ? PATH + token : null);
@@ -132,6 +137,8 @@ public class TeamService {
         }
         i.setRevokedAt(clock.instant());
         invites.saveAndFlush(i);
+        activity.record(businessId, userId, me.getName(), ShopActivityLog.TEAM_INVITE_WITHDRAWN, "MEMBER", i.getId(),
+                i.getEmail(), Map.of("role", i.getRole().name()));
     }
 
     /** Public: the shop and role the link offers. */

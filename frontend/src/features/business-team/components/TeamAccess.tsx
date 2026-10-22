@@ -8,10 +8,13 @@ import { isApiError, type ApiMember } from '@/lib/api';
 import type { MemberRole } from '@/lib/domain';
 import { useSession } from '@/lib/auth';
 import { cn } from '@/lib/utils/cn';
+import { photoBg } from '@/lib/utils/photo';
 
 import {
   MAX_INVITES,
   teamApi,
+  useInviteLookup,
+  type InviteSuggestion,
   useTeam,
   useTeamInvites,
   useTeamRefresh,
@@ -19,6 +22,7 @@ import {
   type TeamInviteBatch,
 } from '../api';
 import t$ from './team.module.css';
+import { Portal } from '@/components/ui/Portal';
 
 type Role = TeamInvite['role'];
 const ROLES: Role[] = ['MANAGER', 'STAFF'];
@@ -278,6 +282,22 @@ function InviteDialog({
   const t = useTranslations('team');
   const [emails, setEmails] = useState<string[]>([]);
   const [draft, setDraft] = useState('');
+  // Who the address being typed may mean, under the field; names for the chips picked from it.
+  const lookup = useInviteLookup(
+    businessId,
+    emails.length < (member ? 1 : MAX_INVITES) ? draft : '',
+  );
+  const [hi, setHi] = useState(0);
+  const [names, setNames] = useState<Record<string, string>>({});
+  const matches = (draft.trim().length >= 2 ? (lookup.data ?? []) : []).filter(
+    (m) => !emails.some((e) => e.toLowerCase() === m.email),
+  );
+  const choose = (m: InviteSuggestion) => {
+    if (m.onTeam) return;
+    setNames((n) => ({ ...n, [m.email]: m.name }));
+    add(m.email);
+    setHi(0);
+  };
   const [role, setRole] = useState<Role>(member?.role === 'MANAGER' ? 'MANAGER' : 'STAFF');
   const [err, setErr] = useState('');
   const [busy, setBusy] = useState(false);
@@ -356,183 +376,244 @@ function InviteDialog({
   const count = emails.length + (draft.trim() ? 1 : 0);
 
   return (
-    <div className={t$.scrim} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <form
-        className={t$.dialog}
-        role="dialog"
-        aria-modal="true"
-        aria-label={member ? t('giveLoginTitle', { name: member.name }) : t('inviteTitle')}
-        onSubmit={submit}
-        noValidate
-      >
-        <h2>
-          {result
-            ? t('sentMany', { n: result.sent.length })
-            : member
-              ? t('giveLoginTitle', { name: member.name })
-              : t('inviteTitle')}
-        </h2>
-        {result ? (
-          <>
-            {!!result.sent.length && (
-              <>
-                <p className={t$.muted}>{t('sentManyBody')}</p>
-                <ul className={t$.sentList}>
-                  {result.sent.map((i) => {
-                    const link = linkOf(i);
-                    return (
-                      <li key={i.id}>
-                        <span className={t$.ok} aria-hidden>
-                          ✓
-                        </span>
-                        <span className={t$.sentEmail}>{i.email}</span>
-                        {link && (
-                          <span className={t$.devLink}>
-                            <code data-testid="team-invite-link">{link}</code>
-                            <button
-                              type="button"
-                              className={t$.ghost}
-                              onClick={() =>
-                                void navigator.clipboard
-                                  ?.writeText(link)
-                                  .then(() => setCopied(i.id))
-                              }
-                            >
-                              {copied === i.id ? t('copied') : t('copyLink')}
-                            </button>
+    <Portal>
+      <div className={t$.scrim} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+        <form
+          className={t$.dialog}
+          role="dialog"
+          aria-modal="true"
+          aria-label={member ? t('giveLoginTitle', { name: member.name }) : t('inviteTitle')}
+          onSubmit={submit}
+          noValidate
+        >
+          <h2>
+            {result
+              ? t('sentMany', { n: result.sent.length })
+              : member
+                ? t('giveLoginTitle', { name: member.name })
+                : t('inviteTitle')}
+          </h2>
+          {result ? (
+            <>
+              {!!result.sent.length && (
+                <>
+                  <p className={t$.muted}>{t('sentManyBody')}</p>
+                  <ul className={t$.sentList}>
+                    {result.sent.map((i) => {
+                      const link = linkOf(i);
+                      return (
+                        <li key={i.id}>
+                          <span className={t$.ok} aria-hidden>
+                            ✓
                           </span>
-                        )}
-                      </li>
-                    );
-                  })}
-                </ul>
-                {result.sent.some((i) => i.devLink) && (
-                  <span className={t$.muted}>{t('devLinkHint')}</span>
-                )}
-              </>
-            )}
-            {!!result.failed.length && (
-              <div role="alert" className={t$.notSent}>
-                <strong>{t('notSent', { n: result.failed.length })}</strong>
-                <ul>
-                  {result.failed.map((f) => (
-                    <li key={f.email}>
-                      <span className={t$.sentEmail}>{f.email}</span>
-                      <span className={t$.muted}>{why(f.code)}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            <div className={t$.btns}>
-              <button type="button" className={t$.primary} onClick={onClose}>
-                {t('done')}
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <p className={t$.muted}>{member ? t('giveLoginLead') : t('inviteLead')}</p>
-            <div className={t$.field}>
-              <label htmlFor="team-emails">{member ? t('email') : t('emails')}</label>
-              <div
-                className={cn(t$.chips, err && t$.chipsBad)}
-                onClick={(e) =>
-                  (e.currentTarget.querySelector('input') as HTMLInputElement)?.focus()
-                }
-              >
-                {emails.map((e) => (
-                  <span
-                    key={e}
-                    className={cn(t$.chip, !EMAIL.test(e) && t$.chipBad)}
-                    title={EMAIL.test(e) ? undefined : t('errEmail')}
-                  >
-                    {e}
-                    <button
-                      type="button"
-                      aria-label={t('removeEmail', { email: e })}
-                      onClick={() => remove(e)}
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-                {emails.length < max && (
-                  <input
-                    id="team-emails"
-                    type="email"
-                    multiple={!member}
-                    autoComplete="off"
-                    value={draft}
-                    placeholder={emails.length ? '' : t('emailsPh')}
-                    aria-describedby="team-emails-hint"
-                    onChange={(e) => {
-                      const v = e.target.value;
-                      // A separator ends the address being typed.
-                      if (/[\s,;]$/.test(v)) add(v);
-                      else {
-                        setDraft(v);
-                        setErr('');
-                      }
-                    }}
-                    onPaste={(e) => {
-                      const text = e.clipboardData.getData('text');
-                      if (splitEmails(text).length > 1) {
-                        e.preventDefault();
-                        add(`${draft} ${text}`);
-                      }
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && draft.trim()) {
-                        e.preventDefault();
-                        add(draft);
-                      } else if (e.key === 'Backspace' && !draft && emails.length) {
-                        remove(emails[emails.length - 1]!);
-                      }
-                    }}
-                    onBlur={() => draft.trim() && add(draft)}
-                  />
-                )}
-              </div>
-              {!member && (
-                <span id="team-emails-hint" className={t$.muted}>
-                  {t('emailsHint', { max })}
-                </span>
+                          <span className={t$.sentEmail}>{i.email}</span>
+                          {link && (
+                            <span className={t$.devLink}>
+                              <code data-testid="team-invite-link">{link}</code>
+                              <button
+                                type="button"
+                                className={t$.ghost}
+                                onClick={() =>
+                                  void navigator.clipboard
+                                    ?.writeText(link)
+                                    .then(() => setCopied(i.id))
+                                }
+                              >
+                                {copied === i.id ? t('copied') : t('copyLink')}
+                              </button>
+                            </span>
+                          )}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                  {result.sent.some((i) => i.devLink) && (
+                    <span className={t$.muted}>{t('devLinkHint')}</span>
+                  )}
+                </>
               )}
-            </div>
-            <fieldset className={t$.field}>
-              <legend>{t('roleLabel')}</legend>
-              {roles.map((r) => (
-                <label key={r} className={cn(t$.opt, role === r && t$.optOn)}>
-                  <input
-                    type="radio"
-                    name="team-role"
-                    checked={role === r}
-                    onChange={() => setRole(r)}
-                  />
-                  <span>
-                    <strong>{t(`role.${r}`)}</strong>
-                    <span className={t$.muted}>{t(`can.${r}`)}</span>
+              {!!result.failed.length && (
+                <div role="alert" className={t$.notSent}>
+                  <strong>{t('notSent', { n: result.failed.length })}</strong>
+                  <ul>
+                    {result.failed.map((f) => (
+                      <li key={f.email}>
+                        <span className={t$.sentEmail}>{f.email}</span>
+                        <span className={t$.muted}>{why(f.code)}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <div className={t$.btns}>
+                <button type="button" className={t$.primary} onClick={onClose}>
+                  {t('done')}
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <p className={t$.muted}>{member ? t('giveLoginLead') : t('inviteLead')}</p>
+              <div className={t$.field}>
+                <label htmlFor="team-emails">{member ? t('email') : t('emails')}</label>
+                <div
+                  className={cn(t$.chips, err && t$.chipsBad)}
+                  onClick={(e) =>
+                    (e.currentTarget.querySelector('input') as HTMLInputElement)?.focus()
+                  }
+                >
+                  {emails.map((e) => (
+                    <span
+                      key={e}
+                      className={cn(t$.chip, !EMAIL.test(e) && t$.chipBad)}
+                      title={EMAIL.test(e) ? undefined : t('errEmail')}
+                    >
+                      {names[e.toLowerCase()] ? (
+                        <>
+                          <strong>{names[e.toLowerCase()]}</strong>
+                          <span className={t$.chipMail}>{e}</span>
+                        </>
+                      ) : (
+                        e
+                      )}
+                      <button
+                        type="button"
+                        aria-label={t('removeEmail', { email: e })}
+                        onClick={() => remove(e)}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                  {emails.length < max && (
+                    <input
+                      id="team-emails"
+                      type="email"
+                      multiple={!member}
+                      autoComplete="off"
+                      value={draft}
+                      placeholder={emails.length ? '' : t('emailsPh')}
+                      aria-describedby="team-emails-hint"
+                      role="combobox"
+                      aria-expanded={matches.length > 0}
+                      aria-controls="team-emails-matches"
+                      aria-activedescendant={matches.length ? `team-match-${hi}` : undefined}
+                      onChange={(e) => {
+                        const v = e.target.value;
+                        setHi(0);
+                        // A separator ends the address being typed.
+                        if (/[\s,;]$/.test(v)) add(v);
+                        else {
+                          setDraft(v);
+                          setErr('');
+                        }
+                      }}
+                      onPaste={(e) => {
+                        const text = e.clipboardData.getData('text');
+                        if (splitEmails(text).length > 1) {
+                          e.preventDefault();
+                          add(`${draft} ${text}`);
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (matches.length && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+                          e.preventDefault();
+                          const n = matches.length;
+                          setHi((h) => (h + (e.key === 'ArrowDown' ? 1 : n - 1)) % n);
+                        } else if (e.key === 'Enter' && matches[hi] && !matches[hi]!.onTeam) {
+                          e.preventDefault();
+                          choose(matches[hi]!);
+                        } else if (e.key === 'Enter' && draft.trim()) {
+                          e.preventDefault();
+                          add(draft);
+                        } else if (e.key === 'Backspace' && !draft && emails.length) {
+                          remove(emails[emails.length - 1]!);
+                        }
+                      }}
+                      onBlur={() => draft.trim() && add(draft)}
+                    />
+                  )}
+                </div>
+                {matches.length > 0 && (
+                  <ul
+                    id="team-emails-matches"
+                    role="listbox"
+                    className={t$.matches}
+                    aria-label={t('matches')}
+                  >
+                    {matches.map((m, i) => (
+                      <li
+                        key={m.email}
+                        id={`team-match-${i}`}
+                        role="option"
+                        aria-selected={i === hi}
+                        aria-disabled={m.onTeam}
+                        className={cn(t$.match, i === hi && t$.matchOn, m.onTeam && t$.matchOff)}
+                        // Keep focus in the field, so it doesn't add the half-typed text first.
+                        onMouseDown={(e) => e.preventDefault()}
+                        onMouseEnter={() => setHi(i)}
+                        onClick={() => choose(m)}
+                      >
+                        <span className={t$.matchAv} style={photoBg(m.avatarUrl)}>
+                          {m.avatarUrl ? null : initials(m.name)}
+                        </span>
+                        <span className={t$.matchText}>
+                          <strong>{m.name}</strong>
+                          <span>{m.email}</span>
+                        </span>
+                        <span
+                          className={cn(t$.matchTag, (m.onTeam || m.invited) && t$.matchTagWarn)}
+                        >
+                          {m.onTeam
+                            ? t('match.onTeam')
+                            : m.invited
+                              ? t('match.invited')
+                              : t(`match.${m.source}`)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                {!member && (
+                  <span id="team-emails-hint" className={t$.muted}>
+                    {t('emailsHint', { max })}
                   </span>
-                </label>
-              ))}
-            </fieldset>
-            {(err || bad.length > 0) && (
-              <p className={t$.err} role="alert">
-                {err || t('errInvalid')}
-              </p>
-            )}
-            <div className={t$.btns}>
-              <button type="button" className={t$.ghost} onClick={onClose}>
-                {t('cancel')}
-              </button>
-              <button type="submit" className={t$.primary} disabled={busy}>
-                {busy ? t('sending') : t('sendN', { n: count })}
-              </button>
-            </div>
-          </>
-        )}
-      </form>
-    </div>
+                )}
+              </div>
+              <fieldset className={t$.field}>
+                <legend>{t('roleLabel')}</legend>
+                {roles.map((r) => (
+                  <label key={r} className={cn(t$.opt, role === r && t$.optOn)}>
+                    <input
+                      type="radio"
+                      name="team-role"
+                      checked={role === r}
+                      onChange={() => setRole(r)}
+                    />
+                    <span>
+                      <strong>{t(`role.${r}`)}</strong>
+                      <span className={t$.muted}>{t(`can.${r}`)}</span>
+                    </span>
+                  </label>
+                ))}
+              </fieldset>
+              {(err || bad.length > 0) && (
+                <p className={t$.err} role="alert">
+                  {err || t('errInvalid')}
+                </p>
+              )}
+              <div className={t$.btns}>
+                <button type="button" className={t$.ghost} onClick={onClose}>
+                  {t('cancel')}
+                </button>
+                <button type="submit" className={t$.primary} disabled={busy}>
+                  {busy ? t('sending') : t('sendN', { n: count })}
+                </button>
+              </div>
+            </>
+          )}
+        </form>
+      </div>
+    </Portal>
   );
 }

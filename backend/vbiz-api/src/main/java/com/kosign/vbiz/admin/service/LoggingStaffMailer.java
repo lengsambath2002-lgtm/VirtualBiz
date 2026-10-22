@@ -1,5 +1,6 @@
 package com.kosign.vbiz.admin.service;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Component
+@ConditionalOnProperty(name = "vbiz.mail.enabled", havingValue = "false", matchIfMissing = true)
 public class LoggingStaffMailer implements StaffMailer {
 
     @Override

@@ -2,6 +2,7 @@
 #
 #   docker compose -f infra/docker/compose.yml up --build
 #   open http://localhost:3000   (demo sign-in: nita@virtualbiz.com / Demo@1234)
+#   open http://localhost:8025   (Mailpit: every email the app sends)
 #
 # It runs the API with the `local` profile (Flyway + demo seed, payment simulator, dev codes),
 # which suits a demo or a QA box. A real environment runs the same images with the `prod`
@@ -27,6 +28,9 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: local
       DATABASE_URL: jdbc:postgresql://db:5432/vbiz
+      # Emails (sign-in codes, invites) go to Mailpit: http://localhost:8025
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
       DATABASE_USERNAME: vbiz
       DATABASE_PASSWORD: vbiz
     volumes:
@@ -35,6 +39,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      mailpit:
+        condition: service_started
     ports:
       - "8180:8180"
 
@@ -48,6 +54,13 @@ services:
       - api
     ports:
       - "3000:3000"
+
+  # Catches every email the API sends (docs/ops/email.md); read them at http://localhost:8025.
+  mailpit:
+    image: axllent/mailpit:v1.21
+    ports:
+      - "8025:8025"
+      - "1025:1025"
 
 volumes:
   db:

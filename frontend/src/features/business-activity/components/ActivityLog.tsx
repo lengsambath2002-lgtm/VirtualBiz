@@ -39,6 +39,8 @@ const KEYS = ['q', 'action', 'targetType', 'actorId', 'from', 'to'] as const;
 export const ACTIONS = [
   'TEAM_INVITED',
   'TEAM_INVITE_WITHDRAWN',
+  'TEAM_INVITE_DECLINED',
+  'TEAM_JOINED',
   'TEAM_ADDED',
   'TEAM_ROLE_CHANGED',
   'TEAM_REMOVED',
@@ -93,7 +95,7 @@ export function ActivityLog({ businessId }: { businessId: string }) {
   const t = useTranslations('activity');
   const role = useMyRole(businessId);
   const allowed = role === 'OWNER' || role === 'MANAGER';
-  const list = useListQuery(KEYS, { size: 50 });
+  const list = useListQuery(KEYS);
   const { values: v } = list;
   const query = list.apiQuery();
   const { data, isPending, isFetching, error, refetch } = useQuery({

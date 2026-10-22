@@ -1,7 +1,6 @@
 package com.kosign.vbiz.business.service;
 
-/** Sends shop team invites. Replace the logging implementation with the email provider's. */
+/** Sends shop team invites: by email ({@link SmtpTeamMailer}) or only logged ({@link LoggingTeamMailer}). */
 public interface TeamMailer {
-
-    void sendInvite(String email, String name, String businessName, String invitedBy, String role, String link);
+    void sendInvite(TeamInviteMail mail);
 }

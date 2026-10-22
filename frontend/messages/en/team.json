@@ -73,7 +73,19 @@
     "expiredTitle": "This invite can't be used",
     "expiredBody": "It has expired, was already used, or was withdrawn. Ask the shop for a new one.",
     "errName": "Enter your name, as your team will see it.",
-    "namePh": "Your full name"
+    "namePh": "Your full name",
+    "accept": "Accept invite",
+    "decline": "Decline",
+    "declineLink": "Not for you? Decline the invite",
+    "declineAsk": "Decline this invite? The shop will see that you said no; it can invite you again later.",
+    "acceptInstead": "Go back",
+    "declinedTitle": "Invite declined",
+    "declinedBody": "{shop} can see that you said no. Nothing else changes.",
+    "asYou": "You're signed in as {name}. Accepting adds the shop to your workspaces with this role.",
+    "otherAccount": "You're signed in as {me}, but this invite is for {email}.",
+    "switchAccount": "Sign in as {email}",
+    "signInToAccept": "{email} already has a VirtualBiz account. Sign in with it (password, email code or Google) to accept.",
+    "signInAccept": "Sign in to accept"
   },
   "readOnlySettings": "Only the owner or a manager can change settings. Ask them if something needs to change.",
   "ownerOnlyPayout": "Only the shop owner can change where payouts go.",
@@ -90,5 +102,13 @@
   "sending": "Sending…",
   "sentMany": "{n, plural, =0 {No invites sent} one {Invite sent} other {# invites sent}}",
   "sentManyBody": "Each person gets an email link (valid 7 days) and adds their own name when they join.",
-  "notSent": "{n, plural, one {# not sent} other {# not sent}}"
+  "notSent": "{n, plural, one {# not sent} other {# not sent}}",
+  "matches": "People this may be",
+  "match": {
+    "ACCOUNT": "VirtualBiz account",
+    "CUSTOMER": "Your customer",
+    "FORMER": "Was on your team",
+    "onTeam": "Already on the team",
+    "invited": "Invite pending"
+  }
 }

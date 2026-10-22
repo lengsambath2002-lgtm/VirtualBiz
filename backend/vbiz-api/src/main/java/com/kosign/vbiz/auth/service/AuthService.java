@@ -70,7 +70,14 @@ public class AuthService {
         User user = users.findByEmail(email).orElseThrow(() -> BusinessException.withDetail(
                 StatusCode.INVALID_CREDENTIALS, "email", "No account for this email", Map.of("reason", "NO_ACCOUNT")));
         loginAttempts.assertNotLocked(user);
-        if (!user.hasPassword() || !passwordEncoder.matches(password, user.getPasswordHash())) {
+        if (!user.hasPassword()) {
+            // Signs in with an email code, Google or SMS only: say so (no wrong-password strike), so
+            // the sign-in page can offer a code or setting a password.
+            throw BusinessException.withDetail(StatusCode.INVALID_CREDENTIALS, "password", "No password set",
+                    Map.of("reason", "NO_PASSWORD", "methods",
+                            user.getSignInMethods().stream().map(Enum::name).sorted().toList()));
+        }
+        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
             loginAttempts.recordFailure(user.getId()); // always throws
         }
         loginAttempts.reset(user);

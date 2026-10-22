@@ -138,7 +138,7 @@ function Workspace({ children }: { children: ReactNode }) {
   }, [close]);
 
   return (
-    <div className={k('root')}>
+    <div className={k('root')} data-overlay-root>
       <div className={sideNavFrame}>
         <Rail />
         <div className={k('main')}>

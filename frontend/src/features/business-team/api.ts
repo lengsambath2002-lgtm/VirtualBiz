@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
 import { api, type ApiMember } from '@/lib/api';
@@ -50,6 +51,36 @@ export interface TeamInviteBatch {
   failed: { email: string; code: string; message: string }[];
 }
 export const MAX_INVITES = 20;
+
+/** `GET …/invites/lookup?q=`: who a typed email may mean (see TeamLookupService). */
+export interface InviteSuggestion {
+  email: string;
+  name: string;
+  avatarUrl?: string | null;
+  source: 'ACCOUNT' | 'CUSTOMER' | 'FORMER';
+  onTeam: boolean;
+  invited: boolean;
+}
+
+/** Suggestions for the address being typed (2+ characters, after a short pause). */
+export function useInviteLookup(businessId: string, text: string) {
+  const [q, setQ] = useState(text);
+  useEffect(() => {
+    const id = setTimeout(() => setQ(text.trim()), 250);
+    return () => clearTimeout(id);
+  }, [text]);
+  return useQuery({
+    queryKey: [...teamKey(businessId), 'lookup', q],
+    queryFn: () =>
+      api.get<InviteSuggestion[]>(
+        `/businesses/${businessId}/invites/lookup?q=${encodeURIComponent(q)}`,
+        opts(businessId),
+      ),
+    enabled: q.length >= 2,
+    staleTime: 30_000,
+    placeholderData: (prev) => prev,
+  });
+}
 
 export const teamApi = {
   inviteMany: (businessId: string, input: { emails: string[]; role: TeamInvite['role'] }) =>

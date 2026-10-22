@@ -1038,3 +1038,18 @@
   gap: 8px;
   padding-bottom: 4px;
 }
+
+/* "Show all 24 businesses" under the first five. */
+.bizMore {
+  border: 0;
+  background: none;
+  padding: 6px 4px;
+  text-align: left;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}

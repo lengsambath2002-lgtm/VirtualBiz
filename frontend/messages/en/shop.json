@@ -24,7 +24,9 @@
       "shop": "Shop not found",
       "order": "Order not found",
       "booking": "Booking not found"
-    }
+    },
+    "showing": "Showing {shown} of {total}",
+    "showMore": "Show more"
   },
   "time": {
     "minAgo": "{n} min ago",
@@ -761,7 +763,12 @@
     "photos": "Photos",
     "photosHint": "Your profile photo and cover show on your account and reviews.",
     "removeCover": "Remove cover",
-    "adminConsole": "Admin console"
+    "adminConsole": "Admin console",
+    "allBusinesses": "Show all {n} businesses",
+    "fewerBusinesses": "Show fewer",
+    "setPassword": "Set a password",
+    "setPasswordHint": "You sign in with an email code or Google. Add a password to sign in with your email and password too; codes keep working.",
+    "pwSetDone": "Password set. You can sign in with it now."
   },
   "address": {
     "title": "Add address",

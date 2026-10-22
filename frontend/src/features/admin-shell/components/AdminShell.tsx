@@ -86,7 +86,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
       router.replace(`/sign-in?next=${encodeURIComponent(pathname)}`);
   }, [session.ready, session.user, pathname, router]);
   return (
-    <div className={s.root}>
+    <div className={s.root} data-overlay-root>
       {!session.ready || !session.user ? (
         <div className={shell.loading} aria-busy="true" />
       ) : session.user.platformRole ? (

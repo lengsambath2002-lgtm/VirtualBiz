@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils/cn';
 
 import { createCustomer, patchCustomer } from '../api';
 import c$ from './customers.module.css';
+import { Portal } from '@/components/ui/Portal';
 
 export interface EditableCustomer {
   /** The shop's client record (`/api/clients/{id}`); empty for a new customer. */
@@ -106,95 +107,97 @@ export function EditCustomerDialog({
     err?.field === k ? { 'aria-invalid': true, 'aria-describedby': `ce-${k}-err` } : {};
 
   return (
-    <div className={c$.scrim} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <form
-        className={c$.dialog}
-        role="dialog"
-        aria-modal="true"
-        aria-label={customer.clientId ? t('title', { name: customer.name }) : t('newTitle')}
-        onSubmit={submit}
-        noValidate
-      >
-        <h2>{customer.clientId ? t('title', { name: customer.name }) : t('newTitle')}</h2>
-        <label className={cn(c$.field, err?.field === 'name' && c$.bad)}>
-          <span>{t('name')}</span>
-          <input
-            value={f.name}
-            maxLength={80}
-            autoComplete="off"
-            onChange={(e) => set('name', e.target.value)}
-            {...aria('name')}
-          />
-          {fieldErr('name')}
-        </label>
-        <div className={c$.g2}>
-          <label className={cn(c$.field, err?.field === 'phone' && c$.bad)}>
-            <span>{t('phone')}</span>
+    <Portal>
+      <div className={c$.scrim} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+        <form
+          className={c$.dialog}
+          role="dialog"
+          aria-modal="true"
+          aria-label={customer.clientId ? t('title', { name: customer.name }) : t('newTitle')}
+          onSubmit={submit}
+          noValidate
+        >
+          <h2>{customer.clientId ? t('title', { name: customer.name }) : t('newTitle')}</h2>
+          <label className={cn(c$.field, err?.field === 'name' && c$.bad)}>
+            <span>{t('name')}</span>
             <input
-              type="tel"
-              inputMode="tel"
-              value={f.phone}
-              maxLength={20}
-              onChange={(e) => set('phone', e.target.value)}
-              {...aria('phone')}
+              value={f.name}
+              maxLength={80}
+              autoComplete="off"
+              onChange={(e) => set('name', e.target.value)}
+              {...aria('name')}
             />
-            {fieldErr('phone')}
+            {fieldErr('name')}
           </label>
-          <label className={cn(c$.field, err?.field === 'district' && c$.bad)}>
-            <span>{t('district')}</span>
-            <select
-              value={f.district}
-              onChange={(e) => set('district', e.target.value)}
-              {...aria('district')}
-            >
-              <option value="">{t('noDistrict')}</option>
-              {f.district && !districts?.some((d) => d.name === f.district) && (
-                <option value={f.district}>{f.district}</option>
-              )}
-              {districts?.map((d) => (
-                <option key={d.id} value={d.name}>
-                  {d.name}
-                </option>
-              ))}
-            </select>
-            {fieldErr('district')}
+          <div className={c$.g2}>
+            <label className={cn(c$.field, err?.field === 'phone' && c$.bad)}>
+              <span>{t('phone')}</span>
+              <input
+                type="tel"
+                inputMode="tel"
+                value={f.phone}
+                maxLength={20}
+                onChange={(e) => set('phone', e.target.value)}
+                {...aria('phone')}
+              />
+              {fieldErr('phone')}
+            </label>
+            <label className={cn(c$.field, err?.field === 'district' && c$.bad)}>
+              <span>{t('district')}</span>
+              <select
+                value={f.district}
+                onChange={(e) => set('district', e.target.value)}
+                {...aria('district')}
+              >
+                <option value="">{t('noDistrict')}</option>
+                {f.district && !districts?.some((d) => d.name === f.district) && (
+                  <option value={f.district}>{f.district}</option>
+                )}
+                {districts?.map((d) => (
+                  <option key={d.id} value={d.name}>
+                    {d.name}
+                  </option>
+                ))}
+              </select>
+              {fieldErr('district')}
+            </label>
+          </div>
+          <label className={cn(c$.field, err?.field === 'email' && c$.bad)}>
+            <span>{t('email')}</span>
+            <input
+              type="email"
+              value={f.email}
+              maxLength={254}
+              onChange={(e) => set('email', e.target.value)}
+              {...aria('email')}
+            />
+            {fieldErr('email')}
           </label>
-        </div>
-        <label className={cn(c$.field, err?.field === 'email' && c$.bad)}>
-          <span>{t('email')}</span>
-          <input
-            type="email"
-            value={f.email}
-            maxLength={254}
-            onChange={(e) => set('email', e.target.value)}
-            {...aria('email')}
-          />
-          {fieldErr('email')}
-        </label>
-        <label className={c$.field}>
-          <span>{t('note')}</span>
-          <textarea
-            rows={3}
-            maxLength={500}
-            value={f.note}
-            placeholder={t('notePh')}
-            onChange={(e) => set('note', e.target.value)}
-          />
-        </label>
-        {err && !err.field && (
-          <p className={c$.msg} role="alert">
-            {err.msg}
-          </p>
-        )}
-        <div className={c$.btns}>
-          <button type="button" className={c$.ghost} onClick={onClose}>
-            {t('cancel')}
-          </button>
-          <button type="submit" className={c$.primary} disabled={busy}>
-            {busy ? t('saving') : t('save')}
-          </button>
-        </div>
-      </form>
-    </div>
+          <label className={c$.field}>
+            <span>{t('note')}</span>
+            <textarea
+              rows={3}
+              maxLength={500}
+              value={f.note}
+              placeholder={t('notePh')}
+              onChange={(e) => set('note', e.target.value)}
+            />
+          </label>
+          {err && !err.field && (
+            <p className={c$.msg} role="alert">
+              {err.msg}
+            </p>
+          )}
+          <div className={c$.btns}>
+            <button type="button" className={c$.ghost} onClick={onClose}>
+              {t('cancel')}
+            </button>
+            <button type="submit" className={c$.primary} disabled={busy}>
+              {busy ? t('saving') : t('save')}
+            </button>
+          </div>
+        </form>
+      </div>
+    </Portal>
   );
 }

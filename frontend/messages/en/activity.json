@@ -55,7 +55,9 @@
     "DATA_IMPORTED": "Imported a CSV",
     "DATA_EXPORTED": "Exported a CSV",
     "CATEGORY_REQUESTED": "Suggested a category",
-    "CATEGORY_DECIDED": "Category suggestion decided"
+    "CATEGORY_DECIDED": "Category suggestion decided",
+    "TEAM_INVITE_DECLINED": "Declined an invite",
+    "TEAM_JOINED": "Joined the team"
   },
   "detail": {
     "rows": "rows",

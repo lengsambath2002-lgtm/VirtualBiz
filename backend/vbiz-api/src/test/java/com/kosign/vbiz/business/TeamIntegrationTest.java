@@ -20,6 +20,9 @@ class TeamIntegrationTest extends IntegrationTest {
 
     private static final String PASS = "Team#Member2026";
 
+    @org.springframework.beans.factory.annotation.Autowired
+    org.springframework.jdbc.core.JdbcTemplate jdbc;
+
     private JsonNode call(Session s, String method, String path, Object body) throws Exception {
         var req = switch (method) {
             case "GET" -> get(path);
@@ -217,5 +220,107 @@ class TeamIntegrationTest extends IntegrationTest {
         assertThat(call(owner, "POST", "/api/businesses/" + NITA_GADGET_ID + "/invites/batch",
                 Map.of("emails", java.util.Collections.nCopies(21, uniqueEmail("x")), "role", "STAFF"))
                 .path("status").path("code").asText()).isEqualTo("VALIDATION_FAILED");
+    }
+
+    @Test
+    void the_invite_box_names_who_an_email_means_without_listing_strangers() throws Exception {
+        Session owner = login(NITA, DEMO_PASSWORD);
+        String path = "/api/businesses/" + NITA_GADGET_ID + "/invites/lookup?q=";
+
+        // Typing part of an address finds the shop's own customers…
+        JsonNode tena = call(owner, "GET", path + "tena", null).path("data");
+        assertThat(tena.get(0).path("email").asText()).isEqualTo("tena.heng@gmail.com");
+        assertThat(tena.get(0).path("source").asText()).isEqualTo("CUSTOMER");
+        assertThat(tena.get(0).path("name").asText()).isEqualTo("Tena Heng");
+
+        // …but never other VirtualBiz accounts: those match on the whole address only.
+        assertThat(call(owner, "GET", path + "admin@virtual", null).path("data").size()).isZero();
+        JsonNode admin = call(owner, "GET", path + "ADMIN@virtualbiz.com", null).path("data");
+        assertThat(admin.get(0).path("source").asText()).isEqualTo("ACCOUNT");
+        assertThat(admin.get(0).path("onTeam").asBoolean()).isFalse();
+
+        // Someone already on the team is marked so; wildcards are text, not patterns.
+        assertThat(call(owner, "GET", path + NITA, null).path("data").get(0).path("onTeam").asBoolean()).isTrue();
+        assertThat(call(owner, "GET", path + "%25%25", null).path("data").size()).isZero();
+
+        // Staff can't use it.
+        Session staff = join(owner, NITA_GADGET_ID, "STAFF", Map.of());
+        assertThat(code(call(staff, "GET", path + "tena", null))).isEqualTo("FORBIDDEN");
+    }
+
+    /** Makes an account sign in with email codes only, as one made by an email code or Google is. */
+    private void codeOnly(String email) {
+        jdbc.update("update users set password_hash = null where email = ?", email);
+        jdbc.update("delete from user_sign_in_method where user_id = (select id from users where email = ?)", email);
+        jdbc.update("insert into user_sign_in_method (user_id, method) select id, 'EMAIL_CODE' from users where email = ?",
+                email);
+    }
+
+    @Test
+    void an_account_without_a_password_is_told_so_joins_with_a_new_one_and_can_set_one() throws Exception {
+        String email = uniqueEmail("nopw");
+        Session own = signUp("Dara Codeonly", email, PASS);
+        codeOnly(email);
+
+        // A password attempt says there is none (not "wrong") and never locks the account.
+        for (int n = 0; n < 7; n++) {
+            JsonNode r = body(mvc.perform(postJson("/api/auth/login", Map.of("email", email, "password", "Anything#1")))
+                    .andReturn());
+            assertThat(code(r)).isEqualTo("INVALID_CREDENTIALS");
+            assertThat(r.path("error").path("details").get(0).path("meta").path("reason").asText())
+                    .isEqualTo("NO_PASSWORD");
+        }
+
+        // Invited, the join page knows the account and its own name, and the password chosen there works.
+        Session owner = login(NITA, DEMO_PASSWORD);
+        JsonNode inv = call(owner, "POST", "/api/businesses/" + NITA_GADGET_ID + "/invites",
+                Map.of("email", email, "role", "STAFF"));
+        JsonNode preview = call(null, "GET", "/api/join/" + token(inv), null).path("data");
+        assertThat(preview.path("accountExists").asBoolean()).isTrue();
+        assertThat(preview.path("accountHasPassword").asBoolean()).isFalse();
+        assertThat(preview.path("name").asText()).isEqualTo("Dara Codeonly");
+        Session joined = session(mvc.perform(postJson("/api/join/" + token(inv) + "/accept",
+                Map.of("password", PASS))).andReturn());
+        assertThat(roleIn(call(joined, "GET", "/api/me/businesses", null), NITA_GADGET_ID)).isEqualTo("STAFF");
+        assertThat(login(email, PASS)).isNotNull();
+
+        // From My settings, a code-only account sets a first password without a current one.
+        String other = uniqueEmail("nopw2");
+        Session mine = signUp("Sok Codeonly", other, PASS);
+        codeOnly(other);
+        assertThat(code(call(mine, "POST", "/api/me/password", Map.of("newPassword", "Fresh#Pass2026"))))
+                .isEqualTo("SUCCESS");
+        assertThat(login(other, "Fresh#Pass2026")).isNotNull();
+        assertThat(own).isNotNull();
+    }
+
+    @Test
+    void a_signed_in_account_accepts_with_one_click_and_anyone_with_the_link_can_decline() throws Exception {
+        Session owner = login(NITA, DEMO_PASSWORD);
+        String email = uniqueEmail("click");
+        Session them = signUp("Mony Click", email, PASS);
+        String invites = "/api/businesses/" + NITA_GADGET_ID + "/invites";
+
+        // Accept while signed in as the invited email: no password, the shop is theirs with the role.
+        JsonNode inv = call(owner, "POST", invites, Map.of("email", email, "role", "MANAGER"));
+        Session other = signUp("Someone Else", uniqueEmail("other"), PASS);
+        JsonNode wrong = call(other, "POST", "/api/me/invites/" + token(inv) + "/accept", null);
+        assertThat(code(wrong)).isEqualTo("FORBIDDEN");
+        JsonNode joined = call(them, "POST", "/api/me/invites/" + token(inv) + "/accept", null).path("data");
+        assertThat(joined.path("businessId").asText()).isEqualTo(NITA_GADGET_ID);
+        assertThat(joined.path("role").asText()).isEqualTo("MANAGER");
+        assertThat(roleIn(call(them, "GET", "/api/me/businesses", null), NITA_GADGET_ID)).isEqualTo("MANAGER");
+        assertThat(code(call(them, "POST", "/api/me/invites/" + token(inv) + "/accept", null)))
+                .isEqualTo("INVITE_EXPIRED");
+
+        // Decline: the invite closes, leaves the pending list, and the shop's log says who said no.
+        String no = uniqueEmail("no");
+        JsonNode inv2 = call(owner, "POST", invites, Map.of("email", no, "role", "STAFF"));
+        assertThat(code(call(null, "POST", "/api/join/" + token(inv2) + "/decline", null))).isEqualTo("SUCCESS");
+        assertThat(code(call(null, "GET", "/api/join/" + token(inv2), null))).isEqualTo("INVITE_EXPIRED");
+        assertThat(call(owner, "GET", invites, null).toString()).doesNotContain(no);
+        assertThat(jdbc.queryForObject(
+                "select count(*) from shop_activity where business_id = ?::uuid and action = 'TEAM_INVITE_DECLINED' and target_label = ?",
+                Integer.class, NITA_GADGET_ID, no)).isEqualTo(1);
     }
 }

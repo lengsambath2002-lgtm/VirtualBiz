@@ -183,7 +183,8 @@
     "best30": "Best sellers, 30 days",
     "acceptThese": "Accept these orders",
     "allOrders": "All orders",
-    "noBest": "Sales from the last 30 days will show your best sellers here."
+    "noBest": "Sales from the last 30 days will show your best sellers here.",
+    "seeAllNew": "See all {n} new orders"
   },
   "orders": {
     "title": "Orders",

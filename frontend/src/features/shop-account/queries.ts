@@ -82,7 +82,7 @@ export function useSetPrefs() {
 /** `POST /api/me/password`. Errors: INVALID_CREDENTIALS (currentPassword), VALIDATION_FAILED. */
 export function useChangePassword() {
   return useMutation({
-    mutationFn: (body: { currentPassword: string; newPassword: string }) =>
+    mutationFn: (body: { currentPassword?: string; newPassword: string }) =>
       api.post<void>('/me/password', body),
   });
 }

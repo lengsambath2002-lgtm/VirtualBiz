@@ -44,6 +44,8 @@ public class ShopActivityLog {
     public static final String TEAM_REMOVED = "TEAM_REMOVED";
     public static final String TEAM_RESTORED = "TEAM_RESTORED";
     public static final String TEAM_ADDED = "TEAM_ADDED";
+    public static final String TEAM_JOINED = "TEAM_JOINED";
+    public static final String TEAM_INVITE_DECLINED = "TEAM_INVITE_DECLINED";
     public static final String SETTINGS_CHANGED = "SETTINGS_CHANGED"; // SHOP
     public static final String CATEGORY_REQUESTED = "CATEGORY_REQUESTED";
     public static final String CATEGORY_DECIDED = "CATEGORY_DECIDED";

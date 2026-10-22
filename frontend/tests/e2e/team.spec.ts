@@ -37,13 +37,15 @@ test.describe('Shop team', () => {
     // The invitee joins and lands in the shop's workspace.
     const ctx = await browser.newContext();
     const vanna = await ctx.newPage();
+    // A name of their own, so earlier runs' cashiers don't match.
+    const vannaName = `Vanna ${Date.now().toString(36)}`;
     await vanna.goto(link);
     await expect(vanna.getByRole('heading', { name: 'Join Nita Gadget Store' })).toBeVisible();
     await vanna.getByLabel('Choose a password').fill(PASS);
     // Invited by email alone: they give their own name.
     await vanna.getByRole('button', { name: 'Join Nita Gadget Store' }).click();
     await expect(vanna.getByText('Enter your name, as your team will see it.')).toBeVisible();
-    await vanna.getByLabel('Your name').fill('Vanna Cashier');
+    await vanna.getByLabel('Your name').fill(vannaName);
     await vanna.getByRole('button', { name: 'Join Nita Gadget Store' }).click();
     await expect(vanna).toHaveURL(/\/en\/seller$/);
 
@@ -55,7 +57,7 @@ test.describe('Shop team', () => {
     await expect(vanna.getByLabel('Shop name')).toBeDisabled();
     await vanna.goto('/en/seller/team');
     await expect(
-      vanna.getByRole('region', { name: 'People and access' }).getByText('Vanna Cashier'),
+      vanna.getByRole('region', { name: 'People and access' }).getByText(vannaName),
     ).toBeVisible();
     await expect(vanna.getByRole('button', { name: 'Invite someone' })).toHaveCount(0);
 
@@ -64,7 +66,7 @@ test.describe('Shop team', () => {
     const row = panel.getByRole('listitem').filter({ hasText: email });
     await expect(row).toContainText('Staff');
     await row.getByRole('button', { name: 'Remove access' }).click();
-    await expect(page.getByText('Vanna Cashier can no longer sign in to this shop')).toBeVisible();
+    await expect(page.getByText(`${vannaName} can no longer sign in to this shop`)).toBeVisible();
     // Former members are kept for their history, behind "Show removed".
     await expect(row).toBeHidden();
     await panel.getByRole('button', { name: /Show removed/ }).click();
@@ -92,5 +94,26 @@ test.describe('Shop team', () => {
     await pending.getByRole('button', { name: 'Withdraw' }).click();
     await expect(page.getByText('Invite withdrawn')).toBeVisible();
     expect(errors).toEqual([]);
+  });
+
+  test('the invite box names who an email means as you type', async ({ page }) => {
+    await signIn(page, '/seller/team');
+    await page.getByRole('button', { name: 'Invite someone' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Invite someone' });
+    const emails = dialog.getByLabel('Emails');
+    await emails.pressSequentially('tena');
+    const match = dialog.getByRole('option', { name: /Tena Heng/ });
+    await expect(match).toContainText(/Your customer|Invite pending/);
+    await emails.press('Enter');
+    await expect(dialog.getByRole('button', { name: 'Remove tena.heng@gmail.com' })).toBeVisible();
+    await expect(dialog.getByText('Tena Heng')).toBeVisible();
+    // Other accounts only on the whole address.
+    await emails.pressSequentially('admin@virtual');
+    await expect(dialog.getByRole('option')).toHaveCount(0);
+    await emails.pressSequentially('biz.com');
+    await expect(dialog.getByRole('option', { name: /admin@virtualbiz\.com/ })).toContainText(
+      'VirtualBiz account',
+    );
+    await dialog.getByRole('button', { name: 'Cancel' }).click();
   });
 });

@@ -55,7 +55,9 @@
     "DATA_IMPORTED": "បាននាំចូល CSV",
     "DATA_EXPORTED": "បាននាំចេញ CSV",
     "CATEGORY_REQUESTED": "បានស្នើប្រភេទ",
-    "CATEGORY_DECIDED": "បានសម្រេចសំណើប្រភេទ"
+    "CATEGORY_DECIDED": "បានសម្រេចសំណើប្រភេទ",
+    "TEAM_INVITE_DECLINED": "បានបដិសេធការអញ្ជើញ",
+    "TEAM_JOINED": "បានចូលរួមក្រុម"
   },
   "detail": {
     "rows": "ជួរ",

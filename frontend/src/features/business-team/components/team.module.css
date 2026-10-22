@@ -388,3 +388,103 @@
 .notSent li {
   display: grid;
 }
+
+/* Invite: who the typed address may mean, under the field. */
+.matches {
+  list-style: none;
+  margin: -2px 0 0;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  background: var(--surface, var(--bg));
+  box-shadow: var(--g-shadow-float);
+  display: grid;
+  gap: 2px;
+  font-weight: 400;
+}
+.match {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.matchOn {
+  background: var(--sunk);
+}
+.matchOff {
+  cursor: default;
+  opacity: 0.6;
+}
+.matchAv {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--sunk);
+  color: var(--ink);
+  font-size: 12px;
+  font-weight: 600;
+  background-size: cover;
+  background-position: center;
+}
+.matchText {
+  display: grid;
+  min-width: 0;
+  line-height: 1.3;
+}
+.matchText strong {
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.matchText span {
+  font-size: 12.5px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.matchTag {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--sunk);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.matchTagWarn {
+  background: color-mix(in srgb, #b7791f 16%, transparent);
+  color: #8a5a10;
+}
+.chipMail {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.danger {
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  background: var(--danger, #c93636);
+  color: #fff;
+}
+.danger:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+a.primary,
+a.ghost {
+  display: inline-grid;
+  place-items: center;
+}

@@ -25,12 +25,31 @@ button; only the owner can edit the payout account.
 | GET `/api/businesses/{id}/invites` | | open invites (owner, manager) |
 | POST `/api/businesses/{id}/invites` | `{email, name?, role, memberId?}` | **201** invite. Owner invites MANAGER or STAFF, manager STAFF only. `memberId` gives an existing member without a login (a stylist on the calendar) this person's account. **409** when already on the team |
 | POST `/api/businesses/{id}/invites/batch` | `{emails: [1..20], role}` | **200** `{sent: [invite], failed: [{email, code, message}]}`. Several people by email alone, one role. Each address runs through the single invite (own transaction, rules, activity entry, email); a refused one (`VALIDATION_FAILED` not an email, `CONFLICT` already on the team, `FORBIDDEN` role) is reported and the rest are sent. The same address twice is sent once. The invite's name is the start of the address until the person joins and gives their own (the join page asks for it) |
+| GET `/api/businesses/{id}/invites/lookup?q=` | | **200** up to 6 `{email, name, avatarUrl, source, onTeam, invited}` (owner, manager). Who the typed text may mean: from 2 characters, the shop's own customers with an email (email starting with, or name containing, the text) and past team members (`CUSTOMER`, `FORMER`); other VirtualBiz accounts only when the text is a whole address (`ACCOUNT`), so the box can't list the platform's users. `onTeam` / `invited` say no invite is needed. `%` and `_` are plain text |
 | DELETE `/api/businesses/{id}/invites/{inviteId}` | | open invites |
 
 Removing access is `active: false`: the person can't open the workspace any more
 (`FORBIDDEN_TENANT`), and their history stays. Restoring is `active: true`.
 
 ## Joining (public)
+
+The invite email (docs/ops/email.md) has **Accept invite** (`/join/{token}`) and **Decline**
+(`/join/{token}?decline=1`). The page:
+
+- signed in as the invited email: **Accept invite** joins in one click (`POST /api/me/invites/{token}/accept`,
+  no password; the shop is added to the account's workspaces with the role, and its workspace opens);
+- signed in as someone else: offers to sign in as the invited email;
+- an existing account, signed out: **Sign in to accept** (password, code or Google), then back here;
+- a new person: name and password create the account and join;
+- Decline asks once more, then `POST /api/join/{token}/decline` closes the invite (`declined_at`),
+  takes it off the pending list and logs `TEAM_INVITE_DECLINED` in the shop's activity. Joining logs
+  `TEAM_JOINED`.
+
+| Method | Body | Result |
+| --- | --- | --- |
+| POST `/api/me/invites/{token}/accept` (signed in) | | **200** `{businessId, businessName, businessType, role}`. **403** `WRONG_ACCOUNT` when the invite is for another email |
+| POST `/api/join/{token}/decline` (public) | | **200**. The invite can't be used afterwards (`INVITE_EXPIRED`) |
+
 
 | Method & path | Body | Returns |
 |---|---|---|

@@ -2,6 +2,18 @@
 spring:
   application:
     name: vbiz-api
+  # SMTP for vbiz.mail (docs/ops/email.md). Locally: Mailpit on 1025, no login.
+  mail:
+    host: ${SMTP_HOST:localhost}
+    port: ${SMTP_PORT:1025}
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail.smtp.auth: ${SMTP_AUTH:false}
+      mail.smtp.starttls.enable: ${SMTP_STARTTLS:false}
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 10000
+      mail.smtp.writetimeout: 10000
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:local}
   config:
@@ -51,6 +63,10 @@ management:
     web:
       exposure:
         include: health,info
+  health:
+    # Only check the SMTP server where emails are actually sent.
+    mail:
+      enabled: ${VBIZ_MAIL_ENABLED:false}
 
 springdoc:
   api-docs:
@@ -116,6 +132,11 @@ vbiz:
       email: ${VBIZ_BOOTSTRAP_ADMIN_EMAIL:}
       name: ${VBIZ_BOOTSTRAP_ADMIN_NAME:VirtualBiz Admin}
       password: ${VBIZ_BOOTSTRAP_ADMIN_PASSWORD:}
+  # docs/ops/email.md: emails (sign-in codes, team and staff invites) go out over SMTP when
+  # enabled; otherwise they're only logged. Locally, Mailpit catches them (http://localhost:8025).
+  mail:
+    enabled: ${VBIZ_MAIL_ENABLED:false}
+    from: ${VBIZ_MAIL_FROM:VirtualBiz <no-reply@virtualbiz.com.kh>}
   # docs/api/phase10-shop-team.md: shop owners invite their team.
   team:
     invite-ttl: P7D

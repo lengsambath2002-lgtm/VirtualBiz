@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from 'next-intl';
 import { useMemo, useState, type FormEvent, type ReactNode } from 'react';
 
+import { Pagination, usePagedRows } from '@/components/data';
 import { ErrorView } from '@/components/feedback';
 import { passwordOk } from '@/features/auth';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
@@ -252,6 +253,7 @@ function Orders() {
           o.lines.some((l) => l.title.toLowerCase().includes(needle)),
       );
   }, [orders, filter, q]);
+  const paged = usePagedRows(shown, { resetOn: [filter, q] });
 
   if (isPending)
     return (
@@ -293,7 +295,7 @@ function Orders() {
       </div>
       {shown.length ? (
         <div className={a.list}>
-          {shown.map((o) => {
+          {paged.rows.map((o) => {
             const sh = shop(o.businessId);
             const first = o.lines[0]!;
             const it = item(first.pid);
@@ -357,6 +359,7 @@ function Orders() {
               </article>
             );
           })}
+          <Pagination {...paged.pager} />
         </div>
       ) : (
         <Empty icon="search" title={t('noMatch')} />
@@ -399,6 +402,8 @@ function Bookings() {
   const up = bookings.filter(isUpcoming);
   const past = bookings.filter((b) => !isUpcoming(b));
   const [view, setView] = useState<'up' | 'past'>('up');
+  const list = view === 'up' ? up : past;
+  const paged = usePagedRows(list, { resetOn: [view] });
   if (loading)
     return (
       <div className={cn(a.card, a.empty)}>
@@ -414,7 +419,6 @@ function Bookings() {
         </Link>
       </Empty>
     );
-  const list = view === 'up' ? up : past;
   return (
     <>
       <div className={a.toolbar}>
@@ -435,10 +439,11 @@ function Bookings() {
       {list.length ? (
         <section className={cn(a.card, a.panel)}>
           <div className={a.rows}>
-            {list.map((b) => (
+            {paged.rows.map((b) => (
               <BookingRow key={b.number} b={b} />
             ))}
           </div>
+          <Pagination {...paged.pager} />
         </section>
       ) : (
         <Empty icon="calendar" title={t('noUpcoming')}>
@@ -461,6 +466,8 @@ function Saved() {
   const its = items.filter((i) => saved.includes(i.id));
   const shs = shops.filter((sh) => saved.includes('shop:' + sh.id));
   const [view, setView] = useState<'items' | 'shops'>('items');
+  const pagedItems = usePagedRows(its, { resetOn: [view] });
+  const pagedShops = usePagedRows(shs, { prefix: 's', resetOn: [view] });
   if (savedLoad.error) return <LoadError error={savedLoad.error} retry={savedLoad.retry} />;
   return (
     <>
@@ -481,11 +488,14 @@ function Saved() {
       </div>
       {view === 'items' ? (
         its.length ? (
-          <div className={cn(s.grid, s.g4)}>
-            {its.map((it) => (
-              <ProductCard key={it.id} it={it} />
-            ))}
-          </div>
+          <>
+            <div className={cn(s.grid, s.g4)}>
+              {pagedItems.rows.map((it) => (
+                <ProductCard key={it.id} it={it} />
+              ))}
+            </div>
+            <Pagination {...pagedItems.pager} />
+          </>
         ) : (
           <Empty icon="heart" title={t('nothingSaved')} hint={t('nothingSavedHint')}>
             <Link className={cn(s.btn, s.btnPrimary)} href="/search">
@@ -494,11 +504,14 @@ function Saved() {
           </Empty>
         )
       ) : shs.length ? (
-        <div className={s.shops}>
-          {shs.map((sh) => (
-            <ShopCard key={sh.id} sh={sh} />
-          ))}
-        </div>
+        <>
+          <div className={s.shops}>
+            {pagedShops.rows.map((sh) => (
+              <ShopCard key={sh.id} sh={sh} />
+            ))}
+          </div>
+          <Pagination {...pagedShops.pager} />
+        </>
       ) : (
         <Empty icon="store" title={t('noShops')}>
           <Link className={cn(s.btn, s.btnPrimary)} href="/search">
@@ -608,9 +621,14 @@ function Addresses() {
 
 /* ===== Profile & security ===== */
 
-function PasswordRow() {
+/**
+ * Change the password; `first` sets one for an account that signs in with a code or Google only
+ * (no current password to give).
+ */
+function PasswordRow({ first = false }: { first?: boolean }) {
   const t = useTranslations('shop.account');
   const tc = useTranslations('common');
+  const session = useSession();
   const [open, setOpen] = useState(false);
   const [errs, setErrs] = useState<{ cur?: string; next?: string }>({});
   const change = useChangePassword();
@@ -621,13 +639,13 @@ function PasswordRow() {
     const cur = String(d.get('cur') ?? '');
     const next = String(d.get('next') ?? '');
     const n = {
-      ...(!cur ? { cur: t('errCurrent') } : {}),
+      ...(!first && !cur ? { cur: t('errCurrent') } : {}),
       ...(!passwordOk(next) ? { next: t('errNewPw') } : {}),
     };
     setErrs(n);
     if (n.cur || n.next) return;
     try {
-      await change.mutateAsync({ currentPassword: cur, newPassword: next });
+      await change.mutateAsync({ ...(first ? {} : { currentPassword: cur }), newPassword: next });
     } catch (err) {
       if (isApiError(err, 'INVALID_CREDENTIALS')) setErrs({ cur: t('errCurrent') });
       else if (isApiError(err, 'VALIDATION_FAILED')) setErrs({ next: t('errNewPw') });
@@ -635,28 +653,36 @@ function PasswordRow() {
       return;
     }
     setOpen(false);
-    toast(t('pwChanged'));
+    if (first && session.user)
+      session.updateUser({ signInMethods: [...session.user.signInMethods, 'PASSWORD'] });
+    toast(first ? t('pwSetDone') : t('pwChanged'));
   };
   return (
     <>
       <div className={a.kvRow}>
         <span>{t('password')}</span>
-        <span>••••••••</span>
+        {first ? <span className={s.muted}>{t('noPassword')}</span> : <span>••••••••</span>}
         {!open && (
           <button
             type="button"
             className={cn(s.btn, s.btnGhost, s.btnSm)}
             onClick={() => setOpen(true)}
           >
-            {t('changePassword')}
+            {first ? t('setPassword') : t('changePassword')}
           </button>
         )}
       </div>
       {open && (
         <form className={a.pwForm} noValidate onSubmit={submit}>
-          <Field id="pw-cur" label={t('currentPw')} error={errs.cur}>
-            <input id="pw-cur" name="cur" type="password" autoComplete="current-password" />
-          </Field>
+          {first ? (
+            <p className={s.muted} style={{ margin: 0, fontSize: 13 }}>
+              {t('setPasswordHint')}
+            </p>
+          ) : (
+            <Field id="pw-cur" label={t('currentPw')} error={errs.cur}>
+              <input id="pw-cur" name="cur" type="password" autoComplete="current-password" />
+            </Field>
+          )}
           <Field
             id="pw-new"
             label={t('newPw')}
@@ -677,7 +703,7 @@ function PasswordRow() {
               {t('cancel')}
             </button>
             <button className={cn(s.btn, s.btnPrimary, s.btnSm)} disabled={busy}>
-              {t('updatePw')}
+              {first ? t('setPassword') : t('updatePw')}
             </button>
           </div>
         </form>
@@ -919,6 +945,8 @@ function Settings() {
         <div className={a.kv}>
           {user.email && hasPassword ? (
             <PasswordRow />
+          ) : user.email ? (
+            <PasswordRow first />
           ) : (
             <div className={a.kvRow}>
               <span>{t('password')}</span>
@@ -969,6 +997,7 @@ function Sidebar({ tab, onLogout }: { tab: AccountTab; onLogout: () => void }) {
   const { user } = useSession();
   const counts = useAccountCounts();
   const { data: businesses = [] } = useMyBusinesses();
+  const [allBiz, setAllBiz] = useState(false);
   if (!user) return null;
   const badge: Partial<Record<AccountTab, number>> = {
     orders: counts.activeOrders,
@@ -1030,7 +1059,7 @@ function Sidebar({ tab, onLogout }: { tab: AccountTab; onLogout: () => void }) {
         <strong>{t('yourBusiness')}</strong>
         <span>{t('yourBusinessHint')}</span>
         <div className={a.bizLinks}>
-          {businesses.map((b) => (
+          {(allBiz ? businesses : businesses.slice(0, 5)).map((b) => (
             <Link key={b.id} href={WORKSPACE_HREF[b.type]}>
               <BusinessLogo b={b} size={32} />
               <span className={a.bizName}>
@@ -1040,6 +1069,11 @@ function Sidebar({ tab, onLogout }: { tab: AccountTab; onLogout: () => void }) {
               <Ic name="right" size={14} className={a.chev} />
             </Link>
           ))}
+          {businesses.length > 5 && (
+            <button type="button" className={a.bizMore} onClick={() => setAllBiz((x) => !x)}>
+              {allBiz ? t('fewerBusinesses') : t('allBusinesses', { n: businesses.length })}
+            </button>
+          )}
           <Link href={{ pathname: '/create-business', query: { new: '1' } }}>
             <Ic name="plus" size={18} />
             {t('newBusiness')}

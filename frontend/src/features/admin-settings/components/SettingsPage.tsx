@@ -19,6 +19,7 @@ import type { BusinessType } from '@/lib/domain';
 import c from './settings.module.css';
 import { CategorySuggestions } from './CategorySuggestions';
 import { StaffTab } from './StaffTab';
+import { Portal } from '@/components/ui/Portal';
 
 const KEYS = ['tab'] as const;
 const DELAYS = [0, 1, 2, 3, 5, 7, 10, 14];
@@ -511,87 +512,89 @@ function CategoryForm({
   );
 
   return (
-    <div className={s.scrim} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <form
-        className={s.modal}
-        role="dialog"
-        aria-modal="true"
-        aria-label={cat ? t('catEditTitle') : t('catNewTitle')}
-        onSubmit={submit}
-        noValidate
-      >
-        <button type="button" className={s.close} aria-label={t('close')} onClick={onClose}>
-          <Ic name="x" size={18} />
-        </button>
-        <h2>{cat ? t('catEditTitle') : t('catNewTitle')}</h2>
-        <p className={cx(s.small, s.muted)} style={{ marginTop: -6 }}>
-          {t(type === 'PRODUCT' ? 'catForProduct' : 'catForService')}
-        </p>
-        <div className={s.g2}>
-          {field('name', t('nameEn'))}
-          {field('nameKh', t('nameKh'))}
-        </div>
-        <div className={s.field}>
-          <span className={s.lbl}>{t('icon')}</span>
-          <div className={c.icons} role="group" aria-label={t('icon')}>
-            {ICONS.map((ic) => (
-              <button
-                key={ic}
-                type="button"
-                className={c.iconBtn}
-                aria-pressed={f.icon === ic}
-                aria-label={ic}
-                onClick={() => set('icon', ic)}
-              >
-                <ShopIc name={ic} size={18} />
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className={s.field}>
-          <span className={s.lbl}>{t('colour')}</span>
-          <div className={c.tints} role="group" aria-label={t('colour')}>
-            {TINTS.map((n) => (
-              <button
-                key={n}
-                type="button"
-                className={cx(c.tintBtn, tintClass(n))}
-                aria-pressed={f.tint === n}
-                aria-label={t('colourN', { n })}
-                onClick={() => set('tint', n)}
-              />
-            ))}
-          </div>
-        </div>
-        <div className={c.preview}>
-          <span className={cx(c.tile, tintClass(f.tint))}>
-            {isIcName(f.icon) && <ShopIc name={f.icon} size={20} />}
-          </span>
-          <span>
-            <strong>{f.name.trim() || t('nameEn')}</strong>
-            <small>{f.nameKh.trim() || t('nameKh')}</small>
-          </span>
-        </div>
-        <label style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Switch
-            checked={f.inMarketplace}
-            label={t('catShowInMarket')}
-            onChange={(v) => set('inMarketplace', v)}
-          />
-          <span>
-            {t('catShowInMarket')}
-            <span className={cx(s.hint, s.block)}>{t('catShowHint')}</span>
-          </span>
-        </label>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-          <button type="button" className={cx(s.btn, s.btnGhost)} onClick={onClose}>
-            {t('cancel')}
+    <Portal>
+      <div className={s.scrim} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+        <form
+          className={s.modal}
+          role="dialog"
+          aria-modal="true"
+          aria-label={cat ? t('catEditTitle') : t('catNewTitle')}
+          onSubmit={submit}
+          noValidate
+        >
+          <button type="button" className={s.close} aria-label={t('close')} onClick={onClose}>
+            <Ic name="x" size={18} />
           </button>
-          <button type="submit" className={cx(s.btn, s.btnPrimary)} disabled={run.isPending}>
-            {cat ? t('save') : t('catAdd')}
-          </button>
-        </div>
-      </form>
-    </div>
+          <h2>{cat ? t('catEditTitle') : t('catNewTitle')}</h2>
+          <p className={cx(s.small, s.muted)} style={{ marginTop: -6 }}>
+            {t(type === 'PRODUCT' ? 'catForProduct' : 'catForService')}
+          </p>
+          <div className={s.g2}>
+            {field('name', t('nameEn'))}
+            {field('nameKh', t('nameKh'))}
+          </div>
+          <div className={s.field}>
+            <span className={s.lbl}>{t('icon')}</span>
+            <div className={c.icons} role="group" aria-label={t('icon')}>
+              {ICONS.map((ic) => (
+                <button
+                  key={ic}
+                  type="button"
+                  className={c.iconBtn}
+                  aria-pressed={f.icon === ic}
+                  aria-label={ic}
+                  onClick={() => set('icon', ic)}
+                >
+                  <ShopIc name={ic} size={18} />
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className={s.field}>
+            <span className={s.lbl}>{t('colour')}</span>
+            <div className={c.tints} role="group" aria-label={t('colour')}>
+              {TINTS.map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  className={cx(c.tintBtn, tintClass(n))}
+                  aria-pressed={f.tint === n}
+                  aria-label={t('colourN', { n })}
+                  onClick={() => set('tint', n)}
+                />
+              ))}
+            </div>
+          </div>
+          <div className={c.preview}>
+            <span className={cx(c.tile, tintClass(f.tint))}>
+              {isIcName(f.icon) && <ShopIc name={f.icon} size={20} />}
+            </span>
+            <span>
+              <strong>{f.name.trim() || t('nameEn')}</strong>
+              <small>{f.nameKh.trim() || t('nameKh')}</small>
+            </span>
+          </div>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Switch
+              checked={f.inMarketplace}
+              label={t('catShowInMarket')}
+              onChange={(v) => set('inMarketplace', v)}
+            />
+            <span>
+              {t('catShowInMarket')}
+              <span className={cx(s.hint, s.block)}>{t('catShowHint')}</span>
+            </span>
+          </label>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+            <button type="button" className={cx(s.btn, s.btnGhost)} onClick={onClose}>
+              {t('cancel')}
+            </button>
+            <button type="submit" className={cx(s.btn, s.btnPrimary)} disabled={run.isPending}>
+              {cat ? t('save') : t('catAdd')}
+            </button>
+          </div>
+        </form>
+      </div>
+    </Portal>
   );
 }

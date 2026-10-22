@@ -368,7 +368,8 @@
     "topServices": "Top services, 30 days",
     "salesLink": "Sales",
     "chartLabel": "Revenue per day, last {n} days",
-    "noTopServices": "Completed visits will show your top services here."
+    "noTopServices": "Completed visits will show your top services here.",
+    "seeAllRequests": "See all {n} requests"
   },
   "sales": {
     "title": "Sales",

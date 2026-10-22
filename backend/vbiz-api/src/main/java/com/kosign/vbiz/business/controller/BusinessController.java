@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kosign.vbiz.business.payload.BusinessResponse;
@@ -18,6 +19,7 @@ import com.kosign.vbiz.business.payload.CreateBusinessRequest;
 import com.kosign.vbiz.business.payload.MemberInput;
 import com.kosign.vbiz.business.payload.MemberResponse;
 import com.kosign.vbiz.business.payload.MyBusinessResponse;
+import com.kosign.vbiz.business.payload.InviteSuggestion;
 import com.kosign.vbiz.business.payload.TeamInviteBatchInput;
 import com.kosign.vbiz.business.payload.TeamInviteBatchResponse;
 import com.kosign.vbiz.business.payload.TeamInviteInput;
@@ -25,6 +27,7 @@ import com.kosign.vbiz.business.payload.TeamInviteResponse;
 import com.kosign.vbiz.business.payload.UpdateBusinessRequest;
 import com.kosign.vbiz.business.service.BusinessService;
 import com.kosign.vbiz.business.service.TeamInviteBatchService;
+import com.kosign.vbiz.business.service.TeamLookupService;
 import com.kosign.vbiz.business.service.TeamService;
 import com.kosign.vbiz.common.api.ApiResponse;
 import com.kosign.vbiz.common.api.BaseController;
@@ -44,6 +47,7 @@ public class BusinessController extends BaseController {
     private final BusinessService businesses;
     private final TeamService team;
     private final TeamInviteBatchService inviteBatch;
+    private final TeamLookupService lookup;
 
     @PostMapping("/businesses")
     public ResponseEntity<ApiResponse<BusinessResponse>> create(@Valid @RequestBody CreateBusinessRequest req) {
@@ -86,6 +90,13 @@ public class BusinessController extends BaseController {
     public ResponseEntity<ApiResponse<TeamInviteResponse>> invite(@PathVariable UUID id,
             @Valid @RequestBody TeamInviteInput in) {
         return created(team.invite(CurrentUser.id(), id, in));
+    }
+
+    /** Who a typed email may mean: the shop's own customers and past members, or the exact account. */
+    @GetMapping("/businesses/{id}/invites/lookup")
+    public ResponseEntity<ApiResponse<List<InviteSuggestion>>> lookupInvitee(@PathVariable UUID id,
+            @RequestParam(required = false) String q) {
+        return ok(lookup.lookup(CurrentUser.id(), id, q));
     }
 
     /** Several people by email, one role; each refused email is reported, the rest are sent. */

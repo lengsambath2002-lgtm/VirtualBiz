@@ -15,6 +15,7 @@ import { useSession } from '@/lib/auth';
 import { Link } from '@/lib/i18n/navigation';
 
 import c from './settings.module.css';
+import { Portal } from '@/components/ui/Portal';
 
 const ROLES: PlatformRole[] = ['ADMIN', 'SUPER_ADMIN'];
 
@@ -383,105 +384,107 @@ function InviteDialog({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div className={s.scrim} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <form
-        className={s.modal}
-        role="dialog"
-        aria-modal="true"
-        aria-label={t('inviteTitle')}
-        onSubmit={submit}
-        noValidate
-      >
-        <button type="button" className={s.close} aria-label={t('close')} onClick={onClose}>
-          <Ic name="x" size={18} />
-        </button>
-        <h2>{sent ? t('sentTitle') : t('inviteTitle')}</h2>
-        {sent ? (
-          <>
-            <p className={s.muted} style={{ margin: 0 }}>
-              {t('sentBody', { email: sent.email, role: tr(sent.role) })}
-            </p>
-            {link && (
-              <div className={s.field}>
-                <span className={s.lbl}>{t('devLink')}</span>
-                <code className={c.devLink} data-testid="invite-link">
-                  {link}
-                </code>
-                <span className={s.hint}>{t('devLinkHint')}</span>
-                <button
-                  type="button"
-                  className={cx(s.btn, s.btnGhost, s.btnSm)}
-                  style={{ justifySelf: 'start' }}
-                  onClick={() =>
-                    void navigator.clipboard?.writeText(link).then(() => setCopied(true))
-                  }
-                >
-                  <Ic name="copy" size={16} />
-                  {copied ? t('copied') : t('copyLink')}
+    <Portal>
+      <div className={s.scrim} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+        <form
+          className={s.modal}
+          role="dialog"
+          aria-modal="true"
+          aria-label={t('inviteTitle')}
+          onSubmit={submit}
+          noValidate
+        >
+          <button type="button" className={s.close} aria-label={t('close')} onClick={onClose}>
+            <Ic name="x" size={18} />
+          </button>
+          <h2>{sent ? t('sentTitle') : t('inviteTitle')}</h2>
+          {sent ? (
+            <>
+              <p className={s.muted} style={{ margin: 0 }}>
+                {t('sentBody', { email: sent.email, role: tr(sent.role) })}
+              </p>
+              {link && (
+                <div className={s.field}>
+                  <span className={s.lbl}>{t('devLink')}</span>
+                  <code className={c.devLink} data-testid="invite-link">
+                    {link}
+                  </code>
+                  <span className={s.hint}>{t('devLinkHint')}</span>
+                  <button
+                    type="button"
+                    className={cx(s.btn, s.btnGhost, s.btnSm)}
+                    style={{ justifySelf: 'start' }}
+                    onClick={() =>
+                      void navigator.clipboard?.writeText(link).then(() => setCopied(true))
+                    }
+                  >
+                    <Ic name="copy" size={16} />
+                    {copied ? t('copied') : t('copyLink')}
+                  </button>
+                </div>
+              )}
+              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <button type="button" className={cx(s.btn, s.btnPrimary)} onClick={onClose}>
+                  {t('done')}
                 </button>
               </div>
-            )}
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button type="button" className={cx(s.btn, s.btnPrimary)} onClick={onClose}>
-                {t('done')}
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            <p className={cx(s.small, s.muted)} style={{ marginTop: -6 }}>
-              {t('inviteLead')}
-            </p>
-            <div className={s.g2}>
-              <div className={cx(s.field, err.name && s.bad)}>
-                <label htmlFor="inv-name">{t('name')}</label>
-                <input
-                  id="inv-name"
-                  maxLength={80}
-                  value={form.name}
-                  onChange={(e) => setForm((x) => ({ ...x, name: e.target.value }))}
-                />
-                <div className={s.err}>{err.name}</div>
-              </div>
-              <div className={cx(s.field, err.email && s.bad)}>
-                <label htmlFor="inv-email">{t('email')}</label>
-                <input
-                  id="inv-email"
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => setForm((x) => ({ ...x, email: e.target.value }))}
-                />
-                <div className={s.err}>{err.email}</div>
-              </div>
-            </div>
-            <div className={s.field} role="radiogroup" aria-label={t('role')}>
-              <span className={s.lbl}>{t('role')}</span>
-              {ROLES.map((r) => (
-                <label key={r} className={cx(c.roleOpt, form.role === r && c.roleOn)}>
+            </>
+          ) : (
+            <>
+              <p className={cx(s.small, s.muted)} style={{ marginTop: -6 }}>
+                {t('inviteLead')}
+              </p>
+              <div className={s.g2}>
+                <div className={cx(s.field, err.name && s.bad)}>
+                  <label htmlFor="inv-name">{t('name')}</label>
                   <input
-                    type="radio"
-                    name="inv-role"
-                    checked={form.role === r}
-                    onChange={() => setForm((x) => ({ ...x, role: r }))}
+                    id="inv-name"
+                    maxLength={80}
+                    value={form.name}
+                    onChange={(e) => setForm((x) => ({ ...x, name: e.target.value }))}
                   />
-                  <span>
-                    <strong>{tr(r)}</strong>
-                    <span className={cx(s.small, s.muted, s.block)}>{t(`roleHelp.${r}`)}</span>
-                  </span>
-                </label>
-              ))}
-            </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-              <button type="button" className={cx(s.btn, s.btnGhost)} onClick={onClose}>
-                {t('cancel')}
-              </button>
-              <button type="submit" className={cx(s.btn, s.btnPrimary)} disabled={run.isPending}>
-                {t('send')}
-              </button>
-            </div>
-          </>
-        )}
-      </form>
-    </div>
+                  <div className={s.err}>{err.name}</div>
+                </div>
+                <div className={cx(s.field, err.email && s.bad)}>
+                  <label htmlFor="inv-email">{t('email')}</label>
+                  <input
+                    id="inv-email"
+                    type="email"
+                    value={form.email}
+                    onChange={(e) => setForm((x) => ({ ...x, email: e.target.value }))}
+                  />
+                  <div className={s.err}>{err.email}</div>
+                </div>
+              </div>
+              <div className={s.field} role="radiogroup" aria-label={t('role')}>
+                <span className={s.lbl}>{t('role')}</span>
+                {ROLES.map((r) => (
+                  <label key={r} className={cx(c.roleOpt, form.role === r && c.roleOn)}>
+                    <input
+                      type="radio"
+                      name="inv-role"
+                      checked={form.role === r}
+                      onChange={() => setForm((x) => ({ ...x, role: r }))}
+                    />
+                    <span>
+                      <strong>{tr(r)}</strong>
+                      <span className={cx(s.small, s.muted, s.block)}>{t(`roleHelp.${r}`)}</span>
+                    </span>
+                  </label>
+                ))}
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                <button type="button" className={cx(s.btn, s.btnGhost)} onClick={onClose}>
+                  {t('cancel')}
+                </button>
+                <button type="submit" className={cx(s.btn, s.btnPrimary)} disabled={run.isPending}>
+                  {t('send')}
+                </button>
+              </div>
+            </>
+          )}
+        </form>
+      </div>
+    </Portal>
   );
 }

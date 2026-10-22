@@ -26,6 +26,7 @@ import type {
 import { useAdminFmt } from '@/features/admin-shared/util/format';
 import { cx, Ic, s, useUi } from '@/features/seller-shared';
 import { api, isApiError } from '@/lib/api';
+import { Portal } from '@/components/ui/Portal';
 
 const KEYS = ['q', 'state'] as const;
 
@@ -109,194 +110,197 @@ function PromoForm({ promo, onClose }: { promo: PlatformPromo | null; onClose: (
     </div>
   );
   return (
-    <div className={s.scrim} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
-      <form
-        className={cx(s.modal, s.wide)}
-        role="dialog"
-        aria-modal="true"
-        aria-label={t(promo ? 'edit' : 'new')}
-        onSubmit={submit}
-      >
-        <button type="button" className={s.close} aria-label={t('close')} onClick={onClose}>
-          <Ic name="x" size={18} />
-        </button>
-        <h2>{t(promo ? 'edit' : 'new')}</h2>
-        <div className={s.g2}>
+    <Portal>
+      <div className={s.scrim} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
+        <form
+          className={cx(s.modal, s.wide)}
+          role="dialog"
+          aria-modal="true"
+          aria-label={t(promo ? 'edit' : 'new')}
+          onSubmit={submit}
+        >
+          <button type="button" className={s.close} aria-label={t('close')} onClick={onClose}>
+            <Ic name="x" size={18} />
+          </button>
+          <h2>{t(promo ? 'edit' : 'new')}</h2>
+          <div className={s.g2}>
+            {field(
+              'name',
+              t('f.name'),
+              <input id="pr-name" value={f.name} onChange={(e) => set('name', e.target.value)} />,
+            )}
+            {field(
+              'code',
+              t('f.code'),
+              <input
+                id="pr-code"
+                value={f.code}
+                style={{ fontFamily: 'var(--f-mono)', textTransform: 'uppercase' }}
+                onChange={(e) => set('code', e.target.value)}
+              />,
+              t('f.codeHint'),
+            )}
+          </div>
+          <div className={s.g2}>
+            {field(
+              'type',
+              t('f.type'),
+              <select id="pr-type" value={f.type} onChange={(e) => set('type', e.target.value)}>
+                <option value="PERCENT">{t('type.PERCENT')}</option>
+                <option value="FIXED">{t('type.FIXED')}</option>
+                <option value="FREE_SHIPPING">{t('type.FREE_SHIPPING')}</option>
+              </select>,
+            )}
+            {f.type !== 'FREE_SHIPPING' &&
+              field(
+                'value',
+                f.type === 'PERCENT' ? t('f.percent') : t('f.amount'),
+                <input
+                  id="pr-value"
+                  inputMode="decimal"
+                  value={f.value}
+                  onChange={(e) => set('value', e.target.value)}
+                />,
+              )}
+          </div>
           {field(
-            'name',
-            t('f.name'),
-            <input id="pr-name" value={f.name} onChange={(e) => set('name', e.target.value)} />,
-          )}
-          {field(
-            'code',
-            t('f.code'),
-            <input
-              id="pr-code"
-              value={f.code}
-              style={{ fontFamily: 'var(--f-mono)', textTransform: 'uppercase' }}
-              onChange={(e) => set('code', e.target.value)}
-            />,
-            t('f.codeHint'),
-          )}
-        </div>
-        <div className={s.g2}>
-          {field(
-            'type',
-            t('f.type'),
-            <select id="pr-type" value={f.type} onChange={(e) => set('type', e.target.value)}>
-              <option value="PERCENT">{t('type.PERCENT')}</option>
-              <option value="FIXED">{t('type.FIXED')}</option>
-              <option value="FREE_SHIPPING">{t('type.FREE_SHIPPING')}</option>
+            'scope',
+            t('f.scope'),
+            <select id="pr-scope" value={f.scope} onChange={(e) => set('scope', e.target.value)}>
+              <option value="ALL">{t('scope.ALL')}</option>
+              <option value="CATEGORY">{t('scope.CATEGORY')}</option>
             </select>,
           )}
-          {f.type !== 'FREE_SHIPPING' &&
-            field(
-              'value',
-              f.type === 'PERCENT' ? t('f.percent') : t('f.amount'),
+          {f.scope === 'CATEGORY' && (
+            <div className={cx(s.field, err.targetIds && s.bad)}>
+              <span>{t('f.categories')}</span>
+              <div className={s.chips}>
+                {cats
+                  .filter((c) => c.inMarketplace)
+                  .map((c) => {
+                    const on = f.targetIds.includes(c.id);
+                    return (
+                      <button
+                        key={c.id}
+                        type="button"
+                        className={cx(s.chip, on && s.on)}
+                        aria-pressed={on}
+                        onClick={() =>
+                          set(
+                            'targetIds',
+                            on ? f.targetIds.filter((x) => x !== c.id) : [...f.targetIds, c.id],
+                          )
+                        }
+                      >
+                        {locale === 'kh' ? c.nameKh : c.name}
+                      </button>
+                    );
+                  })}
+              </div>
+              <div className={s.err}>{err.targetIds}</div>
+            </div>
+          )}
+          <div className={s.g3}>
+            {field(
+              'minSpend',
+              t('f.minSpend'),
               <input
-                id="pr-value"
+                id="pr-minSpend"
                 inputMode="decimal"
-                value={f.value}
-                onChange={(e) => set('value', e.target.value)}
+                value={f.minSpend}
+                onChange={(e) => set('minSpend', e.target.value)}
+                placeholder="0"
               />,
             )}
-        </div>
-        {field(
-          'scope',
-          t('f.scope'),
-          <select id="pr-scope" value={f.scope} onChange={(e) => set('scope', e.target.value)}>
-            <option value="ALL">{t('scope.ALL')}</option>
-            <option value="CATEGORY">{t('scope.CATEGORY')}</option>
-          </select>,
-        )}
-        {f.scope === 'CATEGORY' && (
-          <div className={cx(s.field, err.targetIds && s.bad)}>
-            <span>{t('f.categories')}</span>
-            <div className={s.chips}>
-              {cats
-                .filter((c) => c.inMarketplace)
-                .map((c) => {
-                  const on = f.targetIds.includes(c.id);
-                  return (
-                    <button
-                      key={c.id}
-                      type="button"
-                      className={cx(s.chip, on && s.on)}
-                      aria-pressed={on}
-                      onClick={() =>
-                        set(
-                          'targetIds',
-                          on ? f.targetIds.filter((x) => x !== c.id) : [...f.targetIds, c.id],
-                        )
-                      }
-                    >
-                      {locale === 'kh' ? c.nameKh : c.name}
-                    </button>
-                  );
-                })}
-            </div>
-            <div className={s.err}>{err.targetIds}</div>
+            {field(
+              'maxDiscount',
+              t('f.maxDiscount'),
+              <input
+                id="pr-maxDiscount"
+                inputMode="decimal"
+                value={f.maxDiscount}
+                onChange={(e) => set('maxDiscount', e.target.value)}
+                placeholder="0"
+              />,
+            )}
+            {field(
+              'usageLimit',
+              t('f.usageLimit'),
+              <input
+                id="pr-usageLimit"
+                inputMode="numeric"
+                value={f.usageLimit}
+                onChange={(e) => set('usageLimit', e.target.value)}
+                placeholder="0"
+              />,
+            )}
           </div>
-        )}
-        <div className={s.g3}>
-          {field(
-            'minSpend',
-            t('f.minSpend'),
-            <input
-              id="pr-minSpend"
-              inputMode="decimal"
-              value={f.minSpend}
-              onChange={(e) => set('minSpend', e.target.value)}
-              placeholder="0"
-            />,
-          )}
-          {field(
-            'maxDiscount',
-            t('f.maxDiscount'),
-            <input
-              id="pr-maxDiscount"
-              inputMode="decimal"
-              value={f.maxDiscount}
-              onChange={(e) => set('maxDiscount', e.target.value)}
-              placeholder="0"
-            />,
-          )}
-          {field(
-            'usageLimit',
-            t('f.usageLimit'),
-            <input
-              id="pr-usageLimit"
-              inputMode="numeric"
-              value={f.usageLimit}
-              onChange={(e) => set('usageLimit', e.target.value)}
-              placeholder="0"
-            />,
-          )}
-        </div>
-        <div className={s.g2}>
-          {field(
-            'startsAt',
-            t('f.startsAt'),
-            <div style={{ display: 'flex', gap: 8 }}>
-              <DateRangePicker
-                id="pr-startsAt"
-                mode="single"
-                variant="field"
-                label={t('f.startsAt')}
-                from={f.startsAt.slice(0, 10)}
-                to={f.startsAt.slice(0, 10)}
-                clearable={false}
-                onChange={(d) => set('startsAt', `${d}T${f.startsAt.slice(11, 16) || '00:00'}`)}
-              />
-              <input
-                type="time"
-                aria-label={t('f.startTime')}
-                style={{ width: 120 }}
-                value={f.startsAt.slice(11, 16)}
-                onChange={(e) =>
-                  e.target.value && set('startsAt', `${f.startsAt.slice(0, 10)}T${e.target.value}`)
-                }
-              />
-            </div>,
-          )}
-          {field(
-            'endsAt',
-            t('f.endsAt'),
-            <div style={{ display: 'flex', gap: 8 }}>
-              <DateRangePicker
-                id="pr-endsAt"
-                mode="single"
-                variant="field"
-                label={t('f.endsAt')}
-                from={f.endsAt.slice(0, 10)}
-                to={f.endsAt.slice(0, 10)}
-                clearable={false}
-                min={f.startsAt.slice(0, 10) || undefined}
-                onChange={(d) => set('endsAt', `${d}T${f.endsAt.slice(11, 16) || '00:00'}`)}
-              />
-              <input
-                type="time"
-                aria-label={t('f.endTime')}
-                style={{ width: 120 }}
-                value={f.endsAt.slice(11, 16)}
-                onChange={(e) =>
-                  e.target.value && set('endsAt', `${f.endsAt.slice(0, 10)}T${e.target.value}`)
-                }
-              />
-            </div>,
-            t('f.endsHint'),
-          )}
-        </div>
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-          <button type="button" className={cx(s.btn, s.btnGhost)} onClick={onClose}>
-            {t('cancel')}
-          </button>
-          <button type="submit" className={cx(s.btn, s.btnPrimary)} disabled={run.isPending}>
-            {t(promo ? 'save' : 'create')}
-          </button>
-        </div>
-      </form>
-    </div>
+          <div className={s.g2}>
+            {field(
+              'startsAt',
+              t('f.startsAt'),
+              <div style={{ display: 'flex', gap: 8 }}>
+                <DateRangePicker
+                  id="pr-startsAt"
+                  mode="single"
+                  variant="field"
+                  label={t('f.startsAt')}
+                  from={f.startsAt.slice(0, 10)}
+                  to={f.startsAt.slice(0, 10)}
+                  clearable={false}
+                  onChange={(d) => set('startsAt', `${d}T${f.startsAt.slice(11, 16) || '00:00'}`)}
+                />
+                <input
+                  type="time"
+                  aria-label={t('f.startTime')}
+                  style={{ width: 120 }}
+                  value={f.startsAt.slice(11, 16)}
+                  onChange={(e) =>
+                    e.target.value &&
+                    set('startsAt', `${f.startsAt.slice(0, 10)}T${e.target.value}`)
+                  }
+                />
+              </div>,
+            )}
+            {field(
+              'endsAt',
+              t('f.endsAt'),
+              <div style={{ display: 'flex', gap: 8 }}>
+                <DateRangePicker
+                  id="pr-endsAt"
+                  mode="single"
+                  variant="field"
+                  label={t('f.endsAt')}
+                  from={f.endsAt.slice(0, 10)}
+                  to={f.endsAt.slice(0, 10)}
+                  clearable={false}
+                  min={f.startsAt.slice(0, 10) || undefined}
+                  onChange={(d) => set('endsAt', `${d}T${f.endsAt.slice(11, 16) || '00:00'}`)}
+                />
+                <input
+                  type="time"
+                  aria-label={t('f.endTime')}
+                  style={{ width: 120 }}
+                  value={f.endsAt.slice(11, 16)}
+                  onChange={(e) =>
+                    e.target.value && set('endsAt', `${f.endsAt.slice(0, 10)}T${e.target.value}`)
+                  }
+                />
+              </div>,
+              t('f.endsHint'),
+            )}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+            <button type="button" className={cx(s.btn, s.btnGhost)} onClick={onClose}>
+              {t('cancel')}
+            </button>
+            <button type="submit" className={cx(s.btn, s.btnPrimary)} disabled={run.isPending}>
+              {t(promo ? 'save' : 'create')}
+            </button>
+          </div>
+        </form>
+      </div>
+    </Portal>
   );
 }
 

@@ -34,6 +34,8 @@ export function LoginStep({ initialEmail }: { initialEmail: string }) {
   const [errEmail, setErrEmail] = useState<ReactNode>(null);
   const [errPw, setErrPw] = useState<string | null>(null);
   const [wrong, setWrong] = useState<number | null>(null);
+  // The account has no password (it signs in with a code, Google or SMS).
+  const [noPassword, setNoPassword] = useState(false);
   /** A failure that is not about a field (offline, server error). */
   const [failed, setFailed] = useState<string | null>(null);
   const [caps, setCaps] = useState(false);
@@ -131,6 +133,7 @@ export function LoginStep({ initialEmail }: { initialEmail: string }) {
       return pwRef.current?.focus();
     }
     setWrong(null);
+    setNoPassword(false);
     setFailed(null);
     setBusy(true);
     try {
@@ -152,6 +155,10 @@ export function LoginStep({ initialEmail }: { initialEmail: string }) {
         setErrEmail(noAccount(v));
         return emailRef.current?.focus();
       }
+      if (err.meta('reason') === 'NO_PASSWORD') {
+        setNoPassword(true);
+        return;
+      }
       const left = metaNumber(err, 'triesLeft', 0);
       if (left <= 0) {
         useFlowStore.getState().patch({ lockUntil: Date.now() + LOCK_MS });
@@ -171,6 +178,29 @@ export function LoginStep({ initialEmail }: { initialEmail: string }) {
           seconds: lockLeft,
           num: (c) => <span className="num">{c}</span>,
         })}
+      </Alert>
+    );
+  else if (noPassword)
+    alert = (
+      <Alert kind="ok">
+        {t('noPassword')}{' '}
+        <button
+          type="button"
+          className={cn(s.link, s.inheritLink)}
+          disabled={sending === 'inline'}
+          onClick={() => sendCode('login', 'inline')}
+        >
+          {sending === 'inline' ? t('sending') : t('emailMeCode')}
+        </button>
+        {' · '}
+        <button
+          type="button"
+          className={cn(s.link, s.inheritLink)}
+          disabled={sending === 'forgot'}
+          onClick={() => sendCode('reset', 'forgot')}
+        >
+          {sending === 'forgot' ? t('sendingCode') : t('setPassword')}
+        </button>
       </Alert>
     );
   else if (wrong !== null)

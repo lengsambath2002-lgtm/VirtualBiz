@@ -63,6 +63,10 @@ public class BusinessInvite extends BaseEntity {
     @Column(name = "revoked_at")
     private Instant revokedAt;
 
+    /** The person said no (also sets {@code revokedAt}, which closes it). */
+    @Column(name = "declined_at")
+    private Instant declinedAt;
+
     public boolean isOpen(Instant now) {
         return acceptedAt == null && revokedAt == null && expiresAt.isAfter(now);
     }

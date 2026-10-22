@@ -25,6 +25,7 @@ import com.kosign.vbiz.business.domain.BusinessMember;
 import com.kosign.vbiz.business.domain.MemberRole;
 import com.kosign.vbiz.business.payload.JoinAcceptInput;
 import com.kosign.vbiz.business.payload.JoinPreviewResponse;
+import com.kosign.vbiz.business.payload.JoinedResponse;
 import com.kosign.vbiz.business.payload.TeamInviteInput;
 import com.kosign.vbiz.business.payload.TeamInviteResponse;
 import com.kosign.vbiz.business.repository.BusinessInviteRepository;
@@ -119,8 +120,11 @@ public class TeamService {
         invites.saveAndFlush(i);
         activity.record(businessId, userId, me.getName(), ShopActivityLog.TEAM_INVITED, "MEMBER", i.getId(), email,
                 Map.of("role", in.role().name()));
-        mailer.sendInvite(email, i.getName(), b.getName(), me.getName(), in.role().name(),
-                props.appUrl() + "/en" + PATH + token);
+        String link = props.appUrl() + "/en" + PATH + token;
+        String logo = b.getLogoUrl() != null && b.getLogoUrl().startsWith("/") ? props.appUrl() + b.getLogoUrl()
+                : b.getLogoUrl();
+        mailer.sendInvite(new TeamInviteMail(email, b.getName(), logo, me.getName(), in.role(), link,
+                link + "?decline=1", i.getExpiresAt(), users.findByEmail(email).isPresent()));
         return view(i, now, props.exposeDevLinks() ? PATH + token : null);
     }
 
@@ -148,7 +152,9 @@ public class TeamService {
         Business b = businesses.findById(i.getBusinessId())
                 .orElseThrow(() -> new BusinessException(StatusCode.INVITE_NOT_FOUND));
         User existing = users.findByEmail(i.getEmail()).orElse(null);
-        return new JoinPreviewResponse(b.getId().toString(), b.getName(), b.getType(), b.getLogoUrl(), i.getEmail(), i.getName(),
+        // An existing account keeps its own name; the invite's is only a guess from the address.
+        String name = existing != null ? existing.getName() : i.getName();
+        return new JoinPreviewResponse(b.getId().toString(), b.getName(), b.getType(), b.getLogoUrl(), i.getEmail(), name,
                 i.getRole(), i.getInvitedByName(), i.getExpiresAt(), existing != null,
                 existing != null && existing.hasPassword());
     }
@@ -180,6 +186,46 @@ public class TeamService {
             throw new BusinessException(StatusCode.ACCOUNT_SUSPENDED);
         }
         u = users.saveAndFlush(u);
+        join(i, u);
+        return auth.signInAfterInvite(u, client);
+    }
+
+    /**
+     * Accept while signed in (docs/api/phase10-shop-team.md): an existing account joins with no
+     * password, if the invite was sent to its email. Returns the shop joined.
+     */
+    @Transactional
+    public JoinedResponse acceptAsMe(UUID userId, String token) {
+        BusinessInvite i = openInvite(token);
+        User u = users.findById(userId).orElseThrow(() -> new BusinessException(StatusCode.USER_NOT_FOUND));
+        if (!i.getEmail().equalsIgnoreCase(u.getEmail())) {
+            throw BusinessException.withDetail(StatusCode.FORBIDDEN, "email", "This invite is for another email",
+                    Map.of("reason", "WRONG_ACCOUNT"));
+        }
+        if (u.isSuspended()) {
+            throw new BusinessException(StatusCode.ACCOUNT_SUSPENDED);
+        }
+        BusinessMember m = join(i, u);
+        Business b = businesses.findById(i.getBusinessId())
+                .orElseThrow(() -> new BusinessException(StatusCode.INVITE_NOT_FOUND));
+        return new JoinedResponse(b.getId().toString(), b.getName(), b.getType(), m.getRole());
+    }
+
+    /** Decline (public, the link proves the email): the invite closes and the shop's log says so. */
+    @Transactional
+    public void decline(String token) {
+        BusinessInvite i = openInvite(token);
+        Instant now = clock.instant();
+        i.setDeclinedAt(now);
+        i.setRevokedAt(now);
+        invites.saveAndFlush(i);
+        String who = users.findByEmail(i.getEmail()).map(User::getName).orElse(i.getEmail());
+        activity.record(i.getBusinessId(), null, who, ShopActivityLog.TEAM_INVITE_DECLINED, "MEMBER", i.getId(),
+                i.getEmail(), Map.of("role", i.getRole().name()));
+    }
+
+    /** Makes the account a member with the invite's role and closes the invite. */
+    private BusinessMember join(BusinessInvite i, User u) {
         UUID uid = u.getId();
         if (membership.membership(uid, i.getBusinessId()).isPresent()) {
             throw BusinessException.withDetail(StatusCode.CONFLICT, "email", "Already on this team");
@@ -202,11 +248,13 @@ public class TeamService {
         i.setAcceptedAt(clock.instant());
         i.setAcceptedUserId(uid);
         invites.saveAndFlush(i);
-        return auth.signInAfterInvite(u, client);
+        activity.record(i.getBusinessId(), uid, u.getName(), ShopActivityLog.TEAM_JOINED, "MEMBER", m.getId(),
+                u.getName(), Map.of("role", i.getRole().name()));
+        return m;
     }
 
-    /** Owner or manager. */
-    private BusinessMember requireLead(UUID userId, UUID businessId) {
+    /** The caller's membership when they may manage the team (owner, manager). */
+    public BusinessMember requireLead(UUID userId, UUID businessId) {
         TenantContext.getBusinessId().ifPresent(tenant -> {
             if (!tenant.equals(businessId)) {
                 throw new BusinessException(StatusCode.FORBIDDEN_TENANT);

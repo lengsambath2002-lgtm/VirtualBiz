@@ -13,6 +13,9 @@ spring:
     locations: classpath:db/migration,classpath:db/seed-local
 
 vbiz:
+  # Emails go to Mailpit (brew install mailpit; inbox at http://localhost:8025).
+  mail:
+    enabled: true
   jwt:
     # Local-only default. Every other environment must set VBIZ_JWT_SECRET.
     secret: ${VBIZ_JWT_SECRET:local-dev-only-secret-change-me-0123456789abcdef}

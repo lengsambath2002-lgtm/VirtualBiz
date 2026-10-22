@@ -52,7 +52,8 @@
     "open": "Switch profile",
     "admin": "Admin console",
     "superAdmin": "Super-admin",
-    "staff": "VirtualBiz staff"
+    "staff": "VirtualBiz staff",
+    "find": "Find a shop"
   },
   "location": {
     "useMine": "Use my current location",

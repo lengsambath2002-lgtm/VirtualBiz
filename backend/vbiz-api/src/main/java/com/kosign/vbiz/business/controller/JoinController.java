@@ -18,6 +18,7 @@ import com.kosign.vbiz.business.payload.JoinPreviewResponse;
 import com.kosign.vbiz.business.service.TeamService;
 import com.kosign.vbiz.common.api.ApiResponse;
 import com.kosign.vbiz.common.api.BaseController;
+import com.kosign.vbiz.common.api.EmptyJsonResponse;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,6 +39,13 @@ public class JoinController extends BaseController {
     @GetMapping("/{token}")
     public ResponseEntity<ApiResponse<JoinPreviewResponse>> preview(@PathVariable String token) {
         return ok(team.preview(token));
+    }
+
+    /** No thanks: closes the invite (the link proves the email). */
+    @PostMapping("/{token}/decline")
+    public ResponseEntity<ApiResponse<EmptyJsonResponse>> decline(@PathVariable String token) {
+        team.decline(token);
+        return ok();
     }
 
     @PostMapping("/{token}/accept")

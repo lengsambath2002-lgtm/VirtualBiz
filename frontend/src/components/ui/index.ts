@@ -5,3 +5,4 @@ export * from './Icon';
 export * from './LanguageSwitcher';
 export * from './Logo';
 export * from './Price';
+export * from './Portal';

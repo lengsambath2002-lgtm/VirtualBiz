@@ -181,7 +181,7 @@ export function SellerShell({ children, fontClass }: { children: ReactNode; font
 
   const show = ready && session.ready && !!session.user;
   return (
-    <div className={cx(s.root, fontClass)}>
+    <div className={cx(s.root, fontClass)} data-overlay-root>
       {show ? (
         <Workspace>{children}</Workspace>
       ) : session.user && error ? (

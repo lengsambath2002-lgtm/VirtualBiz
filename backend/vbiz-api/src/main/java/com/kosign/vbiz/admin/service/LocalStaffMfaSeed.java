@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
  * are taken off it, so they sign in with their password alone (a key someone set up themselves is
  * left alone). Never runs in dev / uat / prod.
  */
-@Profile("local")
+@Profile({"local", "demo"})
 @Component
 @RequiredArgsConstructor
 public class LocalStaffMfaSeed implements ApplicationRunner {

@@ -1,0 +1,41 @@
+# A public demo (docs/ops/demo.md): the demo shops, salons and accounts (db/seed-local), the KHQR
+# payment simulator and sign-in codes shown on screen, so anyone can try every part of VirtualBiz
+# without real email, SMS or bank accounts. Real secrets and secure cookies, unlike `local`.
+# Demo data only: never point it at a real database.
+spring:
+  datasource:
+    # Render gives the database as host, port, name, user and password (render.yaml).
+    url: ${DATABASE_URL:jdbc:postgresql://${DB_HOST}:${DB_PORT:5432}/${DB_NAME}}
+    username: ${DATABASE_USERNAME:${DB_USER}}
+    password: ${DATABASE_PASSWORD:${DB_PASSWORD}}
+    hikari:
+      maximum-pool-size: ${DATABASE_POOL_SIZE:5}
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration,classpath:db/seed-local
+
+vbiz:
+  jwt:
+    secret: ${VBIZ_JWT_SECRET}
+  security:
+    data-key: ${VBIZ_DATA_KEY}
+  staff:
+    app-url: ${VBIZ_APP_URL}
+    # No inbox to send invites to: the inviter sees the link and passes it on.
+    expose-dev-links: true
+  auth:
+    cookie-secure: true
+    # The fake Google chooser signs in as any address: off on a public URL.
+    google-dev-enabled: false
+  otp:
+    # Sign-up and email sign-in codes are shown on screen (no email provider in the demo).
+    expose-dev-code: true
+  payment:
+    simulator:
+      enabled: true
+  orders:
+    dev-endpoints: false
+
+log:
+  dir: ${LOG_DIR:/app/logs}

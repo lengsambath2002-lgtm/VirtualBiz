@@ -1,0 +1,57 @@
+# The public demo API on Render (docs/ops/demo.md). New → Blueprint → this repository.
+# The web app runs on Vercel and sends /api/* here (its API_URL).
+services:
+  - type: web
+    name: virtualbiz-api
+    runtime: docker
+    plan: free
+    region: singapore
+    dockerContext: ./backend
+    dockerfilePath: ./backend/Dockerfile
+    healthCheckPath: /api/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: demo
+      - key: SERVER_PORT
+        value: "8180"
+      # A small instance (512 MB): keep the heap inside it.
+      - key: JAVA_OPTS
+        value: "-XX:MaxRAMPercentage=70 -XX:+UseSerialGC"
+      - key: DB_HOST
+        fromDatabase:
+          name: virtualbiz-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: virtualbiz-db
+          property: port
+      - key: DB_NAME
+        fromDatabase:
+          name: virtualbiz-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: virtualbiz-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: virtualbiz-db
+          property: password
+      # 256-bit random values Render generates once.
+      - key: VBIZ_JWT_SECRET
+        generateValue: true
+      - key: VBIZ_DATA_KEY
+        generateValue: true
+      # The Vercel address of the web app (invite links point there). Set after the first deploy.
+      - key: VBIZ_APP_URL
+        sync: false
+
+databases:
+  - name: virtualbiz-db
+    plan: free
+    region: singapore
+    databaseName: vbiz
+    user: vbiz
+    postgresMajorVersion: "16"
+    # Only the API (inside Render) connects.
+    ipAllowList: []

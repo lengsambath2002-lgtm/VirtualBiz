@@ -31,6 +31,8 @@ public final class NotificationKind {
     public static final String BUSINESS_SUSPENDED = "BUSINESS_SUSPENDED";
     public static final String BUSINESS_REINSTATED = "BUSINESS_REINSTATED";
     public static final String PAYOUT_SENT = "PAYOUT_SENT";
+    public static final String CATEGORY_APPROVED = "CATEGORY_APPROVED";
+    public static final String CATEGORY_REJECTED = "CATEGORY_REJECTED";
 
     private NotificationKind() {
     }

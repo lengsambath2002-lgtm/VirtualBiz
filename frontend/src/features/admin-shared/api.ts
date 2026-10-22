@@ -13,7 +13,7 @@ import { api } from '@/lib/api';
 import { useSession } from '@/lib/auth';
 
 import type {
-  ShopActivityEntry,
+  CategoryRequest,
   AdminCategory,
   AuditEntry,
   CategoryInput,
@@ -73,16 +73,14 @@ export const useStaff = () => useAdminQuery<StaffMember[]>(['staff'], '/staff');
 export const useStaffInvites = () =>
   useAdminQuery<StaffInvite[]>(['staffInvites'], '/staff/invites');
 export const useCategories = () => useAdminQuery<AdminCategory[]>(['categories'], '/categories');
+/** Shops' category suggestions waiting for a decision. */
+export const useCategoryRequests = () =>
+  useAdminQuery<Page<CategoryRequest>>(['categoryRequests'], '/category-requests?size=50');
 
 export const useShops = (p: Params) =>
   useAdminQuery<Page<ShopRow>>(['shops', p], `/businesses${qs(p)}`);
 export const useShop = (id: string) => useAdminQuery<ShopDetail>(['shop', id], `/businesses/${id}`);
-/** A shop's own activity log (what its team did), for support. */
-export const useShopActivity = (id: string, page: number) =>
-  useAdminQuery<Page<ShopActivityEntry>>(
-    ['shopActivity', id, page],
-    `/businesses/${id}/activity?page=${page}&size=10`,
-  );
+
 export const useIdPhoto = (id: string, enabled: boolean) =>
   useAdminQuery<{ contentType: string; size: number; dataUrl: string; uploadedAt: string }>(
     ['idPhoto', id],
@@ -134,6 +132,12 @@ export interface BulkResult {
 export type BulkList = 'businesses' | 'users' | 'reviews';
 
 export const adminApi = {
+  approveCategoryRequest: (
+    id: string,
+    body: { categoryId?: string; name?: string; nameKh?: string; moveShop: boolean },
+  ) => api.post(`/admin/category-requests/${id}/approve`, body),
+  rejectCategoryRequest: (id: string, reason: string) =>
+    api.post(`/admin/category-requests/${id}/reject`, { reason }),
   bulk: (list: BulkList, ids: string[], action: string, reason?: string) =>
     api.post<BulkResult>(`/admin/${list}/bulk`, { ids, action, ...(reason ? { reason } : {}) }),
   verify: (id: string, reason?: string) =>

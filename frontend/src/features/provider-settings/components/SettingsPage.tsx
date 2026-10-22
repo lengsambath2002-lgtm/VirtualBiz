@@ -6,7 +6,13 @@ import { useState } from 'react';
 import { ShopPhotos } from '@/components/media';
 import { useMyRole } from '@/features/account-switcher';
 import { PayoutsPanel, VerificationPanel } from '@/features/business-status';
-import { ExportPanel, HoursPanel, LocationPanel, PolicyPanel } from '@/features/shop-settings';
+import {
+  CategoryPanel,
+  ExportPanel,
+  HoursPanel,
+  LocationPanel,
+  PolicyPanel,
+} from '@/features/shop-settings';
 import { formatPhone, isValidPhone, normalizePhone } from '@/lib/utils/phone';
 
 import { PIcon } from '@/features/provider-shared/components/Icon';
@@ -75,6 +81,7 @@ export function SettingsPage() {
               <BusinessPhotos />
               <BusinessForm />
               <LocationPanel business={api} save={saveRaw} canEdit={role !== 'STAFF'} />
+              <CategoryPanel business={api} save={saveRaw} canEdit={role !== 'STAFF'} />
               <PolicyPanel business={api} save={saveRaw} canEdit={role !== 'STAFF'} />
               <BusinessPayments />
               <ExportPanel

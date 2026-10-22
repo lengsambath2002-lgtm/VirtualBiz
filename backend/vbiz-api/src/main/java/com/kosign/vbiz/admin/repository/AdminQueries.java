@@ -96,9 +96,10 @@ public class AdminQueries {
                             OR (status IN ('ACCEPTED', 'PACKED') AND placed_at < :day)) stuck,
                        (SELECT count(*) FROM business WHERE suspended_at IS NOT NULL) suspended_shops,
                        (SELECT count(*) FROM users WHERE suspended_at IS NOT NULL) suspended_users,
-                       (SELECT count(*) FROM review WHERE stars <= 2 AND hidden_at IS NULL AND at >= :week) low_reviews
+                       (SELECT count(*) FROM review WHERE stars <= 2 AND hidden_at IS NULL AND at >= :week) low_reviews,
+                       (SELECT count(*) FROM category_request WHERE status = 'PENDING') category_requests
                 """, p, (rs, i) -> new long[] {rs.getLong("pending"), rs.getLong("stuck"), rs.getLong("suspended_shops"),
-                        rs.getLong("suspended_users"), rs.getLong("low_reviews")});
+                        rs.getLong("suspended_users"), rs.getLong("low_reviews"), rs.getLong("category_requests")});
     }
 
     /** GMV and orders per Phnom Penh day, {@code from}..{@code to} inclusive (days with none are 0). */
@@ -236,15 +237,22 @@ public class AdminQueries {
                 rs.getBigDecimal("paid_out"), BigDecimal.ZERO));
     }
 
-    public List<AdminBusinessDetail.Member> members(UUID businessId) {
+    /** The shop's owner (the console deals with the owner; the shop runs its own team). */
+    public AdminBusinessDetail.Member owner(UUID businessId) {
         return jdbc.query("""
                 SELECT m.user_id, m.name, m.role, m.title, u.email, u.phone, m.active
                   FROM business_member m LEFT JOIN users u ON u.id = m.user_id
-                 WHERE m.business_id = :id
-                 ORDER BY CASE m.role WHEN 'OWNER' THEN 0 WHEN 'MANAGER' THEN 1 ELSE 2 END, m.name
+                 WHERE m.business_id = :id AND m.role = 'OWNER'
                 """, new MapSqlParameterSource("id", businessId), (rs, i) -> new AdminBusinessDetail.Member(
                 rs.getString("user_id"), rs.getString("name"), rs.getString("role"), rs.getString("title"),
-                rs.getString("email"), rs.getString("phone"), rs.getBoolean("active")));
+                rs.getString("email"), rs.getString("phone"), rs.getBoolean("active"))).stream().findFirst()
+                .orElse(null);
+    }
+
+    /** How many people are on the shop's team now. */
+    public long teamSize(UUID businessId) {
+        return jdbc.queryForObject("SELECT count(*) FROM business_member WHERE business_id = :id AND active",
+                new MapSqlParameterSource("id", businessId), Long.class);
     }
 
     private AdminBusinessRow businessRow(ResultSet rs, int i) throws SQLException {

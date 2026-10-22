@@ -36,7 +36,7 @@ test.describe('Console lists', () => {
 
     await page.getByLabel('Rows per page').selectOption('10');
     await expect(page).toHaveURL(/size=10/);
-    expect(await table.locator('tbody tr').count()).toBeLessThanOrEqual(10);
+    await expect.poll(() => table.locator('tbody tr').count()).toBeLessThanOrEqual(10);
 
     await page.reload();
     await expect(page.getByText('Fulfilment: Pickup')).toBeVisible({ timeout: 20_000 });

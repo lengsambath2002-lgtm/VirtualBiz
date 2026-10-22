@@ -32,7 +32,9 @@ import com.kosign.vbiz.admin.payload.AuditEntry;
 import com.kosign.vbiz.admin.payload.BulkInput;
 import com.kosign.vbiz.common.list.BulkResult;
 import com.kosign.vbiz.admin.payload.ListParams;
+import com.kosign.vbiz.admin.payload.CategoryDecisionInput;
 import com.kosign.vbiz.admin.payload.CategoryInput;
+import com.kosign.vbiz.business.payload.CategoryRequestResponse;
 import com.kosign.vbiz.admin.payload.IdPhotoResponse;
 import com.kosign.vbiz.admin.payload.OverviewResponse;
 import com.kosign.vbiz.common.list.PageResponse;
@@ -48,6 +50,7 @@ import com.kosign.vbiz.admin.payload.StaffInviteResponse;
 import com.kosign.vbiz.admin.payload.StaffMemberRow;
 import com.kosign.vbiz.admin.service.AdminAuditService;
 import com.kosign.vbiz.admin.service.AdminBulkService;
+import com.kosign.vbiz.admin.service.AdminCategoryRequestService;
 import com.kosign.vbiz.admin.service.AdminExportService;
 import com.kosign.vbiz.admin.service.AdminBusinessService;
 import com.kosign.vbiz.admin.service.AdminCategoryService;
@@ -91,6 +94,7 @@ public class AdminController extends BaseController {
     private final AdminPromotionService promotions;
     private final AdminExportService exports;
     private final AdminBulkService bulk;
+    private final AdminCategoryRequestService categoryRequests;
     private final AdminPayoutService payouts;
     private final AdminAuditService audit;
     private final AdminSettingsService settings;
@@ -131,13 +135,6 @@ public class AdminController extends BaseController {
     @GetMapping("/businesses/{id}")
     public ResponseEntity<ApiResponse<AdminBusinessDetail>> business(@PathVariable UUID id) {
         return ok(businesses.get(id));
-    }
-
-    @GetMapping("/businesses/{id}/activity")
-    public ResponseEntity<ApiResponse<PageResponse<com.kosign.vbiz.activity.payload.ShopActivityResponse>>> activity(
-            @PathVariable UUID id, @RequestParam(required = false) Integer page,
-            @RequestParam(required = false) Integer size) {
-        return ok(businesses.activity(id, page, size));
     }
 
     @GetMapping("/businesses/{id}/id-photo")
@@ -354,6 +351,24 @@ public class AdminController extends BaseController {
     @PutMapping("/settings")
     public ResponseEntity<ApiResponse<PlatformSettingsResponse>> updateSettings(@Valid @RequestBody SettingsInput in) {
         return ok(settings.update(in));
+    }
+
+    @GetMapping("/category-requests")
+    public ResponseEntity<ApiResponse<PageResponse<CategoryRequestResponse>>> categoryRequests(
+            @RequestParam(required = false) String status, @ModelAttribute ListParams lp) {
+        return ok(categoryRequests.list(status, lp));
+    }
+
+    @PostMapping("/category-requests/{id}/approve")
+    public ResponseEntity<ApiResponse<CategoryRequestResponse>> approveCategory(@PathVariable UUID id,
+            @Valid @RequestBody(required = false) CategoryDecisionInput in) {
+        return ok(categoryRequests.approve(id, in));
+    }
+
+    @PostMapping("/category-requests/{id}/reject")
+    public ResponseEntity<ApiResponse<CategoryRequestResponse>> rejectCategory(@PathVariable UUID id,
+            @Valid @RequestBody CategoryDecisionInput in) {
+        return ok(categoryRequests.reject(id, in.reason()));
     }
 
     @GetMapping("/categories")

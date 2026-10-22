@@ -126,7 +126,10 @@
       "rejected": "ការពិនិត្យអត្តសញ្ញាណប័ណ្ណមិនបានជោគជ័យ៖ {reason}",
       "suspended": "VirtualBiz បានផ្អាកហាងរបស់អ្នក៖ {reason}",
       "reinstated": "ហាងរបស់អ្នកបានត្រឡប់មកទីផ្សារវិញ។",
-      "payout": "បានផ្ញើការទូទាត់ {amount} ទៅ {bakong}។"
+      "payout": "បានផ្ញើការទូទាត់ {amount} ទៅ {bakong}។",
+      "categoryApproved": "សំណើប្រភេទ “{asked}” របស់អ្នកត្រូវបានអនុម័ត៖ ហាងរបស់អ្នកឥឡូវស្ថិតក្រោម {category}។",
+      "categoryApprovedKept": "សំណើប្រភេទ “{asked}” របស់អ្នកត្រូវបានអនុម័តជា {category}។ អ្នកអាចប្តូរទៅវាក្នុងការកំណត់។",
+      "categoryRejected": "សំណើប្រភេទ “{asked}” របស់អ្នកត្រូវបានបដិសេធ៖ {reason}"
     }
   },
   "feedback": {

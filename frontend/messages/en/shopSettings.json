@@ -142,5 +142,34 @@
     "done": "Downloaded {file}",
     "forbidden": "Only the owner or a manager can export.",
     "failed": "Couldn't make the file. Try again."
+  },
+  "category": {
+    "title": "Marketplace category",
+    "sub": "Where shoppers find your shop on VirtualBiz.",
+    "current": "Category",
+    "save": "Save",
+    "saving": "Saving…",
+    "saved": "Category saved.",
+    "failed": "Couldn't save. Try again.",
+    "missing": "None of these fits your shop?",
+    "suggest": "Suggest a category",
+    "name": "Category name",
+    "namePh": "e.g. Pet shop",
+    "nameKh": "Name in Khmer (optional)",
+    "note": "Why is it needed? (optional)",
+    "notePh": "What you sell or do, so VirtualBiz can place it well",
+    "send": "Send suggestion",
+    "cancel": "Cancel",
+    "errName": "Enter at least 2 characters.",
+    "errExists": "This category exists already, or your shop has a suggestion waiting.",
+    "status": {
+      "PENDING": "Waiting",
+      "APPROVED": "Approved",
+      "REJECTED": "Declined",
+      "WITHDRAWN": "Withdrawn"
+    },
+    "approvedAs": "now “{name}”",
+    "waiting": "sent by {name}; VirtualBiz will reply in your inbox",
+    "withdraw": "Withdraw"
   }
 }

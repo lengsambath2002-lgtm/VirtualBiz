@@ -184,7 +184,10 @@
     "popularServices": "Popular services near you",
     "shopsNear": "Shops near {area}",
     "allShops": "All shops",
-    "topRated": "Top rated"
+    "topRated": "Top rated",
+    "catLabel": "Categories",
+    "catPrev": "Previous categories",
+    "catNext": "More categories"
   },
   "search": {
     "crumbSearch": "Search",

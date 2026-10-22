@@ -2,26 +2,17 @@
 
 import { useTranslations } from 'next-intl';
 
-import { Pagination } from '@/components/data';
 import { LoadFailed } from '@/components/feedback';
 import { useState } from 'react';
 
-import {
-  adminApi,
-  useAdminAction,
-  useIdPhoto,
-  useShop,
-  useShopActivity,
-} from '@/features/admin-shared/api';
+import { adminApi, useAdminAction, useIdPhoto, useShop } from '@/features/admin-shared/api';
 import { AuditList } from '@/features/admin-shared/components/AuditList';
 import { OrdersTable } from '@/features/admin-shared/components/OrdersTable';
 import {
   Avatar,
-  Empty,
   KV,
   Loading,
   PageHead,
-  PanelError,
   Pill,
   VerificationPill,
 } from '@/features/admin-shared/components/ui';
@@ -173,9 +164,20 @@ export function ShopPage({ id }: { id: string }) {
                 {t('suspend')}
               </button>
             )}
-            <Link className={cx(s.btn, s.btnGhost)} href={`/shop/${b.slug}`} target="_blank">
-              {t('viewShop')}
-            </Link>
+            {b.suspendedAt || b.verification === 'REJECTED' ? (
+              <button
+                type="button"
+                className={cx(s.btn, s.btnGhost)}
+                disabled
+                title={b.suspendedAt ? t('hiddenSuspended') : t('hiddenRejected')}
+              >
+                {t('viewShop')}
+              </button>
+            ) : (
+              <Link className={cx(s.btn, s.btnGhost)} href={`/shop/${b.slug}`} target="_blank">
+                {t('viewShop')}
+              </Link>
+            )}
           </>
         }
       />
@@ -252,7 +254,6 @@ export function ShopPage({ id }: { id: string }) {
             </div>
             <AuditList rows={d.history} />
           </section>
-          <ShopActivity id={id} />
         </div>
         <div style={{ display: 'grid', gap: 16 }}>
           <section className={s.panel}>
@@ -288,78 +289,34 @@ export function ShopPage({ id }: { id: string }) {
           </section>
           <section className={s.panel}>
             <div className={s.panelH}>
-              <h2>{t('team', { n: d.members.length })}</h2>
+              <h2>{t('owner')}</h2>
             </div>
             <div className={s.panelB} style={{ display: 'grid', gap: 10 }}>
-              {d.members.map((m) => (
-                <div key={(m.userId ?? '') + m.name} className={s.cw}>
-                  <Avatar name={m.name} size={30} />
+              {d.owner && (
+                <div className={s.cw}>
+                  <Avatar name={d.owner.name} size={30} />
                   <div style={{ minWidth: 0, flex: 1 }}>
                     <div>
-                      {m.userId ? <Link href={`/admin/users/${m.userId}`}>{m.name}</Link> : m.name}{' '}
-                      {!m.active && <Pill tone="neutral">{t('inactive')}</Pill>}
+                      {d.owner.userId ? (
+                        <Link href={`/admin/users/${d.owner.userId}`}>{d.owner.name}</Link>
+                      ) : (
+                        d.owner.name
+                      )}
                     </div>
                     <span className={cx(s.tiny, s.muted)}>
-                      {ta(`role.${m.role}` as 'role.OWNER')}
-                      {m.title && m.title !== ta(`role.${m.role}` as 'role.OWNER')
-                        ? ` · ${m.title}`
-                        : ''}
-                      {m.email ? ` · ${m.email}` : ''}
+                      {d.owner.email ?? ''}
+                      {d.owner.phone ? ` · ${formatPhone(d.owner.phone)}` : ''}
                     </span>
                   </div>
                 </div>
-              ))}
+              )}
+              <p className={cx(s.small, s.muted)} style={{ margin: 0 }}>
+                {t('teamManaged', { n: d.teamSize })}
+              </p>
             </div>
           </section>
         </div>
       </div>
     </>
-  );
-}
-
-/** What the shop's own team did (its activity log), ten at a time. */
-function ShopActivity({ id }: { id: string }) {
-  const t = useTranslations('admin.shop');
-  const ta = useTranslations('activity');
-  const f = useAdminFmt();
-  const [page, setPage] = useState(0);
-  const { data, error, refetch } = useShopActivity(id, page);
-  return (
-    <section className={s.panel}>
-      <div className={s.panelH}>
-        <h2>{t('teamActivity')}</h2>
-      </div>
-      {error && !data ? (
-        <PanelError error={error} retry={() => void refetch()} />
-      ) : !data ? (
-        <Loading />
-      ) : !data.items.length ? (
-        <Empty title={ta('empty')} sub={ta('emptyBody')} />
-      ) : (
-        <div className={s.tblWrap}>
-          <table>
-            <tbody>
-              {data.items.map((e) => (
-                <tr key={e.id}>
-                  <td className={cx(s.small, s.num)} style={{ whiteSpace: 'nowrap' }}>
-                    {f.dateTime(e.at)}
-                  </td>
-                  <td className={s.small}>{e.actorName}</td>
-                  <td className={s.small}>
-                    {ta.has(`actions.${e.action}` as 'actions.DATA_EXPORTED')
-                      ? ta(`actions.${e.action}` as 'actions.DATA_EXPORTED')
-                      : e.action}
-                    {e.targetLabel && (
-                      <span className={cx(s.tiny, s.muted, s.block)}>{e.targetLabel}</span>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-      {data && <Pagination page={page} size={10} total={data.total} onPage={setPage} />}
-    </section>
   );
 }

@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
 
-import { RecoveryCodes, securityApi, useStaffSecurity } from '@/features/admin-security';
+import { RecoveryCodes, securityApi, SetupStep, useStaffSecurity } from '@/features/admin-security';
 import { adminApi, useAdminAction, useStaff, useStaffInvites } from '@/features/admin-shared/api';
 import { Avatar, Loading, PanelError, Pill } from '@/features/admin-shared/components/ui';
 import { useAct } from '@/features/admin-shared/hooks/useAct';
@@ -34,6 +34,7 @@ function YourSecurity() {
   const t = useTranslations('admin.staff');
   const { data, refetch } = useStaffSecurity();
   const [codes, setCodes] = useState<string[] | null>(null);
+  const [turningOn, setTurningOn] = useState(false);
   const act = useAct();
   if (!data) return null;
   const low = data.enrolled && data.recoveryCodesLeft <= 3;
@@ -57,6 +58,27 @@ function YourSecurity() {
           </span>
           {low && <span className={cx(s.small, c.warnText, s.block)}>{t('codesLow')}</span>}
         </span>
+        {!data.enrolled && (
+          <button
+            type="button"
+            className={cx(s.btn, s.btnPrimary, s.btnSm)}
+            onClick={() => setTurningOn(true)}
+          >
+            {t('turnOn')}
+          </button>
+        )}
+        {turningOn && (
+          <div className={c.setupLayer}>
+            <SetupStep
+              status={{ ...data, mustChangePassword: false }}
+              onCancel={() => setTurningOn(false)}
+              onDone={() => {
+                setTurningOn(false);
+                void refetch();
+              }}
+            />
+          </div>
+        )}
         {data.enrolled && (
           <button
             type="button"

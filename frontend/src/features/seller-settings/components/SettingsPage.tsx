@@ -11,6 +11,7 @@ import { usePlatformSettings } from '@/lib/platform';
 import { useMyRole, useWorkspaceBusiness } from '@/features/account-switcher';
 import { patchBusinessApi } from '@/features/seller-shared/api';
 import {
+  CategoryPanel,
   DeliveryZonesPanel,
   ExportPanel,
   HoursPanel,
@@ -150,6 +151,7 @@ export function SettingsPage() {
           {business && (
             <>
               <LocationPanel business={business} save={saveBusiness} canEdit={role !== 'STAFF'} />
+              <CategoryPanel business={business} save={saveBusiness} canEdit={role !== 'STAFF'} />
               <HoursPanel business={business} save={saveBusiness} canEdit={role !== 'STAFF'} />
             </>
           )}

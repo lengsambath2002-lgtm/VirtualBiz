@@ -31,8 +31,8 @@ repeated here: orders keep their own event timeline and stock its movement log.
   `targetType`, `targetId`, `actorId`, `from` / `to`, `page`, `size`; newest first.
 - `GET /api/activity/export`: the same filters as CSV (UTF-8 BOM, formula-safe), up to 50,000 rows;
   taking it is logged.
-- `GET /api/admin/businesses/{id}/activity` (platform staff): a shop's log for support; shown on the
-  console's shop page as "Team activity in this shop".
+- The log is the shop's own: platform staff don't read it (they have the console's audit log for
+  their own actions). The console's shop page shows the owner and the team's size, not its people.
 
 `/seller/activity` and `/provider/activity` (linked from each Team page) show it with the shared list
 components: person, area, action and date filters, saved views (`shop.activity`), pages and export.

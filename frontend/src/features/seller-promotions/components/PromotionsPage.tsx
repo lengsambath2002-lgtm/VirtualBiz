@@ -144,7 +144,7 @@ export function PromotionsPage() {
                       <span className={cx(s.pill, s[STATE_PILL[st]])}>{t(`state.${st}`)}</span>
                     </td>
                     <td className={cx(s.num, s.small)}>
-                      {f.fmtD(p.startsAt)} – {f.fmtD(p.endsAt)}
+                      {f.fmtD(p.startsAt)} – {f.fmtD(lastDay(p.endsAt))}
                     </td>
                     <td className={cx(s.r, s.num)}>
                       {p.uses}
@@ -191,6 +191,8 @@ const isoDay = (t: number) => {
   const d = new Date(t);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
+/** The last day a promotion runs: its end is the moment it stops (the next day's start). */
+const lastDay = (endsAt: string) => Date.parse(endsAt) - 1;
 const fromIso = (v: string) => {
   const [y = 0, m = 1, d = 1] = v.split('-').map(Number);
   return new Date(y, m - 1, d).getTime();
@@ -214,7 +216,7 @@ export function PromoForm({ id }: { id?: string }) {
   const [targets, setTargets] = useState<string[]>(src?.targetIds ?? []);
   const [min, setMin] = useState(src?.minSpend ? String(src.minSpend) : '');
   const [start, setStart] = useState(isoDay(src ? Date.parse(src.startsAt) : t0));
-  const [end, setEnd] = useState(isoDay(src ? Date.parse(src.endsAt) : t0 + 14 * DAY));
+  const [end, setEnd] = useState(isoDay(src ? lastDay(src.endsAt) : t0 + 14 * DAY));
   const [limit, setLimit] = useState(src?.usageLimit ? String(src.usageLimit) : '');
   const [errs, setErrs] = useState<Record<string, string>>({});
 
@@ -274,7 +276,8 @@ export function PromoForm({ id }: { id?: string }) {
       ...(r.minSpend ? { minSpend: r.minSpend } : {}),
       ...(src?.maxDiscount ? { maxDiscount: src.maxDiscount } : {}),
       startsAt: new Date(r.start).toISOString(),
-      endsAt: new Date(r.end).toISOString(),
+      // The end date is the last day it runs: it stops at the start of the next day.
+      endsAt: new Date(r.end + DAY).toISOString(),
       uses: src?.uses ?? 0,
       ...(r.limit ? { usageLimit: r.limit } : {}),
     };
@@ -436,6 +439,7 @@ export function PromoForm({ id }: { id?: string }) {
             <label htmlFor="pf-end">{t('ends')}</label>
             <input id="pf-end" type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
             <div className={s.err}>{errs.p2}</div>
+            {!errs.p2 && <span className={s.hint}>{t('endsHint')}</span>}
           </div>
           <div className={s.field}>
             <label htmlFor="pf-limit">{t('limit')}</label>

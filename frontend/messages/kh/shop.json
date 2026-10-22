@@ -184,7 +184,10 @@
     "popularServices": "សេវាកម្មពេញនិយមក្បែរអ្នក",
     "shopsNear": "ហាងក្បែរ{area}",
     "allShops": "ហាងទាំងអស់",
-    "topRated": "ការវាយតម្លៃខ្ពស់បំផុត"
+    "topRated": "ការវាយតម្លៃខ្ពស់បំផុត",
+    "catLabel": "ប្រភេទ",
+    "catPrev": "ប្រភេទមុន",
+    "catNext": "ប្រភេទបន្ថែម"
   },
   "search": {
     "crumbSearch": "ស្វែងរក",

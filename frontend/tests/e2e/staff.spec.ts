@@ -41,17 +41,20 @@ test.describe('Staff security', () => {
     await dara.getByLabel('Type it again').fill(STRONG);
     await dara.getByRole('button', { name: 'Join the staff' }).click();
 
-    // The console asks for two-step sign-in before anything else.
+    // Two-step sign-in is optional: they're in the console, and turn it on in Settings → Staff.
+    await expect(dara.getByRole('heading', { name: 'Overview' })).toBeVisible({ timeout: 20_000 });
+    await dara.goto('/en/admin/settings?tab=staff');
+    await dara.getByRole('button', { name: 'Turn on two-step sign-in' }).click();
     await expect(dara.getByRole('heading', { name: 'Turn on two-step sign-in' })).toBeVisible();
     await expect(
       dara.getByRole('img', { name: 'QR code for your authenticator app' }),
     ).toBeVisible();
     const secret = (await dara.getByTestId('mfa-secret').textContent())!.replace(/\s/g, '');
     await dara.getByLabel('6-digit code from the app').fill('000000');
-    await dara.getByRole('button', { name: 'Turn on' }).click();
+    await dara.getByRole('button', { name: 'Turn on', exact: true }).click();
     await expect(dara.getByText(/That code isn't right/)).toBeVisible();
     await dara.getByLabel('6-digit code from the app').fill(await freshTotp(secret));
-    await dara.getByRole('button', { name: 'Turn on' }).click();
+    await dara.getByRole('button', { name: 'Turn on', exact: true }).click();
     await expect(dara.getByRole('heading', { name: 'Save your recovery codes' })).toBeVisible();
     const codes = (await dara.getByTestId('recovery-codes').innerText())
       .split(/\s+/)
@@ -61,7 +64,7 @@ test.describe('Staff security', () => {
     await expect(open).toBeDisabled();
     await dara.getByLabel("I've saved my recovery codes").check();
     await open.click();
-    await expect(dara.getByRole('heading', { name: 'Overview' })).toBeVisible();
+    await expect(dara.getByText('Two-step sign-in is on')).toBeVisible();
 
     // The team shows them with two-step on; the invite is used up.
     await page.reload();

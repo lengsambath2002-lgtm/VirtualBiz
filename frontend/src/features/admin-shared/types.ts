@@ -4,15 +4,18 @@ import type { BusinessType } from '@/lib/domain';
 export type PlatformRole = 'ADMIN' | 'SUPER_ADMIN';
 export type Verification = 'PENDING' | 'VERIFIED' | 'REJECTED';
 
-/** One row of a shop's activity log. */
-export interface ShopActivityEntry {
+/** A shop's suggestion for a marketplace category. */
+export interface CategoryRequest {
   id: string;
-  actorName: string;
-  action: string;
-  targetType: string;
-  targetLabel?: string | null;
-  details: Record<string, string | number | boolean>;
-  at: string;
+  businessId: string;
+  shopName?: string | null;
+  businessType: BusinessType;
+  name: string;
+  nameKh?: string | null;
+  note?: string | null;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED' | 'WITHDRAWN';
+  requestedByName: string;
+  createdAt: string;
 }
 
 export interface Page<T> {
@@ -54,6 +57,7 @@ export interface Overview {
     suspendedShops: number;
     suspendedUsers: number;
     lowReviews7d: number;
+    categoryRequests: number;
   };
   days: { date: string; gmv: number; orders: number }[];
   topShops: {
@@ -156,15 +160,16 @@ export interface ShopDetail {
     paidOut: number;
     payable: number;
   };
-  members: {
+  /** Who answers for the shop; its team is the shop's own (only the size is shown). */
+  owner?: {
     userId?: string;
     name: string;
     role: string;
-    title?: string;
     email?: string;
     phone?: string;
     active: boolean;
-  }[];
+  } | null;
+  teamSize: number;
   recentOrders: OrderRow[];
   history: AuditEntry[];
 }

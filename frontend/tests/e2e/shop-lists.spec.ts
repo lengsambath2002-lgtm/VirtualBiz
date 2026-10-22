@@ -17,7 +17,7 @@ test.describe('Shop lists', () => {
     await expect(page.getByText('Delivery: Pickup')).toBeVisible();
     await page.getByLabel('Rows per page').selectOption('10');
     await expect(page).toHaveURL(/size=10/);
-    expect(await table.locator('tbody tr').count()).toBeLessThanOrEqual(10);
+    await expect.poll(() => table.locator('tbody tr').count()).toBeLessThanOrEqual(10);
 
     const first = table.locator('tbody tr[tabindex="0"]').first();
     const number = (await first.locator('td').first().innerText()).match(/VB-\d+/)![0];

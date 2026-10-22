@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 
 import { useSession } from '@/lib/auth';
 import { Link } from '@/lib/i18n/navigation';
@@ -102,7 +102,7 @@ export function HomePage() {
       </section>
 
       <section className={s.sec}>
-        <div className={s.catrow}>
+        <CategoryRow>
           {categories.map((c) => (
             <Link
               key={c.id}
@@ -113,7 +113,7 @@ export function HomePage() {
               <span>{f.category(c.id)}</span>
             </Link>
           ))}
-        </div>
+        </CategoryRow>
       </section>
 
       {deals.length > 0 && (
@@ -207,5 +207,58 @@ export function HomePage() {
         </section>
       )}
     </>
+  );
+}
+
+/** The categories in one row that scrolls sideways, with arrows where there is a mouse. */
+function CategoryRow({ children }: { children: ReactNode }) {
+  const t = useTranslations('shop.home');
+  const row = useRef<HTMLDivElement>(null);
+  const [edge, setEdge] = useState({ start: true, end: false });
+  const measure = useCallback(() => {
+    const el = row.current;
+    if (!el) return;
+    setEdge({
+      start: el.scrollLeft <= 4,
+      end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 4,
+    });
+  }, []);
+  useEffect(() => {
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
+  }, [measure]);
+  const by = (dir: 1 | -1) => row.current?.scrollBy({ left: dir * row.current.clientWidth * 0.8 });
+  return (
+    <div className={s.catwrap}>
+      <button
+        type="button"
+        className={cn(s.catArrow, s.catPrev)}
+        aria-label={t('catPrev')}
+        disabled={edge.start}
+        onClick={() => by(-1)}
+      >
+        ‹
+      </button>
+      <div
+        ref={row}
+        className={s.catrow}
+        role="region"
+        aria-label={t('catLabel')}
+        tabIndex={0}
+        onScroll={measure}
+      >
+        {children}
+      </div>
+      <button
+        type="button"
+        className={cn(s.catArrow, s.catNext)}
+        aria-label={t('catNext')}
+        disabled={edge.end}
+        onClick={() => by(1)}
+      >
+        ›
+      </button>
+    </div>
   );
 }

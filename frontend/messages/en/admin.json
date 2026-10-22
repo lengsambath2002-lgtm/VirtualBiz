@@ -127,7 +127,8 @@
       "payouts": "Due to {n, plural, =0 {no shops} one {# shop} other {# shops}}",
       "lowReviews": "1–2★ reviews this week",
       "suspendedShops": "Suspended shops",
-      "suspendedUsers": "Suspended accounts"
+      "suspendedUsers": "Suspended accounts",
+      "categoryRequests": "Category suggestions"
     },
     "chartGmv": "Sales per day",
     "chartOrders": "Orders per day",
@@ -238,11 +239,12 @@
     "category": "Category",
     "slug": "Link",
     "about": "About",
-    "team": "Team ({n})",
     "inactive": "Inactive",
     "missing": "Shop not found",
     "backList": "All shops",
-    "teamActivity": "Team activity in this shop"
+    "teamManaged": "{n, plural, one {# person works} other {# people work}} in this shop. The owner runs the team; VirtualBiz doesn’t manage shop staff.",
+    "hiddenSuspended": "Customers can’t see a suspended shop.",
+    "hiddenRejected": "Customers can’t see a shop whose ID check was rejected."
   },
   "users": {
     "title": "Users",
@@ -440,7 +442,8 @@
       "maxDiscount": "Maximum discount (USD)",
       "usageLimit": "Total uses",
       "startsAt": "Starts",
-      "endsAt": "Ends"
+      "endsAt": "Ends",
+      "endsHint": "The code stops working by itself at this time; no need to end it."
     },
     "type": {
       "PERCENT": "Percent off",
@@ -573,7 +576,9 @@
       "MFA_ENABLED": "Turned on two-step sign-in",
       "MFA_RECOVERY_USED": "Signed in with a recovery code",
       "MFA_RECOVERY_REGENERATED": "Made new recovery codes",
-      "DATA_EXPORTED": "Exported a list"
+      "DATA_EXPORTED": "Exported a list",
+      "CATEGORY_REQUEST_APPROVED": "Approved a category suggestion",
+      "CATEGORY_REQUEST_REJECTED": "Declined a category suggestion"
     },
     "yesterday": "Yesterday",
     "byName": "by {name}",
@@ -590,7 +595,7 @@
     "tab": {
       "platform": "Platform",
       "categories": "Categories",
-      "staff": "Staff"
+      "staff": "Platform staff"
     },
     "readOnly": "Only a super-admin can change these.",
     "commission": "Commission",
@@ -648,7 +653,37 @@
     "colour": "Colour",
     "colourN": "Colour {n}",
     "catShowInMarket": "Show in the marketplace",
-    "catShowHint": "Shops can still choose a hidden category; it just isn't in the category bar."
+    "catShowHint": "Shops can still choose a hidden category; it just isn't in the category bar.",
+    "suggest": {
+      "title": "{n, plural, one {# category suggestion} other {# category suggestions}} from shops",
+      "sub": "Approve as a new category or one you have, or decline with a reason the shop sees.",
+      "col": {
+        "name": "Suggested",
+        "shop": "Shop",
+        "note": "Why",
+        "when": "Sent"
+      },
+      "type": {
+        "PRODUCT": "Product shop",
+        "SERVICE": "Service provider"
+      },
+      "approve": "Approve",
+      "reject": "Decline",
+      "approveTitle": "Approve “{name}” for {shop}?",
+      "as": "Add it as",
+      "asNew": "A new category",
+      "asExisting": "Existing: {name}",
+      "nameEn": "Name (English)",
+      "nameKh": "Name (Khmer)",
+      "move": "Move {shop} into it",
+      "approved": "“{name}” approved; the shop was told.",
+      "conflict": "Someone decided this suggestion already.",
+      "rejectTitle": "Decline “{name}”?",
+      "rejectBody": "The shop sees your reason in its inbox and settings.",
+      "rejectReason": "Reason for the shop",
+      "rejected": "Suggestion declined; the shop was told.",
+      "superOnly": "A super-admin decides"
+    }
   },
   "security": {
     "brand": "VirtualBiz Admin",
@@ -689,7 +724,8 @@
     "recoveryLabel": "Recovery code",
     "verifyConfirm": "Continue",
     "useRecovery": "Lost your phone? Use a recovery code",
-    "useApp": "Use the authenticator app instead"
+    "useApp": "Use the authenticator app instead",
+    "notNow": "Not now"
   },
   "staff": {
     "you": "Your sign-in security",
@@ -697,7 +733,7 @@
     "mfaOff": "Two-step sign-in is off",
     "codesLeft": "{n, plural, =0 {No recovery codes left} one {# recovery code left} other {# recovery codes left}}",
     "mfaOffRequired": "Required for staff: you'll set it up at your next sign-in.",
-    "mfaOffOptional": "Not required in this environment.",
+    "mfaOffOptional": "Optional: turn it on to be asked for a code from your phone at each sign-in.",
     "codesLow": "Running low: make new recovery codes.",
     "newCodes": "New recovery codes",
     "newCodesTitle": "Make new recovery codes?",
@@ -764,7 +800,8 @@
     "devLink": "Invite link",
     "devLinkHint": "Shown because email isn't set up in this environment. Send it privately: it lets the holder join the staff.",
     "copyLink": "Copy link",
-    "copied": "Copied"
+    "copied": "Copied",
+    "turnOn": "Turn on two-step sign-in"
   },
   "invite": {
     "metaTitle": "Join VirtualBiz staff",

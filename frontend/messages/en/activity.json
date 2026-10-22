@@ -53,7 +53,9 @@
     "PROMOTION_UPDATED": "Edited a promotion",
     "PROMOTION_ENDED": "Ended a promotion",
     "DATA_IMPORTED": "Imported a CSV",
-    "DATA_EXPORTED": "Exported a CSV"
+    "DATA_EXPORTED": "Exported a CSV",
+    "CATEGORY_REQUESTED": "Suggested a category",
+    "CATEGORY_DECIDED": "Category suggestion decided"
   },
   "detail": {
     "rows": "rows",

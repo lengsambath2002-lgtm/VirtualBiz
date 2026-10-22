@@ -328,9 +328,11 @@ public class MarketplaceService {
 
     private Business requireBusiness(String slugOrId) {
         Optional<Business> b = parse(slugOrId).flatMap(businesses::findById);
-        // A suspended shop's page is gone too, not only its listing.
+        // A suspended shop's page is gone too, not only its listing; so is a shop whose ID check was
+        // rejected (the same rule as the list, BusinessRepository.findVisible).
         return b.or(() -> businesses.findBySlug(slugOrId == null ? "" : slugOrId.trim().toLowerCase(Locale.ROOT)))
-                .filter(x -> !x.isSuspended())
+                .filter(x -> !x.isSuspended()
+                        && x.getVerification() != com.kosign.vbiz.business.domain.VerificationStatus.REJECTED)
                 .orElseThrow(() -> new BusinessException(StatusCode.BUSINESS_NOT_FOUND));
     }
 

@@ -79,15 +79,15 @@ class ShopActivityIntegrationTest extends BookingTestSupport {
     }
 
     @Test
-    void platform_staff_read_a_shops_activity_shop_people_cannot() throws Exception {
-        Session dana = login(DANA, DEMO_PASSWORD);
-        shop(dana, "PATCH", "/api/businesses/" + GLOW_BEAUTY_ID, Map.of("about", "Seen by support"));
+    void the_platform_does_not_read_a_shops_own_activity_log() throws Exception {
         Session admin = login("admin@virtualbiz.com", DEMO_PASSWORD);
-        JsonNode page = body(mvc.perform(get("/api/admin/businesses/" + GLOW_BEAUTY_ID + "/activity?size=3")
+        // Not a member of the shop: its team's log stays the shop's own.
+        assertThat(code(shop(admin, GLOW_BEAUTY_ID, "GET", "/api/activity", null))).isIn("FORBIDDEN_TENANT",
+                "FORBIDDEN");
+        JsonNode detail = body(mvc.perform(get("/api/admin/businesses/" + GLOW_BEAUTY_ID)
                 .header("Authorization", admin.bearer())).andReturn()).path("data");
-        assertThat(page.path("total").asLong()).isPositive();
-        assertThat(page.path("items").path(0).path("action").asText()).isEqualTo("SETTINGS_CHANGED");
-        assertThat(mvc.perform(get("/api/admin/businesses/" + GLOW_BEAUTY_ID + "/activity")
-                .header("Authorization", dana.bearer())).andReturn().getResponse().getStatus()).isEqualTo(403);
+        assertThat(detail.path("owner").path("role").asText()).isEqualTo("OWNER");
+        assertThat(detail.path("teamSize").asLong()).isPositive();
+        assertThat(detail.has("members")).isFalse();
     }
 }

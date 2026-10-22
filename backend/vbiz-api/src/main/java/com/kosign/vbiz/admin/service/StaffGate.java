@@ -22,7 +22,8 @@ import lombok.RequiredArgsConstructor;
  * What a staff member's session must have done before the console answers it, in order: a
  * forced password change ({@code PASSWORD_CHANGE_REQUIRED}), two-step sign-in set up
  * ({@code MFA_SETUP_REQUIRED}) and passed within {@code vbiz.staff.mfa-ttl} on this sign-in
- * ({@code MFA_REQUIRED}). The last two apply while {@code vbiz.staff.mfa-required}.
+ * ({@code MFA_REQUIRED}). While {@code vbiz.staff.mfa-required} is off, two-step sign-in is
+ * optional: nobody must set it up, and only staff who turned it on are asked for a code.
  */
 @Component
 @RequiredArgsConstructor
@@ -37,11 +38,11 @@ public class StaffGate {
         if (u.isMustChangePassword()) {
             throw new BusinessException(StatusCode.PASSWORD_CHANGE_REQUIRED);
         }
-        if (!props.mfaRequired()) {
-            return;
-        }
         if (!u.hasMfa()) {
-            throw new BusinessException(StatusCode.MFA_SETUP_REQUIRED);
+            if (props.mfaRequired()) {
+                throw new BusinessException(StatusCode.MFA_SETUP_REQUIRED);
+            }
+            return;
         }
         if (verifiedUntil(u.getId()).filter(t -> t.isAfter(clock.instant())).isEmpty()) {
             throw new BusinessException(StatusCode.MFA_REQUIRED);

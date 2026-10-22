@@ -126,7 +126,10 @@
       "rejected": "Your ID check did not pass: {reason}",
       "suspended": "VirtualBiz suspended your shop: {reason}",
       "reinstated": "Your shop is back on the marketplace.",
-      "payout": "Payout of {amount} sent to {bakong}."
+      "payout": "Payout of {amount} sent to {bakong}.",
+      "categoryApproved": "Your category suggestion “{asked}” was approved: your shop is now listed under {category}.",
+      "categoryApprovedKept": "Your category suggestion “{asked}” was approved as {category}. You can switch to it in Settings.",
+      "categoryRejected": "Your category suggestion “{asked}” was declined: {reason}"
     }
   },
   "feedback": {

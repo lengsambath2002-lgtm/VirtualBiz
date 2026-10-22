@@ -14,7 +14,7 @@ check. In order:
 |---|---|---|
 | A password of their own (bootstrapped account, or an invite accepted with a weak existing password) | `PASSWORD_CHANGE_REQUIRED` | "Set a new password" |
 | Two-step sign-in set up (while `vbiz.staff.mfa-required`) | `MFA_SETUP_REQUIRED` | QR code + key, then 10 recovery codes |
-| This sign-in passed the two-step check within `vbiz.staff.mfa-ttl` (12 h) | `MFA_REQUIRED` | "Two-step sign-in" code (or a recovery code) |
+| This sign-in passed the two-step check within `vbiz.staff.mfa-ttl` (12 h): everyone while `mfa-required`, otherwise staff who turned two-step on | `MFA_REQUIRED` | "Two-step sign-in" code (or a recovery code) |
 
 Signing in itself is unchanged for every method (password, email code, phone, Google, reset):
 the check is a step-up on the sign-in, kept per refresh-token **family** (`mfa_session`), so it
@@ -86,7 +86,7 @@ Without them the log warns that there is no super-admin.
 | Setting | Env | Default |
 |---|---|---|
 | `vbiz.security.data-key` | `VBIZ_DATA_KEY` (32 bytes, Base64, required outside local/test) | none |
-| `vbiz.staff.mfa-required` | | `true` (test profile `false`, except StaffSecurityIntegrationTest) |
+| `vbiz.staff.mfa-required` | `VBIZ_STAFF_MFA_REQUIRED` | `false`: two-step sign-in is optional (staff turn it on in Settings → Staff); `true` makes it compulsory for every staff member (StaffSecurityIntegrationTest runs with `true`, OptionalStaffMfaTest with the default) |
 | `vbiz.staff.mfa-ttl` | | `PT12H` |
 | `vbiz.staff.invite-ttl` | | `P7D` |
 | `vbiz.staff.app-url` | `VBIZ_APP_URL` | `http://localhost:3000` (local `:3001`) |
@@ -97,9 +97,10 @@ Changing `VBIZ_DATA_KEY` makes every enrolled key unreadable: staff then need a 
 
 ## Local profile
 
-The demo staff (password `Demo@1234`) have two-step sign-in with fixed keys, set by
-`LocalStaffMfaSeed` (local profile only). Add the key to an authenticator app by hand
-(time-based, 6 digits):
+The demo staff sign in with password `Demo@1234` alone while two-step sign-in is optional (the
+default); `LocalStaffMfaSeed` takes them off the demo keys below if an earlier run had set them.
+With `VBIZ_STAFF_MFA_REQUIRED=true` the seed gives them these fixed keys instead; add the key to an
+authenticator app by hand (time-based, 6 digits):
 
 | Account | Key |
 |---|---|

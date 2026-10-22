@@ -82,12 +82,15 @@ function Frame({
   title,
   lead,
   children,
+  onCancel,
 }: {
   step: number;
   of: number;
   title: string;
   lead: string;
   children: ReactNode;
+  /** Opened by choice (Settings → Staff): Cancel instead of Sign out. */
+  onCancel?: () => void;
 }) {
   const t = useTranslations('admin.security');
   const { signOut } = useSession();
@@ -109,15 +112,21 @@ function Frame({
         <h1 id="gate-title">{title}</h1>
         <p className={g.lead}>{lead}</p>
         {children}
-        <button
-          type="button"
-          className={g.linkBtn}
-          onClick={() => {
-            void signOut().then(() => router.push('/sign-in'));
-          }}
-        >
-          {t('signOut')}
-        </button>
+        {onCancel ? (
+          <button type="button" className={g.linkBtn} onClick={onCancel}>
+            {t('notNow')}
+          </button>
+        ) : (
+          <button
+            type="button"
+            className={g.linkBtn}
+            onClick={() => {
+              void signOut().then(() => router.push('/sign-in'));
+            }}
+          >
+            {t('signOut')}
+          </button>
+        )}
       </section>
     </div>
   );
@@ -197,7 +206,16 @@ function PasswordStep({ status, onDone }: { status: StaffSecurity; onDone: () =>
   );
 }
 
-function SetupStep({ status, onDone }: { status: StaffSecurity; onDone: () => void }) {
+/** Turn on two-step sign-in: QR code and key, a first code, then the recovery codes. */
+export function SetupStep({
+  status,
+  onDone,
+  onCancel,
+}: {
+  status: StaffSecurity;
+  onDone: () => void;
+  onCancel?: () => void;
+}) {
   const t = useTranslations('admin.security');
   const [key, setKey] = useState<{ secret: string; otpauthUri: string } | null>(null);
   const [code, setCode] = useState('');
@@ -250,7 +268,13 @@ function SetupStep({ status, onDone }: { status: StaffSecurity; onDone: () => vo
     }
   };
   return (
-    <Frame step={total} of={total} title={t('setupTitle')} lead={t('setupLead')}>
+    <Frame
+      step={total}
+      of={total}
+      title={t('setupTitle')}
+      lead={t('setupLead')}
+      {...(onCancel ? { onCancel } : {})}
+    >
       {key ? (
         <div className={g.qrRow}>
           <div className={g.qr}>
@@ -427,6 +451,7 @@ export function StaffGate({ children }: { children: ReactNode }) {
   }
   if (data.mustChangePassword) return <PasswordStep status={data} onDone={done} />;
   if (data.mfaRequired && !data.enrolled) return <SetupStep status={data} onDone={done} />;
-  if (data.mfaRequired && !data.verified) return <VerifyStep onDone={done} />;
+  // Required for everyone, or turned on by this person: this sign-in needs its code.
+  if ((data.mfaRequired || data.enrolled) && !data.verified) return <VerifyStep onDone={done} />;
   return <>{children}</>;
 }

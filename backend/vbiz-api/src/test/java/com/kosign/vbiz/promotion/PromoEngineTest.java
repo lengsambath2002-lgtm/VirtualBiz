@@ -73,6 +73,9 @@ class PromoEngineTest {
         Promotion p = promo(PromotionType.FIXED, "5", null, null);
         p.setEndsAt(NOW);
         assertThat(PromoEngine.evaluate(p, List.of(line(A, "30")), NOW).reason()).isEqualTo(Reason.ENDED);
+        // Up to the last moment before its end, it still applies: nobody has to end it by hand.
+        p.setEndsAt(NOW.plusMillis(1));
+        assertThat(PromoEngine.evaluate(p, List.of(line(A, "30")), NOW).applied()).isTrue();
         p = promo(PromotionType.FIXED, "5", null, null);
         p.setStartsAt(NOW.plusSeconds(60));
         assertThat(PromoEngine.evaluate(p, List.of(line(A, "30")), NOW).reason()).isEqualTo(Reason.SCHEDULED);

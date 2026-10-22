@@ -30,7 +30,7 @@ public record OverviewResponse(
 
     /** What is waiting for staff. */
     public record Queues(long pendingVerifications, long stuckOrders, BigDecimal payoutsDue, long payoutShops,
-            long suspendedShops, long suspendedUsers, long lowReviews7d) {
+            long suspendedShops, long suspendedUsers, long lowReviews7d, long categoryRequests) {
     }
 
     public record DayPoint(LocalDate date, BigDecimal gmv, long orders) {

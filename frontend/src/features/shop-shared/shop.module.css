@@ -933,17 +933,72 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.catrow {
-  display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
-  gap: 12px;
+.catwrap {
+  position: relative;
+  /* In a grid section the row would otherwise grow to all its items and scroll the page. */
+  min-width: 0;
+  max-width: 100%;
 }
-@media (max-width: 900px) {
-  .catrow {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+/* One row that scrolls sideways (swipe, trackpad, or the arrows), snapping to a category. */
+.catrow {
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  padding: 6px 2px;
+  -webkit-mask-image: linear-gradient(
+    90deg,
+    transparent 0,
+    #000 24px,
+    #000 calc(100% - 24px),
+    transparent
+  );
+  mask-image: linear-gradient(90deg, transparent 0, #000 24px, #000 calc(100% - 24px), transparent);
+}
+.catrow::-webkit-scrollbar {
+  display: none;
+}
+.catrow:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.catArrow {
+  position: absolute;
+  top: 26px;
+  z-index: 1;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: var(--g-fill-strong);
+  box-shadow: var(--g-shadow);
+  color: var(--ink);
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  font-size: 18px;
+}
+.catArrow:disabled {
+  display: none;
+}
+.catPrev {
+  left: -6px;
+}
+.catNext {
+  right: -6px;
+}
+@media (hover: none), (max-width: 700px) {
+  .catArrow {
+    display: none;
   }
 }
 .cat {
+  flex: 0 0 96px;
+  scroll-snap-align: start;
   display: grid;
   justify-items: center;
   gap: 8px;

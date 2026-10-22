@@ -702,7 +702,8 @@
         "targets": "Pick at least one.",
         "endBefore": "Must end after it starts.",
         "endPast": "End date is in the past."
-      }
+      },
+      "endsHint": "It runs through this day and ends by itself at midnight."
     },
     "emptyTitle": "No promotions yet",
     "emptyBody": "Create one to run a sale or give customers a code.",

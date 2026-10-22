@@ -252,6 +252,7 @@ function PromoForm({ promo, onClose }: { promo: PlatformPromo | null; onClose: (
               value={f.endsAt}
               onChange={(e) => set('endsAt', e.target.value)}
             />,
+            t('f.endsHint'),
           )}
         </div>
         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>

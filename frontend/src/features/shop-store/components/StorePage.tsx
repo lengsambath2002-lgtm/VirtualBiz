@@ -1,9 +1,11 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
-import { EmptyView, ErrorView } from '@/components/feedback';
+import { EmptyView, ErrorView, isNotFound } from '@/components/feedback';
+import { api, type MarketShop } from '@/lib/api';
 import { Link } from '@/lib/i18n/navigation';
 import { cn } from '@/lib/utils/cn';
 
@@ -15,6 +17,7 @@ import {
   useShopReviewsLoad,
 } from '@/features/shop-shared/components/Reviews';
 import { Crumbs, NotFound, Ph, Star } from '@/features/shop-shared/components/ui';
+import { shopToView } from '@/features/shop-shared/catalog';
 import { useFmt, useNeedAuth, useShopData } from '@/features/shop-shared/hooks';
 import { dist, hoursOn, freeOver } from '@/features/shop-shared/rules';
 import s from '@/features/shop-shared/shop.module.css';
@@ -241,10 +244,30 @@ function StoreView({ sh }: { sh: ShopView }) {
   );
 }
 
+/**
+ * A shop's page. The marketplace list holds shops with something listed; a shop that is open but
+ * hasn't listed anything yet (new, or seen from the console) is asked for by itself, so its page
+ * still opens. Only a shop the API refuses (unknown or suspended) is "not found".
+ */
 export function StorePage({ id }: { id: string }) {
   const tm = useTranslations('shop.common');
   const { shop } = useShopData();
-  const sh = shop(id);
-  if (!sh) return <NotFound title={tm('missing.shop')} />;
-  return <StoreView key={id} sh={sh} />;
+  const listed = shop(id);
+  const { data, error, refetch, isPending } = useQuery({
+    queryKey: ['marketplace', 'shop', id],
+    queryFn: () =>
+      api.get<MarketShop>(`/marketplace/shops/${encodeURIComponent(id)}`, { auth: false }),
+    enabled: !listed,
+    retry: (n, e) => !isNotFound(e) && n < 1,
+  });
+  if (listed) return <StoreView key={id} sh={listed} />;
+  if (error) {
+    return isNotFound(error) ? (
+      <NotFound title={tm('missing.shop')} />
+    ) : (
+      <ErrorView error={error} retry={() => void refetch()} />
+    );
+  }
+  if (isPending || !data) return <div aria-busy="true" style={{ minHeight: 320 }} />;
+  return <StoreView key={id} sh={shopToView(data)} />;
 }

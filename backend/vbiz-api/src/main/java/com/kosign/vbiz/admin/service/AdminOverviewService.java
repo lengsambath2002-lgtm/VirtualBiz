@@ -51,7 +51,7 @@ public class AdminOverviewService {
                 queries.period(from, end),
                 queries.period(start(today.minusDays(2L * n - 1)), from),
                 queries.counts(),
-                new OverviewResponse.Queues(q[0], q[1], due, dueShops, q[2], q[3], q[4]),
+                new OverviewResponse.Queues(q[0], q[1], due, dueShops, q[2], q[3], q[4], q[5]),
                 queries.days(today.minusDays(n - 1L), today),
                 queries.topShops(from, 5),
                 queries.categorySales(from));

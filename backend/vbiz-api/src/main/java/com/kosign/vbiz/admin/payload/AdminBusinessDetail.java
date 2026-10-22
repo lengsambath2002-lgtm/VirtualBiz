@@ -17,7 +17,9 @@ public record AdminBusinessDetail(
         String verifiedByName,
         String suspendedReason,
         Stats stats,
-        List<Member> members,
+        /** Who answers for the shop. Its team is the shop's own business: only the size is shown. */
+        Member owner,
+        long teamSize,
         List<AdminOrderRow> recentOrders,
         List<AuditEntry> history) {
 

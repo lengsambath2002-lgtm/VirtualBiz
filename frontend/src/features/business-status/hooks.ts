@@ -12,6 +12,8 @@ export const STATUS_KINDS = [
   'BUSINESS_SUSPENDED',
   'BUSINESS_REINSTATED',
   'PAYOUT_SENT',
+  'CATEGORY_APPROVED',
+  'CATEGORY_REJECTED',
 ] as const;
 
 /** The text of one of those inbox entries, or null for any other kind. */
@@ -33,6 +35,12 @@ export function useStatusNotifText() {
             amount: formatUsd(Number(p.amount ?? 0)),
             bakong: p.bakongId ?? '',
           });
+        case 'CATEGORY_APPROVED':
+          return p.moved === 'false'
+            ? t('categoryApprovedKept', { asked: p.asked ?? '', category: p.category ?? '' })
+            : t('categoryApproved', { asked: p.asked ?? '', category: p.category ?? '' });
+        case 'CATEGORY_REJECTED':
+          return t('categoryRejected', { asked: p.asked ?? '', reason: p.reason ?? '' });
         default:
           return null;
       }

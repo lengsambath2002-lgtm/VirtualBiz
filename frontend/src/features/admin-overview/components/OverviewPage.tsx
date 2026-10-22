@@ -314,6 +314,13 @@ export function OverviewPage() {
           tone="warn"
         />
         <Queue
+          icon="tag"
+          n={q.categoryRequests}
+          label={t('q.categoryRequests')}
+          href="/admin/settings?tab=categories"
+          tone="warn"
+        />
+        <Queue
           icon="store"
           n={q.suspendedShops}
           label={t('q.suspendedShops')}

@@ -45,6 +45,8 @@ public class ShopActivityLog {
     public static final String TEAM_RESTORED = "TEAM_RESTORED";
     public static final String TEAM_ADDED = "TEAM_ADDED";
     public static final String SETTINGS_CHANGED = "SETTINGS_CHANGED"; // SHOP
+    public static final String CATEGORY_REQUESTED = "CATEGORY_REQUESTED";
+    public static final String CATEGORY_DECIDED = "CATEGORY_DECIDED";
     public static final String PRODUCT_CREATED = "PRODUCT_CREATED"; // PRODUCT
     public static final String PRODUCT_UPDATED = "PRODUCT_UPDATED";
     public static final String PRODUCT_STATUS = "PRODUCT_STATUS";
@@ -106,14 +108,10 @@ public class ShopActivityLog {
             LocalDate from, LocalDate to) {
     }
 
+    /** The shop's own log, for its owner and managers only (the platform doesn't read it). */
     @Transactional(readOnly = true)
     public PageResponse<ShopActivityResponse> page(Filter f, Integer page, Integer size) {
-        return pageOf(access.manager().businessId(), f, page, size);
-    }
-
-    /** Any shop's log; the caller checks who may read it (the console: platform staff). */
-    @Transactional(readOnly = true)
-    public PageResponse<ShopActivityResponse> pageOf(UUID businessId, Filter f, Integer page, Integer size) {
+        UUID businessId = access.manager().businessId();
         PageQuery pq = PageQuery.of(page, size, null, Map.of("at", "at"), "-at", null);
         var result = rows.findAll(spec(businessId, f), PageRequest.of(pq.page(), pq.size(), order()));
         return new PageResponse<>(result.getContent().stream().map(ShopActivityLog::toResponse).toList(),

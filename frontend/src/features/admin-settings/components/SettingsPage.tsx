@@ -17,6 +17,7 @@ import { formatKhr, usdToKhr } from '@/lib/money';
 import type { BusinessType } from '@/lib/domain';
 
 import c from './settings.module.css';
+import { CategorySuggestions } from './CategorySuggestions';
 import { StaffTab } from './StaffTab';
 
 const KEYS = ['tab'] as const;
@@ -330,6 +331,7 @@ function CategoriesTab() {
 
   return (
     <>
+      <CategorySuggestions categories={data} isSuper={isSuper} />
       {!isSuper && <ReadOnlyNote />}
       {(['PRODUCT', 'SERVICE'] as const).map((type) => {
         const list = data.filter((x) => x.businessType === type);

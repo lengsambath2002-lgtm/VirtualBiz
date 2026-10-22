@@ -63,4 +63,17 @@ test.describe('Not found, errors and empty states', () => {
     await page.goto('/en/admin/nowhere');
     await expect(page.getByRole('link', { name: 'Back to the console' })).toBeVisible();
   });
+
+  test('a shop with nothing listed yet still has its page; an unknown one is not found', async ({
+    page,
+  }) => {
+    await page.goto('/en/shop/sreyleak-bakery');
+    await expect(page.getByRole('heading', { name: /Sreyleak Bakery/ }).first()).toBeVisible({
+      timeout: 20_000,
+    });
+    await page.goto('/en/shop/no-such-shop-anywhere');
+    await expect(page.getByRole('heading', { name: 'Shop not found' })).toBeVisible({
+      timeout: 20_000,
+    });
+  });
 });

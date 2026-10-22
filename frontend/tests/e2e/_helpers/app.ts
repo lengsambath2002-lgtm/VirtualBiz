@@ -34,9 +34,13 @@ export async function signIn(page: Page, next = '/home', account: Account = DEMO
   await expect(page).toHaveURL(new RegExp(`/en${next.replace(/[/?]/g, '\\$&')}`), {
     timeout: 20_000,
   });
-  // Staff: the console asks for this sign-in's two-step code first.
+  // Staff with two-step sign-in on (optional unless VBIZ_STAFF_MFA_REQUIRED): enter a code
+  // when the console asks for one.
   const key = DEMO_TOTP[account.email];
-  if (key && next.startsWith('/admin')) await passTwoStep(page, key);
+  if (key && next.startsWith('/admin')) {
+    const gate = page.getByRole('heading', { name: 'Two-step sign-in' });
+    if (await gate.isVisible({ timeout: 3_000 }).catch(() => false)) await passTwoStep(page, key);
+  }
 }
 
 /** Enter a fresh authenticator code at the console's "Two-step sign-in" step. */

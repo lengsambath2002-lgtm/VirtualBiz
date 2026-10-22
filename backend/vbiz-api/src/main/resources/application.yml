@@ -100,8 +100,9 @@ vbiz:
     data-key: ${VBIZ_DATA_KEY:}
   # docs/api/phase9-staff-security.md
   staff:
-    # Staff must use two-step sign-in (TOTP) to open the console.
-    mfa-required: true
+    # true: every staff member must use two-step sign-in (TOTP) to open the console. false: it's
+    # optional, and only staff who turned it on are asked for a code (docs/api/phase9-staff-security.md).
+    mfa-required: ${VBIZ_STAFF_MFA_REQUIRED:false}
     # How long a two-step check lasts before the console asks again.
     mfa-ttl: PT12H
     invite-ttl: P7D

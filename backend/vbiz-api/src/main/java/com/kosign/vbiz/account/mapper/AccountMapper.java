@@ -28,7 +28,7 @@ public final class AccountMapper {
     }
 
     public static PrefsDto toPrefs(User u) {
-        return new PrefsDto(u.isPrefDeals(), u.isPrefPromos());
+        return new PrefsDto(u.isPrefDeals(), u.isPrefPromos(), u.isPrefEmails());
     }
 
     public static AddressResponse toAddress(Address a) {

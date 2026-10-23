@@ -7,11 +7,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * Off, they're only logged (tests, or an environment without a provider yet).
  */
 @ConfigurationProperties(prefix = "vbiz.mail")
-public record MailProperties(boolean enabled, String from) {
+public record MailProperties(boolean enabled, String from, String appUrl) {
 
     public MailProperties {
         if (from == null || from.isBlank()) {
             from = "VirtualBiz <no-reply@virtualbiz.com.kh>";
+        }
+        if (appUrl == null || appUrl.isBlank()) {
+            appUrl = "http://localhost:3000";
         }
     }
 }

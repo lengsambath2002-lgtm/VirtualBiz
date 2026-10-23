@@ -46,6 +46,11 @@ public class OrderNotifier {
                 sellerRoute(o));
     }
 
+    /** The customer's confirmation that the shop has their order (with the total). */
+    public void placed(Order o, String shopName) {
+        toCustomer(o, NotificationKind.ORDER_PLACED, shopName, Map.of("amount", Money.usd(o.getTotal()).toPlainString()));
+    }
+
     public void accepted(Order o, String shopName) {
         toCustomer(o, NotificationKind.ORDER_ACCEPTED, shopName, Map.of());
     }

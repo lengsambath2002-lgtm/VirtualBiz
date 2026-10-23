@@ -90,7 +90,8 @@
     "bookingDeclined": "{shop} can't take your {name} booking, {when}. {reason} {message}",
     "bookingCancelled": "{shop} cancelled your {name} booking, {when}. {reason}",
     "bookingChanged": "{shop} moved your {name} booking to {when}",
-    "bookingReminder": "Reminder: {name} at {shop}, {when}"
+    "bookingReminder": "Reminder: {name} at {shop}, {when}",
+    "orderPlaced": "Order {number} placed with {shop}"
   },
   "loc": {
     "title": "Where should we deliver?",
@@ -768,7 +769,9 @@
     "fewerBusinesses": "Show fewer",
     "setPassword": "Set a password",
     "setPasswordHint": "You sign in with an email code or Google. Add a password to sign in with your email and password too; codes keep working.",
-    "pwSetDone": "Password set. You can sign in with it now."
+    "pwSetDone": "Password set. You can sign in with it now.",
+    "prefEmails": "Email me about orders, bookings and my shops",
+    "prefEmailsHint": "Also sent to {email}: every update in your inbox, and your shops’ new orders, bookings, reviews and payouts."
   },
   "address": {
     "title": "Add address",

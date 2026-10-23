@@ -18,6 +18,7 @@ import com.kosign.vbiz.common.list.PageQuery;
 import com.kosign.vbiz.common.api.StatusCode;
 import com.kosign.vbiz.common.error.BusinessException;
 import com.kosign.vbiz.notification.domain.Notification;
+import com.kosign.vbiz.notification.event.NotificationCreated;
 import com.kosign.vbiz.notification.payload.NotificationResponse;
 import com.kosign.vbiz.notification.repository.NotificationRepository;
 import com.kosign.vbiz.notification.sse.StreamEvent;
@@ -40,6 +41,7 @@ public class NotificationService {
         Notification n = create(kind, params, route);
         n.setUserId(userId);
         n = notifications.save(n);
+        events.publishEvent(new NotificationCreated(n));
         events.publishEvent(StreamEvent.toUser(userId, "notification", Map.of("id", n.getId().toString(),
                 "kind", kind)));
         return n;
@@ -50,6 +52,7 @@ public class NotificationService {
         Notification n = create(kind, params, route);
         n.setBusinessId(businessId);
         n = notifications.save(n);
+        events.publishEvent(new NotificationCreated(n));
         events.publishEvent(StreamEvent.toBusiness(businessId, "notification",
                 Map.of("id", n.getId().toString(), "kind", kind)));
         return n;

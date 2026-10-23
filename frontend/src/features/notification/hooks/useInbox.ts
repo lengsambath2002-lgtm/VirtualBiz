@@ -13,6 +13,7 @@ import { useMyNotifications, useReadAllNotifications, useReadNotification } from
 
 /** Server kinds and their message keys under `shop.notif`. */
 const SERVER_KINDS: Record<string, string> = {
+  ORDER_PLACED: 'orderPlaced',
   ORDER_ACCEPTED: 'orderAccepted',
   ORDER_READY_PICKUP: 'readyPickup',
   ORDER_ON_THE_WAY: 'onTheWay',

@@ -55,6 +55,10 @@ public class User extends BaseEntity {
     @Column(name = "pref_promos", nullable = false)
     private boolean prefPromos = false;
 
+    /** Emails about orders, bookings and shops (every inbox notification). */
+    @Column(name = "pref_emails", nullable = false)
+    private boolean prefEmails = true;
+
     @Column(name = "failed_login_count", nullable = false)
     private int failedLoginCount;
 

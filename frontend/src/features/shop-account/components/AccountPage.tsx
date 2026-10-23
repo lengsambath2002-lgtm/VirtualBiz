@@ -891,7 +891,7 @@ function Settings() {
   const [logout, setLogout] = useState(false);
   if (!user) return null;
   const hasPassword = user.signInMethods.includes('PASSWORD');
-  const setPref = (k: 'deals' | 'promos', v: boolean) => {
+  const setPref = (k: 'deals' | 'promos' | 'emails', v: boolean) => {
     if (!prefs) return;
     savePrefs.mutate(
       { ...prefs, [k]: v },
@@ -914,6 +914,19 @@ function Settings() {
               <small>{t('alwaysOn')}</small>
             </span>
             <input className={a.switch} type="checkbox" checked disabled readOnly />
+          </label>
+          <label className={a.toggle}>
+            <span>
+              {t('prefEmails')}
+              <small>{t('prefEmailsHint', { email: user.email ?? '' })}</small>
+            </span>
+            <input
+              className={a.switch}
+              type="checkbox"
+              checked={prefs?.emails ?? true}
+              disabled={!prefs || !user.email}
+              onChange={(e) => setPref('emails', e.target.checked)}
+            />
           </label>
           <label className={a.toggle}>
             <span>{t('prefDeals')}</span>

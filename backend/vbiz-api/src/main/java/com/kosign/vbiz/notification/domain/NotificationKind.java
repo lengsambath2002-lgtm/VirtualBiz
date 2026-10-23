@@ -7,6 +7,7 @@ package com.kosign.vbiz.notification.domain;
 public final class NotificationKind {
 
     // customer
+    public static final String ORDER_PLACED = "ORDER_PLACED";
     public static final String ORDER_ACCEPTED = "ORDER_ACCEPTED";
     public static final String ORDER_READY_PICKUP = "ORDER_READY_PICKUP";
     public static final String ORDER_ON_THE_WAY = "ORDER_ON_THE_WAY";

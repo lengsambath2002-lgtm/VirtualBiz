@@ -80,6 +80,9 @@ public class AccountService {
         User user = require(userId);
         user.setPrefDeals(prefs.deals());
         user.setPrefPromos(prefs.promos());
+        if (prefs.emails() != null) {
+            user.setPrefEmails(prefs.emails());
+        }
         return AccountMapper.toPrefs(user);
     }
 

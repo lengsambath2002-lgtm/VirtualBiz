@@ -401,6 +401,7 @@ public class OrderService {
                 u.getEmail(), o.getAddress() == null ? null : o.getAddress().district()));
         ProductSettings ps = shop.getProductSettings();
         notifier.newOrder(o, customerName);
+        notifier.placed(o, shop.getName());
         if (ps != null && Boolean.TRUE.equals(ps.autoAccept())) {
             acceptNow(o, null, shop.getName());
         } else {

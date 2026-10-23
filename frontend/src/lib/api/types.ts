@@ -54,6 +54,8 @@ export type PhoneVerifyResult =
 export interface Prefs {
   deals: boolean;
   promos: boolean;
+  /** Emails about orders, bookings and shops (every inbox notification). */
+  emails: boolean;
 }
 
 /** `GET /api/me`. */

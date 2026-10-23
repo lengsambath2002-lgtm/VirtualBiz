@@ -12,6 +12,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-mail'
+    // Firebase Auth (verify ID tokens, accounts) and Cloud Messaging (push): docs/ops/firebase.md
+    implementation 'com.google.firebase:firebase-admin:9.4.3'
 
     // OpenAPI document + Swagger UI at /api/docs
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.9'

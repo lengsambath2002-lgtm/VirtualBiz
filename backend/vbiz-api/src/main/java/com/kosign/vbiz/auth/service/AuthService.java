@@ -30,6 +30,8 @@ import com.kosign.vbiz.common.helper.Emails;
 import com.kosign.vbiz.common.helper.PhoneNumbers;
 import com.kosign.vbiz.common.security.IssuedToken;
 import com.kosign.vbiz.common.security.JwtTokenService;
+import com.kosign.vbiz.firebase.FirebaseGateway;
+import com.kosign.vbiz.firebase.FirebaseIdentity;
 
 import lombok.RequiredArgsConstructor;
 
@@ -53,6 +55,7 @@ public class AuthService {
     private final GoogleTokenVerifier google;
     private final OtpProperties otpProps;
     private final AuthProperties authProps;
+    private final FirebaseGateway firebase;
 
     // ── Lookup / password ─────────────────────────────────────────────────────────────
 
@@ -175,6 +178,9 @@ public class AuthService {
         User user = users.require(ticket.getUserId());
         user.setPasswordHash(passwordEncoder.encode(password));
         user.setMustChangePassword(false);
+        if (user.getFirebaseUid() != null) {
+            firebase.setPassword(user.getFirebaseUid(), password);
+        }
         loginAttempts.reset(user);
         return signIn(user, SignInMethod.PASSWORD, client);
     }
@@ -219,6 +225,57 @@ public class AuthService {
     public AuthResult google(String idToken, ClientInfo client) {
         GoogleIdentity id = google.verify(idToken);
         return googleSignIn(Emails.normalizeOrThrow(id.email(), "idToken"), id.name(), id.picture(), client);
+    }
+
+    // ── Firebase (docs/ops/firebase.md) ───────────────────────────────────────────────
+
+    /**
+     * Signs in with a Firebase ID token (Google, or email + password): the VirtualBiz account with that
+     * email, made on first sign-in. An email + password account must have confirmed its email.
+     */
+    @Transactional
+    public AuthResult firebase(String idToken, String name, ClientInfo client) {
+        FirebaseIdentity id = firebase.verify(idToken);
+        if (id.email() == null || id.email().isBlank()) {
+            throw BusinessException.withDetail(StatusCode.INVALID_TOKEN, "idToken", "The account has no email");
+        }
+        if (!id.google() && !id.emailVerified()) {
+            throw new BusinessException(StatusCode.EMAIL_NOT_VERIFIED);
+        }
+        String email = Emails.normalizeOrThrow(id.email(), "idToken");
+        String display = name != null && name.trim().length() >= 2 ? name.trim()
+                : id.name() != null && !id.name().isBlank() ? id.name().trim() : Emails.localPart(email);
+        User user = users.findByEmail(email).orElseGet(() -> User.create(truncate(display, 80), email, null));
+        user.setFirebaseUid(id.uid());
+        if (id.google() && user.getAvatarUrl() == null && id.picture() != null && id.picture().length() <= 500) {
+            user.setAvatarUrl(id.picture());
+        }
+        return signIn(user, id.google() ? SignInMethod.GOOGLE : SignInMethod.PASSWORD, client);
+    }
+
+    /**
+     * An account whose password VirtualBiz keeps (made before Firebase) signs in for the first time
+     * through Firebase: its password is checked here (with the same lockout as the sign-in form),
+     * then its Firebase account gets the same password. The web app then signs in with Firebase.
+     */
+    @Transactional(noRollbackFor = BusinessException.class)
+    public void firebaseMigrate(String rawEmail, String password) {
+        String email = Emails.normalizeOrThrow(rawEmail, "email");
+        User user = users.findByEmail(email).orElseThrow(() -> BusinessException.withDetail(
+                StatusCode.INVALID_CREDENTIALS, "email", "No account for this email", Map.of("reason", "NO_ACCOUNT")));
+        loginAttempts.assertNotLocked(user);
+        if (!user.hasPassword()) {
+            throw BusinessException.withDetail(StatusCode.INVALID_CREDENTIALS, "password", "No password set",
+                    Map.of("reason", "NO_PASSWORD", "methods",
+                            user.getSignInMethods().stream().map(Enum::name).sorted().toList()));
+        }
+        if (!passwordEncoder.matches(password, user.getPasswordHash())) {
+            loginAttempts.recordFailure(user.getId()); // always throws
+        }
+        loginAttempts.reset(user);
+        requireNotSuspended(user);
+        user.setFirebaseUid(firebase.ensurePasswordUser(email, password, user.getName()));
+        users.save(user);
     }
 
     /** Local/dev stand-in for Google. {@code NOT_FOUND} unless {@code vbiz.auth.google-dev-enabled}. */

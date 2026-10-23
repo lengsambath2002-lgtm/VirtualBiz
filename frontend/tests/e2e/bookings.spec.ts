@@ -18,7 +18,7 @@ test.describe('bookings', () => {
     });
 
     // The first day after today with a free time (Srey Leak is off some days).
-    const days = page.locator('button[aria-pressed]').filter({ hasText: /^\D+\s*\d+$/ });
+    const days = page.getByRole('radiogroup', { name: 'Date' }).getByRole('radio');
     const free = page.locator('button:not([disabled])').filter({ hasText: /^\d\d:\d\d$/ });
     for (let i = 1; i < 7; i++) {
       await days.nth(i).click();

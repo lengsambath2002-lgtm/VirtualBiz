@@ -2,7 +2,6 @@ package com.kosign.vbiz.notification.service;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Async;
@@ -11,11 +10,7 @@ import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.kosign.vbiz.account.domain.User;
-import com.kosign.vbiz.account.repository.UserRepository;
 import com.kosign.vbiz.business.domain.Business;
-import com.kosign.vbiz.business.domain.BusinessMember;
-import com.kosign.vbiz.business.domain.MemberRole;
-import com.kosign.vbiz.business.repository.BusinessMemberRepository;
 import com.kosign.vbiz.business.repository.BusinessRepository;
 import com.kosign.vbiz.mail.Email;
 import com.kosign.vbiz.mail.EmailSender;
@@ -38,9 +33,8 @@ public class NotificationEmails {
 
     private final EmailSender mail;
     private final MailProperties props;
-    private final UserRepository users;
+    private final NotificationRecipients people;
     private final BusinessRepository businesses;
-    private final BusinessMemberRepository members;
 
     @Async(MailAsyncConfig.EXECUTOR)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)
@@ -69,15 +63,9 @@ public class NotificationEmails {
 
     private Set<String> recipients(Notification n) {
         Set<String> out = new LinkedHashSet<>();
-        if (n.getUserId() != null) {
-            users.findById(n.getUserId()).filter(NotificationEmails::wantsEmail).map(User::getEmail).ifPresent(out::add);
-        }
-        if (n.getBusinessId() != null) {
-            for (BusinessMember m : members.findByBusiness(n.getBusinessId())) {
-                if (m.isActive() && m.getUserId() != null && m.getRole() != MemberRole.STAFF) {
-                    UUID uid = m.getUserId();
-                    users.findById(uid).filter(NotificationEmails::wantsEmail).map(User::getEmail).ifPresent(out::add);
-                }
+        for (User u : people.of(n)) {
+            if (wantsEmail(u)) {
+                out.add(u.getEmail());
             }
         }
         return out;

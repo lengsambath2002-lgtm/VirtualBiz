@@ -142,6 +142,12 @@ vbiz:
     # Outside production: send only to these addresses or domains (comma-separated); others are
     # logged and skipped. Empty: everyone.
     only-to: ${VBIZ_MAIL_ONLY_TO:}
+  # docs/ops/firebase.md: sign-in with Google and email + password through Firebase Auth, and push
+  # notifications through Firebase Cloud Messaging. Off: VirtualBiz's own sign-in, no push.
+  firebase:
+    enabled: ${VBIZ_FIREBASE_ENABLED:false}
+    credentials: ${VBIZ_FIREBASE_CREDENTIALS:}
+    project-id: ${VBIZ_FIREBASE_PROJECT_ID:}
   # docs/api/phase10-shop-team.md: shop owners invite their team.
   team:
     invite-ttl: P7D

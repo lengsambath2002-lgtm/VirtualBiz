@@ -30,6 +30,7 @@ public enum StatusCode {
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, ErrorType.AUTH, "Invalid or expired token"),
     INVALID_CREDENTIALS(HttpStatus.UNAUTHORIZED, ErrorType.AUTH, "Invalid email or password"),
     ACCOUNT_SUSPENDED(HttpStatus.FORBIDDEN, ErrorType.AUTH, "This account is suspended"),
+    EMAIL_NOT_VERIFIED(HttpStatus.FORBIDDEN, ErrorType.AUTH, "Confirm your email address first"),
     ACCOUNT_LOCKED(HttpStatus.UNAUTHORIZED, ErrorType.AUTH, "Sign-in is temporarily locked after repeated failed attempts"),
     REFRESH_TOKEN_INVALID(HttpStatus.UNAUTHORIZED, ErrorType.AUTH, "Refresh token invalid or expired"),
     OTP_INVALID(HttpStatus.UNAUTHORIZED, ErrorType.AUTH, "Verification code is incorrect"),

@@ -7,7 +7,7 @@ import { fallbackErrorKey, isApiError, metaNumber } from '@/lib/api';
 import { Link } from '@/lib/i18n/navigation';
 import { cn } from '@/lib/utils/cn';
 
-import { login } from '../api';
+import { passwordSignIn } from '../util/passwordSignIn';
 import { useFlowActions, usePageHref } from '../hooks/useFlowActions';
 import { useFlowStore } from '../store';
 import { emailOk, LOCK_MS } from '../util/rules';
@@ -137,7 +137,7 @@ export function LoginStep({ initialEmail }: { initialEmail: string }) {
     setFailed(null);
     setBusy(true);
     try {
-      const session = await login(v, pw);
+      const session = await passwordSignIn(v, pw);
       useFlowStore.getState().patch({ email: v });
       signIn(session, 'password');
     } catch (err) {

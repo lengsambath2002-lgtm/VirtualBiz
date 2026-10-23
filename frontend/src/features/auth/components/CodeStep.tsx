@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils/cn';
 
 import { loginWithCode, verifyPhone, verifyReset, verifySignup } from '../api';
 import { useFlowActions } from '../hooks/useFlowActions';
+import { linkFirebaseLogin } from '../util/passwordSignIn';
 import { useFlowStore } from '../store';
 import type { CodePurpose, OtpState, Step } from '../types';
 import { CODE_LENGTH } from '../util/rules';
@@ -87,7 +88,9 @@ export function CodeStep({ otp }: { otp: OtpState }) {
     const f = useFlowStore.getState();
     try {
       if (o.purpose === 'verify') {
-        signIn(await verifySignup(o.to, code), 'signup');
+        const session = await verifySignup(o.to, code);
+        if (f.pending) linkFirebaseLogin(f.pending.email, f.pending.password);
+        signIn(session, 'signup');
       } else if (o.purpose === 'login') {
         signIn(await loginWithCode(o.to, code), 'emailCode');
       } else if (o.purpose === 'reset') {

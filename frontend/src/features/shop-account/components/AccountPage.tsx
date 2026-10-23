@@ -12,6 +12,7 @@ import { fallbackErrorKey, isApiError, type ApiError } from '@/lib/api';
 import { useSession } from '@/lib/auth';
 import { Link } from '@/lib/i18n/navigation';
 import { formatPhone, isValidPhone, normalizePhone } from '@/lib/utils/phone';
+import { usePush } from '@/lib/firebase';
 import { cn } from '@/lib/utils/cn';
 import { useImageUpload } from '@/lib/hooks/useImageUpload';
 import { photoBg } from '@/lib/utils/photo';
@@ -880,6 +881,32 @@ function Profile() {
   );
 }
 
+/** Push notifications on this browser (Firebase Cloud Messaging, docs/ops/firebase.md). */
+function PushRow() {
+  const t = useTranslations('shop.account');
+  const tc = useTranslations('common');
+  const { state, busy, turnOn, turnOff } = usePush();
+  if (state === null || state === 'unsupported') return null;
+  const hint = state === 'denied' ? t('prefPushDenied') : t('prefPushHint');
+  return (
+    <label className={a.toggle}>
+      <span>
+        {t('prefPush')}
+        <small>{hint}</small>
+      </span>
+      <input
+        className={a.switch}
+        type="checkbox"
+        checked={state === 'on'}
+        disabled={busy || state === 'denied'}
+        onChange={(e) =>
+          (e.target.checked ? turnOn() : turnOff()).catch((err: unknown) => toast(tc(fallbackErrorKey(err))))
+        }
+      />
+    </label>
+  );
+}
+
 function Settings() {
   const t = useTranslations('shop.account');
   const tt = useTranslations('shop.toast');
@@ -928,6 +955,7 @@ function Settings() {
               onChange={(e) => setPref('emails', e.target.checked)}
             />
           </label>
+          <PushRow />
           <label className={a.toggle}>
             <span>{t('prefDeals')}</span>
             <input

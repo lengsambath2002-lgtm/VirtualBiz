@@ -50,3 +50,11 @@ export const googleSignIn = (idToken: string) => post<AuthSession>('/google', { 
 /** Local / dev only: stands in for Google until a client id is configured. */
 export const googleDevSignIn = (email: string, name: string) =>
   post<AuthSession>('/google/dev', { email, name });
+
+/** A Firebase ID token (Google, or email + password) becomes a VirtualBiz session. Errors: INVALID_TOKEN, EMAIL_NOT_VERIFIED. */
+export const firebaseSignIn = (idToken: string, name?: string) =>
+  post<AuthSession>('/firebase', { idToken, name });
+
+/** Checks the password VirtualBiz keeps and gives the account's Firebase login the same one. Errors as `login`. */
+export const firebaseMigrate = (email: string, password: string) =>
+  post<void>('/firebase/migrate', { email, password });

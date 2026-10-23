@@ -111,3 +111,12 @@ These pin down details the tables above leave open. None of them changes a shape
   - Try Dana, phone `093828130`, PASSWORD + PHONE_SMS.
   - Nita Gadget Store `22222222-2222-4222-8222-000000000001` (slug `nita-gadget`, PRODUCT, VERIFIED) and Glow Beauty Salon `…0002` (slug `glow-beauty`, SERVICE, VERIFIED).
   - The other 7 marketplace shops (slug = the mock id, e.g. `happy-coffee`), each owned by a placeholder account `<slug>@shops.virtualbiz.com` (password `Demo@1234`).
+
+## Firebase sign-in and push tokens (docs/ops/firebase.md)
+
+| Method | Path | Auth | Body | Result |
+|---|---|---|---|---|
+| POST | `/api/auth/firebase` | public | `{ idToken, name? }` | Session (as `/api/auth/login`). Errors: `INVALID_TOKEN`, `EMAIL_NOT_VERIFIED` (403, email + password account whose email isn't confirmed), `ACCOUNT_SUSPENDED`, `NOT_CONFIGURED` |
+| POST | `/api/auth/firebase/migrate` | public | `{ email, password }` | `{}`. Checks the password VirtualBiz keeps and gives the Firebase login the same one. Errors as `/api/auth/login` (`INVALID_CREDENTIALS` with `reason`/`triesLeft`, `ACCOUNT_LOCKED`) |
+| POST | `/api/me/push-tokens` | signed in | `{ token, platform? }` (`web` \| `android` \| `ios`) | `{}`. Registers this device; a token already registered moves to this account |
+| DELETE | `/api/me/push-tokens` | signed in | `{ token }` | `{}`. Only the caller's own token is removed |

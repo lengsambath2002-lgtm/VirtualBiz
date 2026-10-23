@@ -13,6 +13,8 @@ import {
   type AuthSession,
 } from '@/lib/api';
 import type { SignInMethod, User } from '@/lib/domain';
+import { firebaseSignOut } from '@/lib/firebase/auth';
+import { forgetPushOnSignOut } from '@/lib/firebase/usePush';
 
 /**
  * Client session shared by every surface (sign-in, customer, seller, provider).
@@ -50,8 +52,11 @@ export const useSessionStore = create<SessionState>()(
       },
       updateUser: (patch) => set((s) => (s.user ? { user: { ...s.user, ...patch } } : s)),
       signOut: async () => {
+        // While still signed in: this browser stops getting the account's push notifications.
+        await Promise.race([forgetPushOnSignOut(), new Promise((r) => setTimeout(r, 1500))]);
         setAccessToken(null);
         set({ user: null, method: null, validated: true });
+        void firebaseSignOut();
         try {
           await apiFetch<void>('/auth/logout', { method: 'POST', auth: false });
         } catch {

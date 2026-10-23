@@ -12,6 +12,7 @@ import com.kosign.vbiz.account.mapper.AccountMapper;
 import com.kosign.vbiz.account.payload.ChangePasswordRequest;
 import com.kosign.vbiz.account.payload.MeResponse;
 import com.kosign.vbiz.account.payload.PrefsDto;
+import com.kosign.vbiz.firebase.FirebaseGateway;
 import com.kosign.vbiz.account.payload.UpdateMeRequest;
 import com.kosign.vbiz.account.payload.UserResponse;
 import com.kosign.vbiz.account.repository.UserRepository;
@@ -35,6 +36,7 @@ public class AccountService {
     private final StorageService storage;
     private final PasswordPolicy passwordPolicy;
     private final PasswordEncoder passwordEncoder;
+    private final FirebaseGateway firebase;
 
     @Transactional(readOnly = true)
     public MeResponse me(UUID userId) {
@@ -106,6 +108,9 @@ public class AccountService {
         user.setPasswordHash(passwordEncoder.encode(req.newPassword()));
         user.setMustChangePassword(false);
         user.addSignInMethod(SignInMethod.PASSWORD);
+        if (user.getFirebaseUid() != null) {
+            firebase.setPassword(user.getFirebaseUid(), req.newPassword());
+        }
     }
 
     private User require(UUID userId) {

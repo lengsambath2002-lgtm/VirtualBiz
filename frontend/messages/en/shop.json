@@ -309,7 +309,6 @@
     "date": "Date",
     "today": "Today",
     "time": "Time",
-    "open": "· {n} open",
     "groups": {
       "morning": "Morning",
       "afternoon": "Afternoon",
@@ -318,7 +317,6 @@
     "unavailable": "{time} unavailable",
     "fullyBooked": "Fully booked this day.",
     "tryDay": "Try {date}",
-    "km": "{km} km",
     "sumService": "Service",
     "sumWith": "With",
     "sumWhen": "When",
@@ -326,12 +324,18 @@
     "total": "Total",
     "continue": "Continue",
     "freeCancel": "Free cancellation up to {h, plural, one {# hour} other {# hours}} before",
-    "saved": "Saved",
-    "saveForLater": "Save for later",
     "moreAt": "More at {shop}",
     "slotsFailed": "We couldn’t load the free times.",
     "slotsRetry": "Try again",
-    "slotsLoading": "Loading free times"
+    "slotsLoading": "Loading free times",
+    "duration": "Duration",
+    "pros": "{n, plural, =0 {Professionals} one {Professional} other {Professionals}}",
+    "hoursBefore": "{h, plural, one {# h} other {# h}} before",
+    "freeCancelShort": "Free cancellation",
+    "chooseTimeSub": "Pick who, which day and what time. You confirm on the next step.",
+    "openN": "{n, plural, =0 {None free} one {# free} other {# free}}",
+    "yourBooking": "Your booking",
+    "pickToContinue": "Pick a time to continue"
   },
   "confirm": {
     "crumb": "Confirm booking",
@@ -788,7 +792,10 @@
     "setPasswordHint": "You sign in with an email code or Google. Add a password to sign in with your email and password too; codes keep working.",
     "pwSetDone": "Password set. You can sign in with it now.",
     "prefEmails": "Email me about orders, bookings and my shops",
-    "prefEmailsHint": "Also sent to {email}: every update in your inbox, and your shops’ new orders, bookings, reviews and payouts."
+    "prefEmailsHint": "Also sent to {email}: every update in your inbox, and your shops’ new orders, bookings, reviews and payouts.",
+    "prefPush": "Push notifications on this device",
+    "prefPushHint": "Orders, bookings and messages pop up here even when VirtualBiz is closed.",
+    "prefPushDenied": "Notifications are blocked for VirtualBiz in this browser. Allow them in the browser’s site settings to turn this on."
   },
   "address": {
     "title": "Add address",

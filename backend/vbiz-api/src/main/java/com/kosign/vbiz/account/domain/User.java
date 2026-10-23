@@ -59,6 +59,10 @@ public class User extends BaseEntity {
     @Column(name = "pref_emails", nullable = false)
     private boolean prefEmails = true;
 
+    /** The Firebase Authentication account this one signs in with (docs/ops/firebase.md). */
+    @Column(name = "firebase_uid", length = 128)
+    private String firebaseUid;
+
     @Column(name = "failed_login_count", nullable = false)
     private int failedLoginCount;
 

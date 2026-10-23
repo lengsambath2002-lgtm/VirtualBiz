@@ -11,6 +11,7 @@ import com.kosign.vbiz.auth.payload.AuthResult;
 import com.kosign.vbiz.auth.payload.AuthSessionResponse;
 import com.kosign.vbiz.auth.payload.EmailCodeRequest;
 import com.kosign.vbiz.auth.payload.GoogleDevRequest;
+import com.kosign.vbiz.auth.payload.FirebaseSignInRequest;
 import com.kosign.vbiz.auth.payload.GoogleRequest;
 import com.kosign.vbiz.auth.payload.LoginRequest;
 import com.kosign.vbiz.auth.payload.LookupRequest;
@@ -112,6 +113,20 @@ public class AuthController extends BaseController {
     public ResponseEntity<ApiResponse<AuthSessionResponse>> google(
             @Valid @RequestBody GoogleRequest req, HttpServletRequest http, HttpServletResponse res) {
         return session(auth.google(req.idToken(), client(http)), res);
+    }
+
+    /** A Firebase sign-in (Google, or email + password) becomes a VirtualBiz session (docs/ops/firebase.md). */
+    @PostMapping("/firebase")
+    public ResponseEntity<ApiResponse<AuthSessionResponse>> firebase(
+            @Valid @RequestBody FirebaseSignInRequest req, HttpServletRequest http, HttpServletResponse res) {
+        return session(auth.firebase(req.idToken(), req.name(), client(http)), res);
+    }
+
+    /** First Firebase sign-in of an account whose password VirtualBiz keeps: its Firebase account gets it. */
+    @PostMapping("/firebase/migrate")
+    public ResponseEntity<ApiResponse<EmptyJsonResponse>> firebaseMigrate(@Valid @RequestBody LoginRequest req) {
+        auth.firebaseMigrate(req.email(), req.password());
+        return ok();
     }
 
     @PostMapping("/google/dev")

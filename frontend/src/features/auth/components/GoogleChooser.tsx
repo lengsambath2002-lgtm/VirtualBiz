@@ -6,7 +6,9 @@ import { useRef, useState, type FormEvent } from 'react';
 import { fallbackErrorKey, isApiError } from '@/lib/api';
 import { cn } from '@/lib/utils/cn';
 
-import { googleDevSignIn, googleSignIn } from '../api';
+import { firebaseCode, firebaseEnabled, googleIdToken } from '@/lib/firebase';
+
+import { firebaseSignIn, googleDevSignIn, googleSignIn } from '../api';
 import { useAuthPage, useFlowActions } from '../hooks/useFlowActions';
 import { FIRST_STEP } from '../types';
 import { emailOk, initials } from '../util/rules';
@@ -45,7 +47,8 @@ export function GoogleChooser({ mode }: { mode: 'list' | 'new' }) {
   const t = useTranslations('auth.google');
   const page = useAuthPage();
   const { go } = useFlowActions();
-  const real = !!GOOGLE_CLIENT_ID;
+  const viaFirebase = firebaseEnabled();
+  const real = viaFirebase || !!GOOGLE_CLIENT_ID;
   return (
     <Sheet label={t('title')} onClose={() => go(FIRST_STEP[page])}>
       <div className={s.gHead}>
@@ -53,8 +56,42 @@ export function GoogleChooser({ mode }: { mode: 'list' | 'new' }) {
         <h2>{mode === 'list' || real ? t('title') : t('newTitle')}</h2>
         <p>{t('sub')}</p>
       </div>
-      {real ? <RealGoogle /> : mode === 'list' ? <AccountList /> : <NewAccount />}
+      {viaFirebase ? <FirebaseGoogle /> : real ? <RealGoogle /> : mode === 'list' ? <AccountList /> : <NewAccount />}
     </Sheet>
+  );
+}
+
+/** Firebase: Google's account chooser in a popup, then `/api/auth/firebase` (docs/ops/firebase.md). */
+function FirebaseGoogle() {
+  const locale = useLocale();
+  const t = useTranslations('auth.google');
+  const { signIn } = useFlowActions();
+  const message = useGoogleError();
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const start = async () => {
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      signIn(await firebaseSignIn(await googleIdToken(locale)), 'google');
+    } catch (e) {
+      setBusy(false);
+      const code = firebaseCode(e);
+      if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') return;
+      setError(code === 'auth/popup-blocked' ? t('errPopup') : code ? t('errUnavailable') : message(e));
+    }
+  };
+
+  return (
+    <div className={s.form}>
+      {error && <Alert kind="bad">{error}</Alert>}
+      <Btn type="button" variant="ghost" onClick={start} busy={busy} busyLabel={t('signingIn')}>
+        <GoogleIcon />
+        {t('continue')}
+      </Btn>
+    </div>
   );
 }
 

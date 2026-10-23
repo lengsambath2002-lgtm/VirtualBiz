@@ -7,14 +7,13 @@ import { Link, useRouter } from '@/lib/i18n/navigation';
 import { cn } from '@/lib/utils/cn';
 
 import { Ic } from '@/features/shop-shared/components/Ic';
-import { ProductCard, useToggleSave } from '@/features/shop-shared/components/cards';
+import { OpenLabel, ProductCard, useToggleSave } from '@/features/shop-shared/components/cards';
 import { ReviewsBlock, useReviewRows } from '@/features/shop-shared/components/Reviews';
 import { NotFound, Ph, Star, StarRow, tintClass } from '@/features/shop-shared/components/ui';
 import { useFmt, useNeedAuth, useShopData } from '@/features/shop-shared/hooks';
 import {
   DAY_MS,
   SLOT_GROUPS,
-  dist,
   hm,
   hueOf,
   initials,
@@ -24,11 +23,13 @@ import {
 } from '@/features/shop-shared/rules';
 import s from '@/features/shop-shared/shop.module.css';
 import { useIsSaved } from '@/features/shop-shared/saved';
-import { useShopStore } from '@/features/shop-shared/store';
+import { toast, useShopStore } from '@/features/shop-shared/store';
 import type { BookingDraft, Item, ShopBooking, ShopView } from '@/features/shop-shared/types';
 import { Gallery, ItemCrumbs } from '@/features/shop-product/components/ProductPage';
+import p from '@/features/shop-product/components/product.module.css';
 
 import { isoOfLocal, useAvailability } from '../queries';
+import v from './service.module.css';
 
 /** Bookings that still hold their slot. */
 export const isUpcoming = (b: ShopBooking) =>
@@ -63,9 +64,7 @@ function ServiceView({ it, sh }: { it: Item; sh: ShopView }) {
   const tp = useTranslations('shop.product');
   const f = useFmt();
   const router = useRouter();
-  const { items, districts } = useShopData();
-  const area = useShopStore((st) => st.area);
-  const here = useShopStore((st) => st.here);
+  const { items } = useShopData();
   const saved = useIsSaved(it.id);
   const draft = useShopStore((st) => st.bk);
   const needAuth = useNeedAuth();
@@ -89,211 +88,303 @@ function ServiceView({ it, sh }: { it: Item; sh: ShopView }) {
   const t0 = today0();
   const dur = it.dur ?? 30;
   const cancelH = sh.booking?.freeCancelHours ?? 2;
+  const price = net(it);
+  const when =
+    b.slot !== null ? `${f.fmtD(t0 + b.day * DAY_MS)}, ${hm(b.slot)}–${hm(b.slot + dur)}` : null;
+
+  const book = () => needAuth('book', () => router.push(`/s/${it.id}/book`));
+  const toPicker = () => document.getElementById('book')?.scrollIntoView({ behavior: 'smooth' });
+  const share = async () => {
+    const url = window.location.href;
+    try {
+      if (navigator.share) await navigator.share({ title: it.name, url });
+      else {
+        await navigator.clipboard.writeText(url);
+        toast(tp('linkCopied'));
+      }
+    } catch {
+      /* the share sheet was closed */
+    }
+  };
 
   return (
-    <>
+    <div className={p.page}>
       <ItemCrumbs it={it} sh={sh} />
-      <div className={cn(s.pdp, s.svc, s.glassMat)}>
+      <div className={p.top}>
         <Gallery it={it} sh={sh} />
-        <div className={s.info}>
-          <h1>{it.name}</h1>
-          <div className={s.metaRow}>
-            <StarRow n={Math.round(it.rating)} />
-            <a href="#reviews" className="num">
-              {tp('ratingReviews', { rating: it.rating.toFixed(1), count: rows.length })}
-            </a>
-            <span className={s.sep} />
-            <span style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}>
-              <Ic name="clock" size={14} /> {t('minutes', { n: dur })}
-            </span>
-            <span className={s.sep} />
-            <span className="num">{t('booked', { n: kfmt(it.sold) })}</span>
+        <div className={p.buy}>
+          <div className={p.titleRow}>
+            <h1>{it.name}</h1>
+            <div className={p.meta}>
+              <StarRow n={Math.round(it.rating)} />
+              <a href="#reviews" className="num">
+                {tp('ratingReviews', { rating: it.rating.toFixed(1), count: rows.length })}
+              </a>
+              <span className={p.metaSep} />
+              <span className="num">{t('booked', { n: kfmt(it.sold) })}</span>
+              <span className={p.iconBtns}>
+                <button
+                  type="button"
+                  className={p.iconBtn}
+                  aria-label={tp('share')}
+                  onClick={() => void share()}
+                >
+                  <Ic name="share" size={18} />
+                </button>
+                <button
+                  type="button"
+                  className={p.iconBtn}
+                  aria-label={saved ? tp('unsave') : tp('save')}
+                  aria-pressed={saved}
+                  onClick={() => toggleSave(it.id)}
+                >
+                  <Ic name="heart" size={18} />
+                </button>
+              </span>
+            </div>
           </div>
-          <div className={s.pbox}>
-            <div className={cn(s.price, it.off > 0 && s.sale)}>
-              <strong>{f.money(net(it))}</strong>
+
+          <div className={p.priceCard}>
+            <div className={cn(p.priceRow, it.off > 0 && p.sale)}>
+              <strong className="num">{f.money(price)}</strong>
               {it.off > 0 && (
                 <>
-                  <s>{f.money(it.price)}</s>
-                  <span className={cn(s.pill, s.bad)}>-{it.off}%</span>
+                  <s className="num">{f.money(it.price)}</s>
+                  <span className={p.off}>-{it.off}%</span>
                 </>
               )}
             </div>
-            <span className={cn(s.small, s.muted)}>{t('payAtShop')}</span>
+            <span className={cn(p.khr, 'num')}>
+              ≈ {f.khr(price)} · {t('payAtShop')}
+            </span>
           </div>
-          <p className={s.desc}>{it.desc}</p>
-          <div className={cn(s.panel, s.glassMat)} style={{ gap: 16 }}>
+
+          <ul className={v.facts}>
+            <li>
+              <Ic name="clock" size={18} />
+              <span>
+                <b className="num">{t('minutes', { n: dur })}</b>
+                <small>{t('duration')}</small>
+              </span>
+            </li>
+            <li>
+              <Ic name="user" size={18} />
+              <span>
+                <b className="num">{staff.length || '—'}</b>
+                <small>{t('pros', { n: staff.length })}</small>
+              </span>
+            </li>
+            <li>
+              <Ic name="undo" size={18} />
+              <span>
+                <b className="num">{t('hoursBefore', { h: cancelH })}</b>
+                <small>{t('freeCancelShort')}</small>
+              </span>
+            </li>
+          </ul>
+
+          {it.desc.trim() && <p className={v.lead}>{it.desc}</p>}
+
+          <button className={cn(s.btn, s.btnPrimary, s.btnLg, v.cta)} onClick={toPicker}>
+            <Ic name="clock" size={18} />
+            {t('chooseTime')}
+          </button>
+
+          <Link className={p.shopCard} href={`/shop/${sh.id}`}>
+            <Ph hue={sh.hue} icon={sh.icon} photo={sh.logo} />
+            <div>
+              <strong>{sh.name}</strong>
+              <span>
+                <Star n={sh.rating} /> {sh.rating.toFixed(1)} · <OpenLabel shop={sh} />
+              </span>
+              <span className={v.addr}>
+                <Ic name="pin" size={13} /> {sh.addr}, {f.district(sh.area)}
+              </span>
+            </div>
+            <span className={cn(s.btn, s.btnGhost, s.btnSm)}>{tp('visitShop')}</span>
+          </Link>
+        </div>
+      </div>
+
+      <nav className={p.secNav} aria-label={tp('sections')}>
+        <a href="#book">{t('chooseTime')}</a>
+        <a href="#reviews">{tp('reviewsN', { n: rows.length })}</a>
+        {more.length > 0 && <a href="#more">{tp('moreFromShort')}</a>}
+      </nav>
+
+      <section id="book" className={v.book} aria-label={t('chooseTime')}>
+        <div className={v.picker}>
+          <header className={v.pickerH}>
             <h2>{t('chooseTime')}</h2>
-            {staff.length > 0 && (
-              <div className={s.optG}>
-                <span className={s.lbl}>{t('professional')}</span>
-                <div className={s.staff}>
-                  {[{ id: '', name: '' }, ...staff].map((p) => (
-                    <button
-                      key={p.id}
-                      className={cn(b.staff === p.id && s.on)}
-                      aria-pressed={b.staff === p.id}
-                      onClick={() => setB({ staff: p.id, slot: null })}
-                    >
-                      <span className={cn(s.avS, tintClass(p.id ? hueOf(p.name) : 6))}>
-                        {p.id ? initials(p.name) : <Ic name="user" size={16} />}
-                      </span>
-                      {p.id ? p.name : t('anyone')}
-                    </button>
-                  ))}
-                </div>
+            <p>{t('chooseTimeSub')}</p>
+          </header>
+
+          {staff.length > 0 && (
+            <div className={v.step}>
+              <div className={v.stepH}>
+                <span className={v.num}>1</span>
+                <h3>{t('professional')}</h3>
               </div>
-            )}
-            <div className={s.optG}>
-              <span className={s.lbl}>{t('date')}</span>
-              <div className={s.days}>
-                {Array.from({ length: 7 }, (_, k) => {
-                  const d = t0 + k * DAY_MS;
-                  return (
-                    <button
-                      key={k}
-                      className={cn(s.day, k === b.day && s.on)}
-                      aria-pressed={k === b.day}
-                      onClick={() => setB({ day: k, slot: null })}
-                    >
-                      {k === 0 ? t('today') : f.weekday(d)}
-                      <b className="num">{new Date(d).getDate()}</b>
-                    </button>
-                  );
-                })}
+              <div className={v.staff} role="radiogroup" aria-label={t('professional')}>
+                {[{ id: '', name: '' }, ...staff].map((m) => (
+                  <button
+                    key={m.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={b.staff === m.id}
+                    className={v.person}
+                    onClick={() => setB({ staff: m.id, slot: null })}
+                  >
+                    <span className={cn(v.av, tintClass(m.id ? hueOf(m.name) : 6))}>
+                      {m.id ? initials(m.name) : <Ic name="user" size={16} />}
+                    </span>
+                    {m.id ? m.name : t('anyone')}
+                  </button>
+                ))}
               </div>
             </div>
-            <div className={s.optG}>
-              <span className={s.lbl}>
-                {t('time')} <span>{t('open', { n: free })}</span>
-              </span>
-              {slotsError ? (
-                // Times that failed to load are not "fully booked": say so, offer a retry.
-                <div className={cn(s.alert, s.aInfo)} role="alert">
-                  <span>
-                    {t('slotsFailed')}{' '}
-                    <button className={s.link} style={{ color: 'inherit' }} onClick={retrySlots}>
-                      {t('slotsRetry')}
-                    </button>
-                  </span>
-                </div>
-              ) : loading ? (
-                <div className={s.slots} aria-busy="true" aria-label={t('slotsLoading')}>
-                  {Array.from({ length: 8 }, (_, i) => (
-                    <span key={i} className={cn(s.slot, s.skel)} style={{ minHeight: 40 }} />
-                  ))}
-                </div>
-              ) : free ? (
-                SLOT_GROUPS.map(([g, a, z]) => {
-                  const xs = slots.filter((x) => x.m >= a && x.m < z);
-                  return xs.length ? (
-                    <div key={g} className={s.slotG}>
-                      <h4>{t(`groups.${g}`)}</h4>
-                      <div className={s.slots}>
-                        {xs.map((x) => (
-                          <button
-                            key={x.m}
-                            className={cn(s.slot, b.slot === x.m && s.on)}
-                            disabled={x.dis}
-                            aria-label={x.dis ? t('unavailable', { time: hm(x.m) }) : undefined}
-                            onClick={() => setB({ slot: x.m })}
-                          >
-                            {hm(x.m)}
-                          </button>
-                        ))}
-                      </div>
+          )}
+
+          <div className={v.step}>
+            <div className={v.stepH}>
+              <span className={v.num}>{staff.length > 0 ? 2 : 1}</span>
+              <h3>{t('date')}</h3>
+              <span className={v.stepNote}>{f.fmtD(t0 + b.day * DAY_MS)}</span>
+            </div>
+            <div className={v.days} role="radiogroup" aria-label={t('date')}>
+              {Array.from({ length: 7 }, (_, k) => {
+                const d = t0 + k * DAY_MS;
+                return (
+                  <button
+                    key={k}
+                    type="button"
+                    role="radio"
+                    aria-checked={k === b.day}
+                    className={v.day}
+                    onClick={() => setB({ day: k, slot: null })}
+                  >
+                    <small>{k === 0 ? t('today') : f.weekday(d)}</small>
+                    <b className="num">{new Date(d).getDate()}</b>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className={v.step}>
+            <div className={v.stepH}>
+              <span className={v.num}>{staff.length > 0 ? 3 : 2}</span>
+              <h3>{t('time')}</h3>
+              {!loading && !slotsError && <span className={v.stepNote}>{t('openN', { n: free })}</span>}
+            </div>
+            {slotsError ? (
+              // Times that failed to load are not "fully booked": say so, offer a retry.
+              <div className={cn(s.alert, s.aInfo)} role="alert">
+                <span>
+                  {t('slotsFailed')}{' '}
+                  <button className={s.link} style={{ color: 'inherit' }} onClick={retrySlots}>
+                    {t('slotsRetry')}
+                  </button>
+                </span>
+              </div>
+            ) : loading ? (
+              <div className={v.times} aria-busy="true" aria-label={t('slotsLoading')}>
+                {Array.from({ length: 8 }, (_, i) => (
+                  <span key={i} className={cn(v.time, s.skel)} />
+                ))}
+              </div>
+            ) : free ? (
+              SLOT_GROUPS.map(([g, a, z]) => {
+                const xs = slots.filter((x) => x.m >= a && x.m < z);
+                return xs.length ? (
+                  <div key={g} className={v.slotG}>
+                    <h4>
+                      <Ic name={g === 'evening' ? 'moon' : 'sun'} size={14} />
+                      {t(`groups.${g}`)}
+                    </h4>
+                    <div className={v.times}>
+                      {xs.map((x) => (
+                        <button
+                          key={x.m}
+                          type="button"
+                          className={v.time}
+                          aria-pressed={b.slot === x.m}
+                          disabled={x.dis}
+                          aria-label={x.dis ? t('unavailable', { time: hm(x.m) }) : undefined}
+                          onClick={() => setB({ slot: x.m })}
+                        >
+                          {hm(x.m)}
+                        </button>
+                      ))}
                     </div>
-                  ) : null;
-                })
-              ) : (
-                <div className={cn(s.alert, s.aInfo)}>
-                  <span>
-                    {t('fullyBooked')}{' '}
+                  </div>
+                ) : null;
+              })
+            ) : (
+              <div className={cn(s.alert, s.aInfo)}>
+                <span>
+                  {t('fullyBooked')}{' '}
+                  {b.day < 6 && (
                     <button
                       className={s.link}
                       style={{ color: 'inherit' }}
-                      onClick={() => setB({ day: Math.min(6, b.day + 1), slot: null })}
+                      onClick={() => setB({ day: b.day + 1, slot: null })}
                     >
                       {t('tryDay', { date: f.fmtD(t0 + (b.day + 1) * DAY_MS) })}
                     </button>
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-        <aside className={s.buySide}>
-          <div className={cn(s.panel, s.glassMat)}>
-            <div className={s.shopMini}>
-              <Ph hue={sh.hue} icon={sh.icon} photo={sh.logo} />
-              <div>
-                <Link href={`/shop/${sh.id}`} style={{ fontWeight: 500, textDecoration: 'none' }}>
-                  {sh.name}
-                </Link>
-                <div className={s.pcM}>
-                  <Star n={sh.rating} /> {sh.rating.toFixed(1)} ·{' '}
-                  {t('km', { km: dist(sh, area, districts, here) })}
-                </div>
-              </div>
-            </div>
-            <div className={s.sum}>
-              <div>
-                <span className={s.muted}>{t('sumService')}</span>
-                <span style={{ textAlign: 'right' }}>{it.name}</span>
-              </div>
-              <div>
-                <span className={s.muted}>{t('sumWith')}</span>
-                <span>{staffName ?? t('anyoneAvailable')}</span>
-              </div>
-              <div>
-                <span className={s.muted}>{t('sumWhen')}</span>
-                <span className="num">
-                  {b.slot !== null ? (
-                    `${f.fmtD(t0 + b.day * DAY_MS)}, ${hm(b.slot)}–${hm(b.slot + dur)}`
-                  ) : (
-                    <span className={s.muted}>{t('pickTime')}</span>
                   )}
                 </span>
               </div>
-              <div className={s.tot}>
-                <span>{t('total')}</span>
-                <span>{f.money(net(it))}</span>
-              </div>
-            </div>
-            <button
-              className={cn(s.btn, s.btnPrimary, s.btnLg, s.btnBlock)}
-              disabled={b.slot === null}
-              onClick={() => needAuth('book', () => router.push(`/s/${it.id}/book`))}
-            >
-              {t('continue')}
-            </button>
-            <div className={s.perk}>
-              <Ic name="undo" size={18} />
-              <span className={s.small}>{t('freeCancel', { h: cancelH })}</span>
-            </div>
-            <div className={s.perk}>
-              <Ic name="pin" size={18} />
-              <span className={s.small}>
-                {sh.addr}, {f.district(sh.area)}
-              </span>
-            </div>
+            )}
+          </div>
+        </div>
+
+        <aside className={v.summary} aria-label={t('yourBooking')}>
+          <h2>{t('yourBooking')}</h2>
+          <dl className={v.sum}>
+            <dt>{t('sumService')}</dt>
+            <dd>
+              {it.name}
+              <small className="num">{t('minutes', { n: dur })}</small>
+            </dd>
+            <dt>{t('sumWith')}</dt>
+            <dd>{staffName ?? t('anyoneAvailable')}</dd>
+            <dt>{t('sumWhen')}</dt>
+            <dd className="num">{when ?? <span className={v.pending}>{t('pickTime')}</span>}</dd>
+          </dl>
+          <div className={v.total}>
+            <span>{t('total')}</span>
+            <span>
+              <strong className="num">{f.money(price)}</strong>
+              <small className="num">≈ {f.khr(price)}</small>
+            </span>
           </div>
           <button
-            className={cn(s.btn, s.btnGhost)}
-            aria-pressed={saved}
-            style={{ color: saved ? 'var(--sale)' : 'inherit' }}
-            onClick={() => toggleSave(it.id)}
+            className={cn(s.btn, s.btnPrimary, s.btnLg, s.btnBlock)}
+            disabled={b.slot === null}
+            onClick={book}
           >
-            <Ic name="heart" size={18} />
-            {saved ? t('saved') : t('saveForLater')}
+            {b.slot === null ? t('pickToContinue') : t('continue')}
           </button>
+          <p className={v.note}>
+            <Ic name="undo" size={16} />
+            {t('freeCancel', { h: cancelH })}
+          </p>
+          <p className={v.note}>
+            <Ic name="shield" size={16} />
+            {t('payAtShop')}
+          </p>
         </aside>
-      </div>
+      </section>
+
       <ReviewsBlock itemId={it.id} shopName={sh.name} />
       {more.length > 0 && (
-        <section className={s.sec}>
+        <section id="more" className={cn(s.sec, p.anchor)}>
           <div className={s.secH}>
             <h2>{t('moreAt', { shop: sh.name })}</h2>
+            <Link className={s.link} href={`/shop/${sh.id}`}>
+              {tp('viewShop')}
+            </Link>
           </div>
           <div className={s.grid}>
             {more.map((x) => (
@@ -302,7 +393,24 @@ function ServiceView({ it, sh }: { it: Item; sh: ShopView }) {
           </div>
         </section>
       )}
-    </>
+
+      {/* Phones: the chosen time and Continue stay at hand. */}
+      <div className={cn(p.buyBar, v.bar)} data-pdp-bar>
+        <div>
+          <strong className="num">{f.money(price)}</strong>
+          <span className="num">{when ?? t('minutes', { n: dur })}</span>
+        </div>
+        {b.slot === null ? (
+          <button className={cn(s.btn, s.btnPrimary)} onClick={toPicker}>
+            {t('chooseTime')}
+          </button>
+        ) : (
+          <button className={cn(s.btn, s.btnPrimary)} onClick={book}>
+            {t('continue')}
+          </button>
+        )}
+      </div>
+    </div>
   );
 }
 

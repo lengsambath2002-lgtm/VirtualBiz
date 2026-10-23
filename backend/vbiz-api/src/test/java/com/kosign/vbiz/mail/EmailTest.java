@@ -43,4 +43,14 @@ class EmailTest {
                 .contains("29 October 2026")
                 .contains("ចូលរួម Nita Gadget Store");
     }
+
+    @Test
+    void outside_production_only_listed_addresses_or_domains_get_emails() {
+        MailProperties gmailOnly = new MailProperties(true, null, null, java.util.List.of("gmail.com", "boss@corp.test"));
+        assertThat(gmailOnly.allows("Someone@Gmail.com")).isTrue();
+        assertThat(gmailOnly.allows("boss@corp.test")).isTrue();
+        assertThat(gmailOnly.allows("nita@virtualbiz.com")).isFalse();
+        assertThat(gmailOnly.allows("e2e.x@example.com")).isFalse();
+        assertThat(new MailProperties(true, null, null, java.util.List.of()).allows("anyone@example.com")).isTrue();
+    }
 }

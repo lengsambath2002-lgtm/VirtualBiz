@@ -42,6 +42,10 @@ public class EmailSender {
     }
 
     private void deliver(String to, String subject, Email email) {
+        if (!props.allows(to)) {
+            log.info("[MAIL] \"{}\" to {} skipped: not in vbiz.mail.only-to", subject, to);
+            return;
+        }
         try {
             var message = smtp.createMimeMessage();
             var m = new MimeMessageHelper(message, true, StandardCharsets.UTF_8.name());

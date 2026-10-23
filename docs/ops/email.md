@@ -56,8 +56,11 @@ Gmail sends from your own address (about 500 emails a day on a personal account)
    SMTP_PASSWORD=<the 16-letter app password>
    ```
 
-The demo accounts' addresses (`nita@virtualbiz.com` …) don't exist: their emails bounce back to the
-Gmail inbox. To receive them, put a real address on the account you test with.
+Outside production, limit who gets real email with `VBIZ_MAIL_ONLY_TO` (comma-separated
+addresses or domains, e.g. `gmail.com`): the rest are logged as skipped. Without it, the demo
+accounts' made-up addresses (`nita@virtualbiz.com` …) and the tests' `@example.com` ones would bounce
+back into the Gmail inbox and can get the account flagged. Put a real address on the account you test
+with to receive its emails.
 
 ## Locally: Mailpit
 

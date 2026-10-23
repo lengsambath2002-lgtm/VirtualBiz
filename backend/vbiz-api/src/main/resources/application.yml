@@ -139,6 +139,9 @@ vbiz:
     from: ${VBIZ_MAIL_FROM:VirtualBiz <no-reply@virtualbiz.com.kh>}
     # Buttons in emails open the web app here.
     app-url: ${vbiz.staff.app-url}
+    # Outside production: send only to these addresses or domains (comma-separated); others are
+    # logged and skipped. Empty: everyone.
+    only-to: ${VBIZ_MAIL_ONLY_TO:}
   # docs/api/phase10-shop-team.md: shop owners invite their team.
   team:
     invite-ttl: P7D

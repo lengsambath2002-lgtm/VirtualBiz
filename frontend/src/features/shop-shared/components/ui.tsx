@@ -55,13 +55,15 @@ export function ItemPh({
   className?: string;
 }) {
   const c = swatchOf(it, sel);
+  const photo = it.photos?.[0];
   return (
     <Ph
       hue={shop?.hue ?? 1}
       icon={shop?.icon ?? 'store'}
+      {...(photo ? { photo } : {})}
       className={className}
       style={
-        c
+        c && !photo
           ? { background: `linear-gradient(135deg,${c},color-mix(in srgb,${c} 70%,#000))` }
           : undefined
       }

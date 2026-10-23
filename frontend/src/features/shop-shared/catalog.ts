@@ -69,6 +69,7 @@ export function productToItem(p: MarketProduct): Item {
     ...(opts.length ? { opts } : {}),
     ...(spec ? { spec } : {}),
     variants,
+    ...(p.photos?.length ? { photos: p.photos } : {}),
   };
 }
 

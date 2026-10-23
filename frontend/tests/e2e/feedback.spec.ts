@@ -25,14 +25,35 @@ test.describe('Not found, errors and empty states', () => {
 
   test('a failed search is an error with a retry, not "no results"', async ({ page }) => {
     let fail = true;
+    // The API answering with an error of its own: "something went wrong".
     await page.route('**/api/marketplace/search**', (route) =>
-      fail ? route.fulfill({ status: 500, body: '{}' }) : route.continue(),
+      fail
+        ? route.fulfill({
+            status: 500,
+            contentType: 'application/json',
+            body: JSON.stringify({ status: { code: 'INTERNAL_ERROR', message: 'Error' } }),
+          })
+        : route.continue(),
     );
     await page.goto('/en/search?q=coffee');
     await expect(page.getByRole('heading', { name: 'Something went wrong' })).toBeVisible();
     fail = false;
     await page.getByRole('button', { name: 'Try again' }).click();
     await expect(page.getByRole('heading', { name: 'Something went wrong' })).toBeHidden();
+  });
+
+  test('a server that is down or starting up is said so, not "contact support"', async ({
+    page,
+  }) => {
+    // A gateway error without the API's own reply (the server is asleep or restarting).
+    await page.route('**/api/marketplace/search**', (route) =>
+      route.fulfill({ status: 502, body: '' }),
+    );
+    await page.goto('/en/search?q=coffee');
+    await expect(
+      page.getByRole('heading', { name: "Can't reach VirtualBiz right now" }),
+    ).toBeVisible();
+    await expect(page.getByText('The server may be starting up')).toBeVisible();
   });
 
   test('the marketplace says when it cannot load at all', async ({ page }) => {

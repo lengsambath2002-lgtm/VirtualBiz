@@ -26,7 +26,7 @@ async function slugOf(page: Page, title: string) {
 async function customerStock(page: Page, slug: string) {
   const tab = await page.context().newPage();
   await tab.goto(`/en/p/${slug}`);
-  const text = tab.getByText(/· (only \d+ left|\d+ available)/).first();
+  const text = tab.getByText(/^(Only \d+ left|In stock · \d+ available)$/).first();
   await expect(text).toBeVisible({ timeout: 20_000 });
   return { tab, text };
 }
@@ -52,7 +52,7 @@ test.describe('Seller catalogue → customer marketplace', () => {
     const slug = await slugOf(page, title);
     let shown = await customerStock(page, slug);
     await expect(shown.tab.getByRole('heading', { name: title })).toBeVisible();
-    await expect(shown.text).toHaveText('· 7 available');
+    await expect(shown.text).toHaveText('In stock · 7 available');
     await shown.tab.close();
 
     // Edit: a new price is what customers see.
@@ -69,7 +69,7 @@ test.describe('Seller catalogue → customer marketplace', () => {
     await page.getByRole('button', { name: 'Save adjustment' }).click();
     await expect(page.getByRole('status')).toContainText('10 in stock');
     shown = await customerStock(page, slug);
-    await expect(shown.text).toHaveText('· 10 available');
+    await expect(shown.text).toHaveText('In stock · 10 available');
     await shown.tab.close();
 
     // Damaged 4 → 6, then Undo → back to 10, on the server too.
@@ -89,7 +89,7 @@ test.describe('Seller catalogue → customer marketplace', () => {
       })
       .toBe(10);
     shown = await customerStock(page, slug);
-    await expect(shown.text).toHaveText('· 10 available');
+    await expect(shown.text).toHaveText('In stock · 10 available');
     await shown.tab.close();
 
     // A reload shows the server's log: the receipt is there, the undone loss is not.

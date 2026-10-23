@@ -88,6 +88,8 @@ const IC = {
   ),
   down: <path d="m6 9 6 6 6-6" />,
   right: <path d="m9 6 6 6-6 6" />,
+  left: <path d="m15 6-6 6 6 6" />,
+  share: <path d="M12 3v12M7 8l5-5 5 5M5 13v6h14v-6" />,
   gear: (
     <>
       <circle cx="12" cy="12" r="3" />

@@ -266,6 +266,10 @@
         left 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
         right 0.3s;
     }
+    /* A page with its own bottom bar (the product page's buy bar) hides the tab bar. */
+    body:has([data-pdp-bar]) .vb-tabbar {
+      display: none;
+    }
     .vb-tabbar[data-mini='true'] {
       left: 22%;
       right: 22%;

@@ -48,6 +48,8 @@ export interface Item {
   dur?: number;
   spec?: Record<string, string>;
   variants?: Variant[];
+  /** Uploaded photos, first is the cover (products); none: a tinted placeholder. */
+  photos?: string[];
   /** Staff who perform the service. */
   staffIds?: string[];
 }

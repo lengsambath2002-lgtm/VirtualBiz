@@ -10,6 +10,7 @@ All notable changes are recorded here. Format: [Keep a Changelog](https://keepac
 
 ### Fixed
 
+- The profile switcher no longer says "You have no businesses yet." to someone with no shop; it just offers to create one.
 - Some dialogs (invite someone, add / edit customer, console staff, categories and promo codes, opening hours) greyed out only the panel they were opened from, leaving the sidebar and header bright and clickable: a full-screen backdrop drawn inside a blurred panel is trapped in that panel. They now open at the top of the workspace (a shared `Portal`), so the backdrop covers the screen.
 - Shop promotions stopped at the start of their end date (a 1–31 October deal showed "Ended" all of 31 October). They now run through the whole end date and end by themselves at midnight; both promotion forms say so.
 - "View in marketplace" from the console, and any link to a shop that hasn't listed anything yet, showed "Shop not found": the shop page only looked in the list of shops with listings. It now asks for the shop itself; only unknown, suspended or rejected shops are "not found", and the console disables the link for those with the reason.
@@ -24,6 +25,7 @@ All notable changes are recorded here. Format: [Keep a Changelog](https://keepac
 
 ### Added
 
+- Shop and salon settings are in sections (Shop profile, Location and hours, Orders and stock or Booking rules, Delivery, Payments and payouts, Receipts and tax, Export data) with links to Team, Promotions or Marketing, Notifications and Your account. On a phone, settings is a list and each section opens on its own with a way back, instead of one 7,000-pixel page; on a computer the sections sit in a menu beside the open one. Each section has its own link (`/seller/settings?section=payments`), which the "fix your ID check" banner now uses.
 - A VirtualBiz logo and app icon: a shop awning over a "V" on the yellow tile, replacing the plain "B" everywhere it showed (marketplace, landing page, sign-in, invites, admin console). The browser tab, iPhone home screen, installed web app (new manifest) and push notifications use it too (docs/ui/brand.md).
 - Log in and sign up: with Firebase, "Continue with Google" opens Google's account chooser straight away (no extra "Choose an account" step). The card, its buttons and fields have clear borders, hover and focus states, in light and dark.
 - Redesigned service page, in the product page's style: the photos beside the title, price (with KHR) and quick facts (duration, professionals, free cancellation), then a full-width booking area with numbered steps (professional, date, time grouped by morning / afternoon / evening) and a sticky "Your booking" summary. On phones, Continue sits in a bar at the bottom.

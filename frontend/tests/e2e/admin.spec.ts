@@ -75,7 +75,7 @@ test.describe('Super-admin console', () => {
     // The owner's workspace says why and how to fix it.
     const ownerCtx = await browser.newContext();
     const ownerPage = await ownerCtx.newPage();
-    await signIn(ownerPage, '/seller/settings', shop.owner);
+    await signIn(ownerPage, '/seller/settings?section=payments', shop.owner);
     await expect(ownerPage.getByText('Your ID check did not pass').first()).toBeVisible();
     await expect(ownerPage.getByText(/The photo is blurry/).first()).toBeVisible();
     await expect(ownerPage.getByText('Send a new ID photo').first()).toBeVisible();

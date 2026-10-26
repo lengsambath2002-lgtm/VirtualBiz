@@ -150,7 +150,10 @@ function Workspace({ children }: { children: ReactNode }) {
         <div className={s.main}>
           <TopBar />
           <main className={s.page}>
-            <StatusBanner businessId={businessId} settingsHref="/seller/settings" />
+            <StatusBanner
+              businessId={businessId}
+              settingsHref="/seller/settings?section=payments"
+            />
             {children}
           </main>
         </div>

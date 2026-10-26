@@ -6,7 +6,7 @@ const expect = baseExpect.configure({ timeout: 20_000 });
 
 /** Fill the shop policy panel and save it. */
 async function setPolicy(page: Page, footer: string, vat: string, card: boolean) {
-  await page.goto('/en/seller/settings');
+  await page.goto('/en/seller/settings?section=receipts');
   const panel = page.getByRole('region', { name: 'Receipts, VAT and payments' });
   await panel.getByLabel('Receipt footer').fill(footer);
   await panel.getByLabel('VAT rate (%)').fill(vat);
@@ -53,7 +53,7 @@ test.describe('Shop settings', () => {
   test('a provider sets start times and the public booking slots follow', async ({ page }) => {
     const errors = trackErrors(page);
     await signIn(page, '/provider/settings', DANA);
-    await page.getByRole('button', { name: 'Booking rules' }).click();
+    await page.getByRole('link', { name: /^Booking rules/ }).click();
     const slot = page.getByLabel('Start times');
     await slot.selectOption({ label: 'Every 15 min' });
     await expect(page.getByText('Saved', { exact: true }).first()).toBeVisible();
@@ -62,6 +62,29 @@ test.describe('Shop settings', () => {
 
     await slot.selectOption({ label: 'Every 30 min' });
     await expect(page.getByText('Saved', { exact: true }).first()).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+
+  test('on a phone, settings is a list and each section opens on its own @phone', async ({
+    page,
+  }) => {
+    const errors = trackErrors(page);
+    await signIn(page, '/seller/settings');
+    const menu = page.getByRole('navigation', { name: 'Settings sections' });
+    await expect(page.getByRole('heading', { name: 'Settings', level: 1 })).toBeVisible();
+    await expect(page.getByLabel('Shop name')).toBeHidden();
+
+    await menu.getByRole('link', { name: /^Delivery/ }).click();
+    await expect(page).toHaveURL(/section=delivery/);
+    await expect(page.getByRole('heading', { name: 'Delivery zones' })).toBeVisible();
+    await expect(menu).toBeHidden();
+
+    await page.getByRole('link', { name: 'Settings', exact: true }).last().click();
+    await expect(menu.getByRole('link', { name: /^Payments and payouts/ })).toBeVisible();
+    await expect(menu.getByRole('link', { name: /^Team and roles/ })).toHaveAttribute(
+      'href',
+      '/en/seller/team',
+    );
     expect(errors).toEqual([]);
   });
 });

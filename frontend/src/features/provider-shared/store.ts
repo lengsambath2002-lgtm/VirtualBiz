@@ -116,7 +116,6 @@ interface UiState {
   salesR: 1 | 7 | 30;
   payF: 'all' | 'CASH' | 'KHQR' | 'CARD';
   mkTab: 'deals' | 'reviews';
-  setTab: 'business' | 'hours' | 'rules';
   open: (o: Overlay) => void;
   close: (silent?: boolean) => void;
   confirm: (opts: ConfirmOpts) => Promise<Record<string, string> | null>;
@@ -124,10 +123,7 @@ interface UiState {
   hideToast: () => void;
   set: (
     patch: Partial<
-      Pick<
-        UiState,
-        'menu' | 'dragging' | 'clientQ' | 'clientF' | 'salesR' | 'payF' | 'mkTab' | 'setTab'
-      >
+      Pick<UiState, 'menu' | 'dragging' | 'clientQ' | 'clientF' | 'salesR' | 'payF' | 'mkTab'>
     >,
   ) => void;
 }
@@ -145,7 +141,6 @@ export const useUi = create<UiState>()((set, get) => ({
   salesR: 7,
   payF: 'all',
   mkTab: 'deals',
-  setTab: 'business',
   open: (o) => {
     const prev = get().overlay;
     if (prev?.t === 'confirm') prev.resolve(null);

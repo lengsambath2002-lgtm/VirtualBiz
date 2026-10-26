@@ -119,11 +119,6 @@
   text-transform: uppercase;
   color: var(--muted);
 }
-.none {
-  padding: 6px 10px;
-  font-size: 13px;
-  color: var(--muted);
-}
 .skel {
   height: 56px;
   margin: 0 10px;

@@ -22,7 +22,7 @@ test('a seller edits a customer and downloads customers as CSV', async ({ page }
   await expect(form).toBeHidden();
   await expect(page.getByText(note)).toBeVisible();
 
-  await page.goto('/en/seller/settings');
+  await page.goto('/en/seller/settings?section=data');
   const panel = page.getByRole('region', { name: 'Export data' });
   await expect(panel).toBeVisible({ timeout: 20_000 });
   const [download] = await Promise.all([
@@ -37,7 +37,7 @@ test('a seller edits a customer and downloads customers as CSV', async ({ page }
 });
 
 test('a provider downloads bookings for a period', async ({ page }) => {
-  await signIn(page, '/provider/settings', DANA);
+  await signIn(page, '/provider/settings?section=data', DANA);
   const panel = page.getByRole('region', { name: 'Export data' });
   await expect(panel).toBeVisible({ timeout: 20_000 });
   await panel.getByRole('button', { name: /^Period: / }).click();

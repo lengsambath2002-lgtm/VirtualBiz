@@ -19,6 +19,9 @@ import {
   PolicyPanel,
   ReturnWindow,
   type SaveBusiness,
+  SettingsLayout,
+  type SettingsLink,
+  type SettingsSection,
 } from '@/features/shop-settings';
 import type { Business } from '@/lib/domain';
 import { formatPhone, isValidPhone, normalizePhone } from '@/lib/utils/phone';
@@ -76,17 +79,14 @@ export function SettingsPage() {
     void update({ [k]: v }).then((ok) => ok && toast(t('saved')));
   };
 
-  return (
-    <>
-      <div className={s.phH}>
-        <h1>{t('title')}</h1>
-      </div>
-      {role === 'STAFF' && <p className={cx(s.small, s.muted)}>{tt('readOnlySettings')}</p>}
-      <fieldset
-        disabled={role === 'STAFF'}
-        style={{ border: 0, margin: 0, padding: 0, minWidth: 0, display: 'contents' }}
-      >
-        <div style={{ display: 'grid', gap: 16, maxWidth: 780 }}>
+  const sections: SettingsSection[] = [
+    {
+      key: 'general',
+      icon: 'store',
+      title: t('sec.general'),
+      hint: t('sec.generalHint'),
+      content: (
+        <>
           <section className={s.panel}>
             <div className={s.panelH}>
               <h2>{tc('image.shopPhotos')}</h2>
@@ -149,12 +149,34 @@ export function SettingsPage() {
             </div>
           </form>
           {business && (
+            <CategoryPanel business={business} save={saveBusiness} canEdit={role !== 'STAFF'} />
+          )}
+        </>
+      ),
+    },
+    {
+      key: 'location',
+      icon: 'pin',
+      title: t('sec.location'),
+      hint: t('sec.locationHint'),
+      content: (
+        <>
+          {business && (
             <>
               <LocationPanel business={business} save={saveBusiness} canEdit={role !== 'STAFF'} />
-              <CategoryPanel business={business} save={saveBusiness} canEdit={role !== 'STAFF'} />
               <HoursPanel business={business} save={saveBusiness} canEdit={role !== 'STAFF'} />
             </>
           )}
+        </>
+      ),
+    },
+    {
+      key: 'orders',
+      icon: 'bag',
+      title: t('sec.orders'),
+      hint: t('sec.ordersHint'),
+      content: (
+        <>
           <section className={s.panel}>
             <div className={s.panelH}>
               <h2>{t('orders')}</h2>
@@ -210,6 +232,16 @@ export function SettingsPage() {
           {business?.type === 'PRODUCT' && (
             <ReturnWindow business={business} save={saveBusiness} canEdit={role !== 'STAFF'} />
           )}
+        </>
+      ),
+    },
+    {
+      key: 'delivery',
+      icon: 'truck',
+      title: t('sec.delivery'),
+      hint: t('sec.deliveryHint'),
+      content: (
+        <>
           <section className={s.panel}>
             <div className={s.panelH}>
               <h2>{t('delivery')}</h2>
@@ -241,15 +273,6 @@ export function SettingsPage() {
               </div>
             </div>
           </section>
-          <VerificationPanel
-            businessId={shop.id}
-            bakongId={shop.bakongId}
-            panel={s.panel}
-            head={s.panelH}
-            body={s.panelB}
-            btn={cx(s.btn, s.btnGhost, s.btnSm)}
-            onToast={toast}
-          />
           {business?.type === 'PRODUCT' && (
             <DeliveryZonesPanel
               business={business}
@@ -257,15 +280,16 @@ export function SettingsPage() {
               canEdit={role !== 'STAFF'}
             />
           )}
-          {business && (
-            <PolicyPanel business={business} save={saveBusiness} canEdit={role !== 'STAFF'} />
-          )}
-          <PayoutsPanel businessId={shop.id} panel={s.panel} head={s.panelH} body={s.panelB} />
-          <ExportPanel
-            businessId={shop.id}
-            type="PRODUCT"
-            canExport={role === 'OWNER' || role === 'MANAGER'}
-          />
+        </>
+      ),
+    },
+    {
+      key: 'payments',
+      icon: 'card',
+      title: t('sec.payments'),
+      hint: t('sec.paymentsHint'),
+      content: (
+        <>
           <section className={s.panel}>
             <div className={s.panelH}>
               <h2>{t('payments')}</h2>
@@ -299,8 +323,73 @@ export function SettingsPage() {
               />
             </div>
           </section>
-        </div>
-      </fieldset>
-    </>
+          <VerificationPanel
+            businessId={shop.id}
+            bakongId={shop.bakongId}
+            panel={s.panel}
+            head={s.panelH}
+            body={s.panelB}
+            btn={cx(s.btn, s.btnGhost, s.btnSm)}
+            onToast={toast}
+          />
+          <PayoutsPanel businessId={shop.id} panel={s.panel} head={s.panelH} body={s.panelB} />
+        </>
+      ),
+    },
+    {
+      key: 'receipts',
+      icon: 'receipt',
+      title: t('sec.receipts'),
+      hint: t('sec.receiptsHint'),
+      content: (
+        <>
+          {business && (
+            <PolicyPanel business={business} save={saveBusiness} canEdit={role !== 'STAFF'} />
+          )}
+        </>
+      ),
+    },
+    {
+      key: 'data',
+      icon: 'download',
+      title: t('sec.data'),
+      hint: t('sec.dataHint'),
+      content: (
+        <>
+          <ExportPanel
+            businessId={shop.id}
+            type="PRODUCT"
+            canExport={role === 'OWNER' || role === 'MANAGER'}
+          />
+        </>
+      ),
+    },
+  ];
+  const links: SettingsLink[] = [
+    { href: '/seller/team', icon: 'team', title: t('link.team'), hint: t('link.teamHint') },
+    {
+      href: '/seller/promotions',
+      icon: 'tag',
+      title: t('link.promotions'),
+      hint: t('link.promotionsHint'),
+    },
+    {
+      href: '/seller/notifications',
+      icon: 'bell',
+      title: t('link.notifications'),
+      hint: t('link.notificationsHint'),
+    },
+    { href: '/account', icon: 'user', title: t('link.account'), hint: t('link.accountHint') },
+  ];
+
+  return (
+    <fieldset disabled={role === 'STAFF'} style={{ border: 0, margin: 0, padding: 0, minWidth: 0 }}>
+      <SettingsLayout
+        title={t('title')}
+        intro={role === 'STAFF' && <p className={cx(s.small, s.muted)}>{tt('readOnlySettings')}</p>}
+        sections={sections}
+        links={links}
+      />
+    </fieldset>
   );
 }

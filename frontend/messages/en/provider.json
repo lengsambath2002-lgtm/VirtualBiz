@@ -696,7 +696,31 @@
     "tipN": "Tip choice {n}",
     "tipRemove": "Remove the {n}% tip",
     "tipAdd": "Add a choice",
-    "errTip": "Tips are whole numbers from 0 to 50."
+    "errTip": "Tips are whole numbers from 0 to 50.",
+    "sec": {
+      "general": "Business profile",
+      "generalHint": "Photos, name, contact and category",
+      "location": "Location and hours",
+      "locationHint": "Address, map pin, opening hours and days off",
+      "bookings": "Booking rules",
+      "bookingsHint": "Notice, cancellation, time slots and reminders",
+      "payments": "Payments and payouts",
+      "paymentsHint": "Bakong ID, ID check and payouts",
+      "receipts": "Receipts and tax",
+      "receiptsHint": "Receipt text, VAT, counter payments and social links",
+      "data": "Export data",
+      "dataHint": "Download bookings, clients and services as CSV"
+    },
+    "link": {
+      "team": "Team and roles",
+      "teamHint": "Who can sign in, their roles and calendars",
+      "marketing": "Marketing",
+      "marketingHint": "Offers and promo codes for clients",
+      "notifications": "Notifications",
+      "notificationsHint": "New bookings, changes and other alerts",
+      "account": "Your account and security",
+      "accountHint": "Password, sign-in methods and push notifications"
+    }
   },
   "requests": {
     "title": "Online requests",

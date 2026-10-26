@@ -201,9 +201,7 @@ export function ProfileSwitcher({
               })}
           </div>
         </>
-      ) : (
-        <p className={s.none}>{t('noShops')}</p>
-      )}
+      ) : null}
 
       <Link
         href="/create-business"

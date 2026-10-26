@@ -823,7 +823,33 @@
     "khqr": "KHQR merchant (Bakong ID)",
     "khqrHint": "Payouts settle to this account {days, plural, =0 {the same day as delivery} one {the day after delivery} other {# days after delivery}}.",
     "cod": "Cash on delivery",
-    "codHint": "Rider collects cash and returns it within 24 h"
+    "codHint": "Rider collects cash and returns it within 24 h",
+    "sec": {
+      "general": "Shop profile",
+      "generalHint": "Photos, name, about and category",
+      "location": "Location and hours",
+      "locationHint": "Address, map pin and opening hours",
+      "orders": "Orders and stock",
+      "ordersHint": "Accepting orders, prep time, low stock and returns",
+      "delivery": "Delivery",
+      "deliveryHint": "Pickup, free delivery and delivery zones",
+      "payments": "Payments and payouts",
+      "paymentsHint": "KHQR, cash on delivery, ID check and payouts",
+      "receipts": "Receipts and tax",
+      "receiptsHint": "Receipt text, VAT, counter payments and social links",
+      "data": "Export data",
+      "dataHint": "Download orders, customers and products as CSV"
+    },
+    "link": {
+      "team": "Team and roles",
+      "teamHint": "Who can sign in to this shop and what they can do",
+      "promotions": "Promotions",
+      "promotionsHint": "Discounts and promo codes",
+      "notifications": "Notifications",
+      "notificationsHint": "New orders, low stock and other alerts",
+      "account": "Your account and security",
+      "accountHint": "Password, sign-in methods and push notifications"
+    }
   },
   "pos": {
     "register": "Register",

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 
 import { ShopPhotos } from '@/components/media';
 import { useMyRole } from '@/features/account-switcher';
@@ -12,6 +12,10 @@ import {
   HoursPanel,
   LocationPanel,
   PolicyPanel,
+  SettingsLayout,
+  type SettingsIcon,
+  type SettingsLink,
+  type SettingsSection,
 } from '@/features/shop-settings';
 import { formatPhone, isValidPhone, normalizePhone } from '@/lib/utils/phone';
 
@@ -36,68 +40,82 @@ type Sel =
   | 'maxDaysAhead'
   | 'reminderHours';
 
-/** Settings: business, hours & closures, booking rules (prototype `P.settings`). */
+/** Settings in sections: profile, location and hours, booking rules, payments, receipts, data. */
 export function SettingsPage() {
   const { t } = useFmt();
-  const ui = useUi();
-  const tab = ui.setTab;
   // What this member's role may change (docs/api/phase10-shop-team.md); the API enforces it.
   const data = useData();
   const role = useMyRole(data.business.id);
   const api = toApiBusiness(data.business);
   const saveRaw = useSaveBusinessRaw();
   const tt = useTranslations('team');
+  const can = role !== 'STAFF';
+  const sec = (
+    key: 'general' | 'location' | 'bookings' | 'payments' | 'receipts' | 'data',
+    icon: SettingsIcon,
+    content: ReactNode,
+  ): SettingsSection => ({
+    key,
+    icon,
+    title: t(`settings.sec.${key}`),
+    hint: t(`settings.sec.${key}Hint`),
+    content,
+  });
+  const sections = [
+    sec(
+      'general',
+      'store',
+      <>
+        <BusinessPhotos />
+        <BusinessForm />
+        <CategoryPanel business={api} save={saveRaw} canEdit={can} />
+      </>,
+    ),
+    sec(
+      'location',
+      'pin',
+      <>
+        <LocationPanel business={api} save={saveRaw} canEdit={can} />
+        <HoursPanel business={api} save={saveRaw} canEdit={can} />
+      </>,
+    ),
+    sec('bookings', 'cal', <Rules />),
+    sec('payments', 'card', <BusinessPayments />),
+    sec('receipts', 'receipt', <PolicyPanel business={api} save={saveRaw} canEdit={can} />),
+    sec(
+      'data',
+      'download',
+      <ExportPanel
+        businessId={data.business.id}
+        type="SERVICE"
+        canExport={role === 'OWNER' || role === 'MANAGER'}
+      />,
+    ),
+  ];
+  const link = (
+    key: 'team' | 'marketing' | 'notifications' | 'account',
+    href: string,
+    icon: SettingsIcon,
+  ): SettingsLink => ({
+    href,
+    icon,
+    title: t(`settings.link.${key}`),
+    hint: t(`settings.link.${key}Hint`),
+  });
   return (
-    <>
-      <div className={k('ph-h')}>
-        <h1>{t('settings.title')}</h1>
-      </div>
-      <div className={k('seg')}>
-        {(
-          [
-            ['business', 'tabBusiness'],
-            ['hours', 'tabHours'],
-            ['rules', 'tabRules'],
-          ] as const
-        ).map(([key, l]) => (
-          <button
-            key={key}
-            type="button"
-            className={k(tab === key && 'on')}
-            onClick={() => ui.set({ setTab: key })}
-          >
-            {t(`settings.${l}`)}
-          </button>
-        ))}
-      </div>
-      {role === 'STAFF' && <p className={k('small muted')}>{tt('readOnlySettings')}</p>}
-      <fieldset
-        disabled={role === 'STAFF'}
-        style={{ border: 0, margin: 0, padding: 0, minWidth: 0, display: 'contents' }}
-      >
-        <div style={{ display: 'grid', gap: 16, maxWidth: 760 }}>
-          {tab === 'business' ? (
-            <>
-              <BusinessPhotos />
-              <BusinessForm />
-              <LocationPanel business={api} save={saveRaw} canEdit={role !== 'STAFF'} />
-              <CategoryPanel business={api} save={saveRaw} canEdit={role !== 'STAFF'} />
-              <PolicyPanel business={api} save={saveRaw} canEdit={role !== 'STAFF'} />
-              <BusinessPayments />
-              <ExportPanel
-                businessId={data.business.id}
-                type="SERVICE"
-                canExport={role === 'OWNER' || role === 'MANAGER'}
-              />
-            </>
-          ) : tab === 'hours' ? (
-            <HoursPanel business={api} save={saveRaw} canEdit={role !== 'STAFF'} />
-          ) : (
-            <Rules />
-          )}
-        </div>
-      </fieldset>
-    </>
+    <fieldset disabled={!can} style={{ border: 0, margin: 0, padding: 0, minWidth: 0 }}>
+      <SettingsLayout
+        title={t('settings.title')}
+        intro={role === 'STAFF' && <p className={k('small muted')}>{tt('readOnlySettings')}</p>}
+        sections={sections}
+        links={[
+          link('team', '/provider/team', 'team'),
+          link('marketing', '/provider/marketing', 'tag'),
+          link('notifications', '/provider/notifications', 'bell'),
+          link('account', '/account', 'user'),
+        ]}
+      />
+    </fieldset>
   );
 }
 

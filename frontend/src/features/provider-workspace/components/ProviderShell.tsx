@@ -143,7 +143,10 @@ function Workspace({ children }: { children: ReactNode }) {
         <div className={k('main')}>
           <TopBar />
           <main className={k('page')}>
-            <StatusBanner businessId={businessId} settingsHref="/provider/settings" />
+            <StatusBanner
+              businessId={businessId}
+              settingsHref="/provider/settings?section=payments"
+            />
             {children}
           </main>
         </div>

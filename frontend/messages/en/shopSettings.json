@@ -171,5 +171,10 @@
     "approvedAs": "now “{name}”",
     "waiting": "sent by {name}; VirtualBiz will reply in your inbox",
     "withdraw": "Withdraw"
+  },
+  "nav": {
+    "label": "Settings sections",
+    "more": "More settings",
+    "back": "Settings"
   }
 }

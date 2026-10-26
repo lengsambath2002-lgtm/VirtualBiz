@@ -3,6 +3,7 @@
 import { useLocale, useTranslations } from 'next-intl';
 
 import { SideNav, SideNavBrand, type SideNavSection } from '@/components/layout/SideNav';
+import { LogoGlyph } from '@/components/ui';
 import { useOverview } from '@/features/admin-shared/api';
 import { Ic, type IcName } from '@/features/seller-shared';
 import { useSession } from '@/lib/auth';
@@ -82,7 +83,7 @@ export function AdminRail({ onLogout }: { onLogout: () => void }) {
           name={tt('title')}
           mark={
             <span className={shell.mark} aria-hidden>
-              B
+              <LogoGlyph />
             </span>
           }
           sub={

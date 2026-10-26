@@ -4,7 +4,7 @@ import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 
-import { LanguageSwitcher } from '@/components/ui';
+import { LanguageSwitcher, LogoGlyph } from '@/components/ui';
 import { useSession } from '@/lib/auth';
 import { useRouter } from '@/lib/i18n/navigation';
 
@@ -205,7 +205,9 @@ function Flow({ page }: { page: AuthPage }) {
                 go(first);
               }}
             >
-              <span className={s.logoMark}>B</span>
+              <span className={s.logoMark} aria-hidden="true">
+                <LogoGlyph />
+              </span>
               <span>
                 Virtual<b>Biz</b>
               </span>

@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { Suspense, useEffect, useState, type ReactNode } from 'react';
 
+import { LogoGlyph } from '@/components/ui';
 import { useLiveStream } from '@/lib/api/useLiveStream';
 import { useSession } from '@/lib/auth';
 import { useScrollMini } from '@/lib/hooks/useScrollMini';
@@ -36,7 +37,9 @@ function ShopFooter() {
       <div className={cn(s.wrap, s.ft)}>
         <div>
           <Link className={s.logo} href="/home">
-            <span className={s.logoMark}>B</span>
+            <span className={s.logoMark} aria-hidden="true">
+              <LogoGlyph />
+            </span>
             <span>
               Virtual<b>Biz</b>
             </span>

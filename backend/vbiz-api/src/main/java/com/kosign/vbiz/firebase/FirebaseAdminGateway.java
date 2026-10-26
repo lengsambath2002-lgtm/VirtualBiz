@@ -1,5 +1,6 @@
 package com.kosign.vbiz.firebase;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
 import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushFcmOptions;
+import com.google.firebase.messaging.WebpushNotification;
 import com.kosign.vbiz.common.api.StatusCode;
 import com.kosign.vbiz.common.error.BusinessException;
 import com.kosign.vbiz.common.logging.LogMask;
@@ -26,6 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 /** Firebase through the Admin SDK (a service account), for a configured project. */
 @Slf4j
 public class FirebaseAdminGateway implements FirebaseGateway {
+
+    private static final String ICON = "/brand/icon-192.png";
 
     private final FirebaseAuth auth;
     private final FirebaseMessaging messaging;
@@ -90,7 +94,10 @@ public class FirebaseAdminGateway implements FirebaseGateway {
         }
         // Firebase opens an https link itself; a local http one is opened by our service worker
         // (public/firebase-messaging-sw.js) from the data.
-        WebpushConfig.Builder web = WebpushConfig.builder();
+        // The browser shows the app icon the web app serves (public/brand) beside the text.
+        URI site = URI.create(link);
+        WebpushConfig.Builder web = WebpushConfig.builder().setNotification(
+                new WebpushNotification(title, body, site.getScheme() + "://" + site.getAuthority() + ICON));
         if (link.startsWith("https://")) {
             web.setFcmOptions(WebpushFcmOptions.withLink(link));
         }

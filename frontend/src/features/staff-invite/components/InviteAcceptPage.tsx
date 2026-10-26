@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { useState, type FormEvent } from 'react';
 
+import { LogoGlyph } from '@/components/ui';
 import { ErrorView, NotFoundView, StatusView } from '@/components/feedback';
 import { STAFF_RULES, staffPasswordOk } from '@/features/admin-security';
 import { cx, Ic, s } from '@/features/seller-shared';
@@ -90,7 +91,9 @@ export function InviteAcceptPage({ token }: { token: string }) {
       <div className={g.wrap}>
         <section className={cx(s.panel, g.card)} aria-labelledby="invite-title">
           <div className={g.brand}>
-            <span className={g.mark}>B</span>
+            <span className={g.mark} aria-hidden="true">
+              <LogoGlyph />
+            </span>
             VirtualBiz
           </div>
           <h1 id="invite-title">{t('title', { role: tr(data.role) })}</h1>

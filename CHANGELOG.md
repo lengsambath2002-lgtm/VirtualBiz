@@ -24,6 +24,7 @@ All notable changes are recorded here. Format: [Keep a Changelog](https://keepac
 
 ### Added
 
+- A VirtualBiz logo and app icon: a shop awning over a "V" on the yellow tile, replacing the plain "B" everywhere it showed (marketplace, landing page, sign-in, invites, admin console). The browser tab, iPhone home screen, installed web app (new manifest) and push notifications use it too (docs/ui/brand.md).
 - Log in and sign up: with Firebase, "Continue with Google" opens Google's account chooser straight away (no extra "Choose an account" step). The card, its buttons and fields have clear borders, hover and focus states, in light and dark.
 - Redesigned service page, in the product page's style: the photos beside the title, price (with KHR) and quick facts (duration, professionals, free cancellation), then a full-width booking area with numbered steps (professional, date, time grouped by morning / afternoon / evening) and a sticky "Your booking" summary. On phones, Continue sits in a bar at the bottom.
 - Firebase sign-in and push notifications (docs/ops/firebase.md). With the Firebase web config set, Google sign-in uses Google's account chooser and email + password is checked by Firebase; accounts made before Firebase move over the first time they sign in, with the same password and lockout. VirtualBiz keeps its own sessions and roles. My settings has a "Push notifications on this device" switch: every inbox notification then also pops up on that browser (Firebase Cloud Messaging), and signing out stops it. Without the config, sign-in works as before.

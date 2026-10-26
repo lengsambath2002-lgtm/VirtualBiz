@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import qrcode from 'qrcode-generator';
 import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
 
+import { LogoGlyph } from '@/components/ui';
 import { cx, Ic, s } from '@/features/seller-shared';
 import { isApiError } from '@/lib/api';
 import { useSession } from '@/lib/auth';
@@ -99,7 +100,9 @@ function Frame({
     <div className={g.wrap}>
       <section className={cx(s.panel, g.card)} aria-labelledby="gate-title">
         <div className={g.brand}>
-          <span className={g.mark}>B</span>
+          <span className={g.mark} aria-hidden="true">
+            <LogoGlyph />
+          </span>
           {t('brand')}
         </div>
         {of > 1 && (

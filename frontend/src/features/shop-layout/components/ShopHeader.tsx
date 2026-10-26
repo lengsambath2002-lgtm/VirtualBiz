@@ -4,6 +4,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import { useSearchParams } from 'next/navigation';
 import { Fragment, useEffect, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 
+import { LogoGlyph } from '@/components/ui';
 import { useSession, useSessionStore } from '@/lib/auth';
 import { currentPosition, reverseGeocode } from '@/lib/geo';
 import { Link, usePathname, useRouter } from '@/lib/i18n/navigation';
@@ -520,7 +521,9 @@ export function ShopHeader() {
     <header className={s.hdr}>
       <div className={cn(s.wrap, s.hdr1)}>
         <Link className={s.logo} href="/home" aria-label={t('homeLabel')}>
-          <span className={s.logoMark}>B</span>
+          <span className={s.logoMark} aria-hidden="true">
+            <LogoGlyph />
+          </span>
           <span>
             Virtual<b>Biz</b>
           </span>

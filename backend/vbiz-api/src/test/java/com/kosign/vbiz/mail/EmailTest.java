@@ -46,11 +46,21 @@ class EmailTest {
 
     @Test
     void outside_production_only_listed_addresses_or_domains_get_emails() {
-        MailProperties gmailOnly = new MailProperties(true, null, null, java.util.List.of("gmail.com", "boss@corp.test"));
+        MailProperties gmailOnly = new MailProperties(true, null, null, java.util.List.of("gmail.com", "boss@corp.test"),
+                null);
         assertThat(gmailOnly.allows("Someone@Gmail.com")).isTrue();
         assertThat(gmailOnly.allows("boss@corp.test")).isTrue();
         assertThat(gmailOnly.allows("nita@virtualbiz.com")).isFalse();
         assertThat(gmailOnly.allows("e2e.x@example.com")).isFalse();
-        assertThat(new MailProperties(true, null, null, java.util.List.of()).allows("anyone@example.com")).isTrue();
+        assertThat(new MailProperties(true, null, null, java.util.List.of(), null).allows("anyone@example.com")).isTrue();
+    }
+
+    @Test
+    void the_demo_never_emails_its_made_up_accounts() {
+        MailProperties demo = new MailProperties(true, null, null, null,
+                java.util.List.of("virtualbiz.com", " sok.dara@gmail.com "));
+        assertThat(demo.allows("nita@virtualbiz.com")).isFalse();
+        assertThat(demo.allows("Sok.Dara@gmail.com")).isFalse();
+        assertThat(demo.allows("someone.real@gmail.com")).isTrue();
     }
 }

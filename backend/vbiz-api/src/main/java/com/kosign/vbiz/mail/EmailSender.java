@@ -46,7 +46,7 @@ public class EmailSender {
 
     private void deliver(String to, String subject, Email email) {
         if (!props.allows(to)) {
-            log.info("[MAIL] \"{}\" to {} skipped: not in vbiz.mail.only-to", LogMask.text(subject),
+            log.info("[MAIL] \"{}\" to {} skipped (vbiz.mail.only-to / never-to)", LogMask.text(subject),
                     LogMask.contact(to));
             return;
         }

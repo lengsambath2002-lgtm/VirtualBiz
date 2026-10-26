@@ -30,6 +30,14 @@ vbiz:
     cookie-secure: true
     # The fake Google chooser signs in as any address: off on a public URL.
     google-dev-enabled: false
+  mail:
+    # The demo's made-up accounts (db/seed-local) belong to nobody, or to a stranger: never email
+    # them. People who sign up on the demo get their emails like anywhere else.
+    never-to: >-
+      virtualbiz.com, shops.virtualbiz.com, glowbeauty.com.kh, nitagadget.com.kh, example.com,
+      alex.noman@gmail.com, hay.kongmeng@gmail.com, lang.cutties@gmail.com, monika.lim@gmail.com,
+      pisey.sorn@gmail.com, rithy.thon@gmail.com, sok.dara@gmail.com, sreypov.kim@gmail.com,
+      tena.heng@gmail.com, vannak.heng@gmail.com
   otp:
     # A code shown in the reply would let anyone sign in to (or reset) any account.
     expose-dev-code: false

@@ -77,3 +77,10 @@ The `local` profile sends to `localhost:1025`. Open an invite there and press **
 Mail security scanners open every link in a message. A link that joined or declined by itself could do
 so before the person reads the email, so both buttons open the invite page, which asks for one more
 click (docs/api/phase10-shop-team.md).
+
+## Never email (`vbiz.mail.never-to`)
+
+Addresses or domains that never get an email, whatever else is set. The public demo lists its
+made-up accounts (`application-demo.yml`): they belong to nobody, or to a stranger who happens to
+own that Gmail address, and bounces would land in the sender's inbox. People who sign up on the
+demo get their emails as usual.

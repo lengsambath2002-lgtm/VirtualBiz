@@ -3,7 +3,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiError } from '@/lib/api';
 
 const fb = vi.hoisted(() => ({ enabled: true, token: vi.fn() }));
-const api = vi.hoisted(() => ({ login: vi.fn(), firebaseSignIn: vi.fn(), firebaseMigrate: vi.fn() }));
+const api = vi.hoisted(() => ({
+  login: vi.fn(),
+  firebaseSignIn: vi.fn(),
+  firebaseMigrate: vi.fn(),
+}));
 
 vi.mock('@/lib/firebase', () => ({
   firebaseEnabled: () => fb.enabled,
@@ -40,7 +44,9 @@ describe('passwordSignIn', () => {
   });
 
   it('moves an account made before Firebase, then signs in through Firebase', async () => {
-    fb.token.mockRejectedValueOnce(fbError('auth/invalid-credential')).mockResolvedValueOnce('id-token');
+    fb.token
+      .mockRejectedValueOnce(fbError('auth/invalid-credential'))
+      .mockResolvedValueOnce('id-token');
     api.firebaseMigrate.mockResolvedValue(undefined);
     api.firebaseSignIn.mockResolvedValue(session);
     await expect(passwordSignIn('a@b.co', 'pw')).resolves.toBe(session);
@@ -49,7 +55,9 @@ describe('passwordSignIn', () => {
 
   it('a wrong password fails with the sign-in errors (tries left, lockout)', async () => {
     fb.token.mockRejectedValue(fbError('auth/invalid-credential'));
-    const wrong = new ApiError('INVALID_CREDENTIALS', 401, [{ field: 'password', message: 'Wrong', meta: { reason: 'BAD_PASSWORD', triesLeft: 3 } }]);
+    const wrong = new ApiError('INVALID_CREDENTIALS', 401, [
+      { field: 'password', message: 'Wrong', meta: { reason: 'BAD_PASSWORD', triesLeft: 3 } },
+    ]);
     api.firebaseMigrate.mockRejectedValue(wrong);
     await expect(passwordSignIn('a@b.co', 'bad')).rejects.toBe(wrong);
     expect(api.firebaseSignIn).not.toHaveBeenCalled();

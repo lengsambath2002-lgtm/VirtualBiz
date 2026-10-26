@@ -80,9 +80,30 @@ export async function forgetSession(page: Page) {
   await page.evaluate(() => localStorage.removeItem('vb-session'));
 }
 
-/** Type the 6-digit code shown by the dev code toast ("Fill in"; the API's `devCode`). */
+const sentCodes = new WeakMap<Page, string>();
+
+/**
+ * Remember the codes the API sends from now on. The app never shows a code (it goes by email
+ * or SMS); the local API profile also returns it as `devCode`, which the tests type in like a
+ * person copying it from the email. Call before the step that sends the code.
+ */
+export function watchCodes(page: Page) {
+  page.on('response', async (r) => {
+    if (
+      r.request().method() !== 'POST' ||
+      !/\/api\/auth\/(otp|signup)$/.test(new URL(r.url()).pathname)
+    )
+      return;
+    const code = (await r.json().catch(() => null))?.data?.devCode as string | undefined;
+    if (code) sentCodes.set(page, code);
+  });
+}
+
+/** Type the last code the API sent (see `watchCodes`) into the 6 boxes. */
 export async function fillDemoCode(page: Page) {
-  await page.getByRole('status').getByRole('button', { name: 'Fill in' }).click();
+  await expect.poll(() => sentCodes.get(page), { message: 'a code was sent' }).toBeTruthy();
+  await page.getByRole('group', { name: '6-digit code' }).getByRole('textbox').first().click();
+  await page.keyboard.type(sentCodes.get(page)!);
 }
 
 /** Collect page errors and console errors (ignores 404s for not-yet-built routes). */

@@ -275,7 +275,9 @@ function ServiceView({ it, sh }: { it: Item; sh: ShopView }) {
             <div className={v.stepH}>
               <span className={v.num}>{staff.length > 0 ? 3 : 2}</span>
               <h3>{t('time')}</h3>
-              {!loading && !slotsError && <span className={v.stepNote}>{t('openN', { n: free })}</span>}
+              {!loading && !slotsError && (
+                <span className={v.stepNote}>{t('openN', { n: free })}</span>
+              )}
             </div>
             {slotsError ? (
               // Times that failed to load are not "fully booked": say so, offer a retry.

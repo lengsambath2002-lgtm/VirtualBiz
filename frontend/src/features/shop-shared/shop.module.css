@@ -2517,3 +2517,11 @@
   color: var(--danger, #c93636);
   font-size: 14px;
 }
+
+/* Homepage banners with the main one or the side ones hidden (HomeHero.tsx). */
+.heroOne {
+  grid-template-columns: minmax(0, 1fr);
+}
+.sideRow {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}

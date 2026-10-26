@@ -1053,3 +1053,211 @@
   text-underline-offset: 3px;
   cursor: pointer;
 }
+
+/* ---------- Settings: notification choices (SettingsSections.tsx) ---------- */
+.nt table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+.nt thead th {
+  width: 64px;
+  padding: 0 0 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  text-align: center;
+}
+.nt tbody th[scope='row'] {
+  padding: 10px 8px 10px 0;
+  font-weight: 500;
+  text-align: left;
+}
+.nt tbody th small {
+  display: block;
+  margin-top: 1px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+}
+.nt tbody tr + tr > * {
+  border-top: 1px solid var(--line);
+}
+.nt td {
+  text-align: center;
+  vertical-align: middle;
+}
+.nt .ntGroup {
+  padding: 14px 0 4px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: left;
+}
+.nt tbody:first-of-type .ntGroup {
+  padding-top: 0;
+}
+.ntNote {
+  margin: 10px 0 4px;
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+/* ---------- Settings: appearance ---------- */
+.seg {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--sunk);
+}
+.seg button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 40px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--ink-2, var(--ink));
+  font: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.seg button[aria-checked='true'] {
+  background: var(--surface, #fff);
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(10, 14, 25, 0.12);
+}
+.seg button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+/* ---------- Settings: two-step sign-in ---------- */
+.tsBox {
+  display: grid;
+  gap: 12px;
+}
+.tsBox > p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+.tsSteps {
+  margin: 0;
+  padding-left: 20px;
+  display: grid;
+  gap: 4px;
+  font-size: 14px;
+}
+.tsQr {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.tsQrImg {
+  width: 168px;
+  height: 168px;
+  padding: 10px;
+  border-radius: 14px;
+  background: #fff;
+  border: 1px solid var(--line);
+  flex: none;
+}
+.tsQrImg svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.tsQr small {
+  display: block;
+  color: var(--muted);
+  font-size: 12.5px;
+  margin-bottom: 4px;
+}
+.tsQr code,
+.tsCodes code {
+  font-family: var(--font-jbmono), var(--f-mono);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  overflow-wrap: anywhere;
+}
+.tsCodes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 14px;
+  border-radius: 12px;
+  background: var(--sunk);
+}
+.tsCheck {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.tsLabel {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.tsInput {
+  height: 46px;
+  padding: 0 14px;
+  border-radius: 12px;
+  border: 1px solid var(--line-h);
+  background: var(--surface, #fff);
+  color: var(--ink);
+  font-family: var(--font-jbmono), var(--f-mono);
+  font-size: 18px;
+  letter-spacing: 0.18em;
+}
+.tsInput:focus {
+  outline: none;
+  border-color: var(--focus, var(--accent));
+}
+.tsErr {
+  margin: 6px 0 0;
+  color: var(--sale);
+  font-size: 13px;
+}
+.tsSwitch {
+  justify-self: start;
+  margin-top: 8px;
+  font-size: 13px;
+}
+.tsOn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--ok);
+}
+.tsActions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+.tsSkel {
+  height: 40px;
+  border-radius: 10px;
+  background: var(--sunk);
+}
+@media (max-width: 640px) {
+  .tsActions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+  .tsQr {
+    justify-content: center;
+  }
+}

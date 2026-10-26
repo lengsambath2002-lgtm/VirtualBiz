@@ -2,7 +2,14 @@
 
 import { useMutation, useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query';
 
-import { api, type AddressInput, type ApiAddress, type Me, type Prefs } from '@/lib/api';
+import {
+  api,
+  type AddressInput,
+  type ApiAddress,
+  type Me,
+  type Prefs,
+  type TwoStepStatus,
+} from '@/lib/api';
 import { useSession, useSessionStore } from '@/lib/auth';
 import type { User } from '@/lib/domain';
 
@@ -59,24 +66,35 @@ export function useUpdateProfile() {
   });
 }
 
-/** `PUT /api/me/prefs`, optimistic (the switch flips at once, and back on failure). */
+/**
+ * `PUT /api/me/prefs`, optimistic: the switch flips in the same render as the click (a controlled
+ * switch would otherwise spring back until the request starts), and back on failure.
+ */
 export function useSetPrefs() {
   const qc = useQueryClient();
   const { user } = useSession();
   const key = meKey(user?.id);
-  return useMutation({
+  const m = useMutation({
     mutationFn: (prefs: Prefs) => api.put<Prefs>('/me/prefs', prefs),
-    onMutate: async (prefs) => {
-      await qc.cancelQueries({ queryKey: key });
-      const prev = qc.getQueryData<Me>(key);
-      if (prev) qc.setQueryData<Me>(key, { ...prev, prefs });
-      return { prev };
-    },
-    onError: (_e, _p, ctx) => {
-      if (ctx?.prev) qc.setQueryData(key, ctx.prev);
-    },
     onSuccess: (prefs) => qc.setQueryData<Me>(key, (me) => (me ? { ...me, prefs } : me)),
   });
+  const mutate = (
+    prefs: Prefs,
+    opts: { onSuccess?: () => void; onError?: (e: unknown) => void } = {},
+  ) => {
+    const prev = qc.getQueryData<Me>(key);
+    // A reload already on its way would bring back the old value; drop it (without rolling back).
+    void qc.cancelQueries({ queryKey: key }, { revert: false });
+    if (prev) qc.setQueryData<Me>(key, { ...prev, prefs });
+    m.mutate(prefs, {
+      onSuccess: () => opts.onSuccess?.(),
+      onError: (e) => {
+        if (prev) qc.setQueryData(key, prev);
+        opts.onError?.(e);
+      },
+    });
+  };
+  return { ...m, mutate };
 }
 
 /** `POST /api/me/password`. Errors: INVALID_CREDENTIALS (currentPassword), VALIDATION_FAILED. */
@@ -85,6 +103,46 @@ export function useChangePassword() {
     mutationFn: (body: { currentPassword?: string; newPassword: string }) =>
       api.post<void>('/me/password', body),
   });
+}
+
+// ---- two-step sign-in (docs/api/two-step.md) ------------------------------------------
+
+export const twoStepKey = (userId: string | undefined) => ['me', userId, 'two-step'] as const;
+
+export function useTwoStep() {
+  const { user } = useSession();
+  return useQuery({
+    queryKey: twoStepKey(user?.id),
+    queryFn: () => api.get<TwoStepStatus>('/me/two-step'),
+    enabled: !!user,
+  });
+}
+
+/** A code from the authenticator app, or one recovery code. */
+export type TwoStepCode = { code: string } | { recoveryCode: string };
+
+/** Set-up, turn on/off and new recovery codes; each refreshes the status. */
+export function useTwoStepActions() {
+  const qc = useQueryClient();
+  const { user } = useSession();
+  const refresh = () => qc.invalidateQueries({ queryKey: twoStepKey(user?.id) });
+  return {
+    setup: () => api.post<{ secret: string; otpauthUri: string }>('/me/two-step/setup'),
+    enable: async (code: string) => {
+      const r = await api.post<{ codes: string[] }>('/me/two-step/enable', { code });
+      await refresh();
+      return r.codes;
+    },
+    disable: async (code: TwoStepCode) => {
+      await api.post<TwoStepStatus>('/me/two-step/disable', code);
+      await refresh();
+    },
+    newCodes: async (code: string) => {
+      const r = await api.post<{ codes: string[] }>('/me/two-step/recovery-codes', { code });
+      await refresh();
+      return r.codes;
+    },
+  };
 }
 
 // ---- addresses ------------------------------------------------------------------------

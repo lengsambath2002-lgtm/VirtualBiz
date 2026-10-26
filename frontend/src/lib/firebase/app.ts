@@ -9,7 +9,9 @@ let app: Promise<FirebaseApp> | null = null;
 let auth: Promise<Auth> | null = null;
 
 export function firebaseApp(): Promise<FirebaseApp> {
-  app ??= import('firebase/app').then(({ getApps, initializeApp }) => getApps()[0] ?? initializeApp(FIREBASE_CONFIG));
+  app ??= import('firebase/app').then(
+    ({ getApps, initializeApp }) => getApps()[0] ?? initializeApp(FIREBASE_CONFIG),
+  );
   return app;
 }
 

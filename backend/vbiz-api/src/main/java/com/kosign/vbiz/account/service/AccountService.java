@@ -7,6 +7,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.kosign.vbiz.account.domain.NotifyTopic;
 import com.kosign.vbiz.account.domain.User;
 import com.kosign.vbiz.account.mapper.AccountMapper;
 import com.kosign.vbiz.account.payload.ChangePasswordRequest;
@@ -82,8 +83,13 @@ public class AccountService {
         User user = require(userId);
         user.setPrefDeals(prefs.deals());
         user.setPrefPromos(prefs.promos());
-        if (prefs.emails() != null) {
-            user.setPrefEmails(prefs.emails());
+        if (prefs.topics() != null) {
+            prefs.topics().forEach((topic, ch) -> {
+                if (topic != null && ch != null) {
+                    user.setWants(NotifyTopic.Channel.EMAIL, topic, ch.email());
+                    user.setWants(NotifyTopic.Channel.PUSH, topic, ch.push());
+                }
+            });
         }
         return AccountMapper.toPrefs(user);
     }

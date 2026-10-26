@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kosign.vbiz.auth.payload.AuthResult;
+import com.kosign.vbiz.auth.payload.TwoStepSignInRequest;
 import com.kosign.vbiz.auth.payload.AuthSessionResponse;
 import com.kosign.vbiz.auth.payload.EmailCodeRequest;
 import com.kosign.vbiz.auth.payload.GoogleDevRequest;
@@ -66,6 +67,13 @@ public class AuthController extends BaseController {
     public ResponseEntity<ApiResponse<AuthSessionResponse>> login(
             @Valid @RequestBody LoginRequest req, HttpServletRequest http, HttpServletResponse res) {
         return session(auth.login(req.email(), req.password(), client(http)), res);
+    }
+
+    /** Finishes a sign-in that answered TWO_STEP_REQUIRED (docs/api/two-step.md). */
+    @PostMapping("/two-step")
+    public ResponseEntity<ApiResponse<AuthSessionResponse>> twoStep(
+            @Valid @RequestBody TwoStepSignInRequest req, HttpServletRequest http, HttpServletResponse res) {
+        return session(auth.twoStep(req.ticket(), req.code(), req.recoveryCode(), client(http)), res);
     }
 
     @PostMapping("/otp")

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test';
 
-import { fillDemoCode, forgetSession, trackErrors } from './_helpers/app';
+import { fillDemoCode, watchCodes, forgetSession, trackErrors } from './_helpers/app';
 
 test.describe('Customer marketplace', () => {
   test('add a product to the cart while signed out @phone', async ({ page }) => {
@@ -49,6 +49,7 @@ test.describe('Login sheet', () => {
   }
 
   test('logs in an account created on /sign-up', async ({ page }) => {
+    watchCodes(page);
     const email = `sheet-${Date.now()}@example.com`;
     await page.goto('/en/sign-up');
     await page.getByLabel('Full name').fill('Sok Dara');

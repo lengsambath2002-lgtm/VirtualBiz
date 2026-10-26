@@ -110,7 +110,8 @@ export interface AuditEntry {
     | 'SETTINGS'
     | 'CATEGORY'
     | 'STAFF_INVITE'
-    | 'EXPORT';
+    | 'EXPORT'
+    | 'CONTENT';
   targetId: string;
   targetLabel?: string;
   reason?: string;

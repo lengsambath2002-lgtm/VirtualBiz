@@ -3,7 +3,13 @@
 import { useSearchParams } from 'next/navigation';
 import { createContext, useCallback, useContext, useMemo } from 'react';
 
-import type { AuthSession, OtpPurposeWire, OtpSent } from '@/lib/api';
+import {
+  isApiError,
+  metaString,
+  type AuthSession,
+  type OtpPurposeWire,
+  type OtpSent,
+} from '@/lib/api';
 import { useSessionStore } from '@/lib/auth';
 import type { SignInMethod } from '@/lib/domain';
 import { useRouter } from '@/lib/i18n/navigation';
@@ -87,8 +93,7 @@ export function useFlowActions() {
 
   /**
    * Send a new code (`/auth/otp`; a sign-up's VERIFY code is sent again by `/auth/signup` with
-   * the pending sign-up). Throws `ApiError`. In local / dev the response carries the code, which
-   * the code toast shows.
+   * the pending sign-up). Throws `ApiError`. The code goes by email (or SMS) only, never on screen.
    */
   const startCode = useCallback(async (purpose: CodePurpose, to: string) => {
     const pending = useFlowStore.getState().pending;
@@ -101,12 +106,10 @@ export function useFlowActions() {
       otp: {
         purpose,
         to,
-        devCode: sent.devCode ?? null,
         exp: epoch(sent.expiresAt, OTP_TTL_MS),
         resendAt: epoch(sent.resendAt, RESEND_MS),
         seq: (prev?.seq ?? 0) + 1,
       },
-      codeToast: !!sent.devCode,
       verified: null,
     });
   }, []);
@@ -115,8 +118,8 @@ export function useFlowActions() {
     (session: AuthSession, method: MethodKey) => {
       // Mark that we're leaving before the session flips, so the signed-in redirect doesn't race.
       useFlowStore.getState().patch({
-        codeToast: false,
         leaving: true,
+        twoStep: null,
         pending: null,
         resetToken: null,
         phoneToken: null,
@@ -128,5 +131,24 @@ export function useFlowActions() {
     [finish],
   );
 
-  return useMemo(() => ({ go, finish, startCode, signIn }), [go, finish, startCode, signIn]);
+  /**
+   * A sign-in answered TWO_STEP_REQUIRED (two-step sign-in is on for the account): keep its ticket
+   * and ask for the code. True when it did, so the caller stops there.
+   */
+  const askTwoStep = useCallback(
+    (err: unknown, method: MethodKey) => {
+      if (!isApiError(err, 'TWO_STEP_REQUIRED')) return false;
+      const ticket = metaString(err, 'ticket');
+      if (!ticket) return false;
+      useFlowStore.getState().patch({ twoStep: { ticket, method } });
+      go('two-step');
+      return true;
+    },
+    [go],
+  );
+
+  return useMemo(
+    () => ({ go, finish, startCode, signIn, askTwoStep }),
+    [go, finish, startCode, signIn, askTwoStep],
+  );
 }

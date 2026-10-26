@@ -55,7 +55,19 @@ class AccountIntegrationTest extends IntegrationTest {
                 .andExpect(jsonPath("$.data.deals").value(false))
                 .andExpect(jsonPath("$.data.promos").value(true));
         mvc.perform(get("/api/me").header("Authorization", s.bearer()))
-                .andExpect(jsonPath("$.data.prefs.promos").value(true));
+                .andExpect(jsonPath("$.data.prefs.promos").value(true))
+                .andExpect(jsonPath("$.data.prefs.topics.STOCK.email").value(true))
+                .andExpect(jsonPath("$.data.prefs.topics.STOCK.push").value(true));
+        // Per topic and channel; topics left out stay as they are.
+        mvc.perform(put("/api/me/prefs").header("Authorization", s.bearer()).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"deals\":false,\"promos\":true,\"topics\":{\"STOCK\":{\"email\":false,\"push\":true}}}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.topics.STOCK.email").value(false))
+                .andExpect(jsonPath("$.data.topics.STOCK.push").value(true))
+                .andExpect(jsonPath("$.data.topics.ORDERS.email").value(true));
+        mvc.perform(put("/api/me/prefs").header("Authorization", s.bearer()).contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"deals\":false,\"promos\":true}"))
+                .andExpect(jsonPath("$.data.topics.STOCK.email").value(false));
 
         mvc.perform(post("/api/me/password").header("Authorization", s.bearer()).contentType(MediaType.APPLICATION_JSON)
                         .content(json.writeValueAsString(Map.of("currentPassword", "nope", "newPassword", "An0ther!Pw"))))

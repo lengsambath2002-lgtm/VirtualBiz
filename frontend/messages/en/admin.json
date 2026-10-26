@@ -559,7 +559,8 @@
       "SETTINGS": "Settings",
       "CATEGORY": "Categories",
       "STAFF_INVITE": "Staff invites",
-      "EXPORT": "Exports"
+      "EXPORT": "Exports",
+      "CONTENT": "Site content"
     },
     "empty": "No staff actions yet",
     "by": "{name} · {date}",
@@ -594,7 +595,8 @@
       "MFA_RECOVERY_REGENERATED": "Made new recovery codes",
       "DATA_EXPORTED": "Exported a list",
       "CATEGORY_REQUEST_APPROVED": "Approved a category suggestion",
-      "CATEGORY_REQUEST_REJECTED": "Declined a category suggestion"
+      "CATEGORY_REQUEST_REJECTED": "Declined a category suggestion",
+      "CONTENT_UPDATED": "Edited the homepage or a legal page"
     },
     "yesterday": "Yesterday",
     "byName": "by {name}",
@@ -611,7 +613,9 @@
     "tab": {
       "platform": "Platform",
       "categories": "Categories",
-      "staff": "Platform staff"
+      "staff": "Platform staff",
+      "homepage": "Homepage",
+      "legal": "Terms & privacy"
     },
     "readOnly": "Only a super-admin can change these.",
     "commission": "Commission",
@@ -919,5 +923,47 @@
         "restoreBody": "They count in the shop's rating again."
       }
     }
+  },
+  "content": {
+    "lang": {
+      "en": "English",
+      "kh": "ខ្មែរ"
+    },
+    "previewIn": "Preview language",
+    "preview": "Preview",
+    "slot": {
+      "main": "Main banner",
+      "side1": "Side banner 1",
+      "side2": "Side banner 2"
+    },
+    "slotHint": {
+      "main": "Large and dark, at the top of the marketplace.",
+      "side1": "Beside the main banner, on top.",
+      "side2": "Beside the main banner, below."
+    },
+    "show": "Show",
+    "eyebrow": "Small heading",
+    "titleField": "Title",
+    "body": "Text",
+    "bodyHint": "Put a promo code between double stars to highlight it: **WATERFEST**.",
+    "cta": "Button",
+    "href": "Opens",
+    "hrefHint": "A page of VirtualBiz, like /deals or /search?type=service, or a full https:// address.",
+    "allHidden": "Every banner is hidden: the homepage starts with the categories.",
+    "save": "Save changes",
+    "discard": "Discard",
+    "lastChanged": "Last changed by {name}, {when}",
+    "neverChanged": "Not changed since launch",
+    "confirmBanners": "Update the homepage?",
+    "confirmBannersBody": "Everyone sees the new banners within a minute.",
+    "savedBanners": "Homepage updated",
+    "legalPages": "Legal pages",
+    "openPage": "Open the page",
+    "legalHint": "Plain text. Start a line with \"## \" for a heading and \"- \" for a bullet; leave a blank line between paragraphs.",
+    "khHint": "Left empty, the Khmer page shows the English text with a note.",
+    "confirmLegal": "Publish the new {page}?",
+    "confirmLegalBody": "The page shows the new text and today's date right away. Tell people about important changes.",
+    "savedLegal": "{page} updated",
+    "leaveUnsaved": "Leave without saving your changes?"
   }
 }

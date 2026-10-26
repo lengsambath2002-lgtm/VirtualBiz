@@ -60,6 +60,7 @@ import com.kosign.vbiz.admin.service.AdminPayoutService;
 import com.kosign.vbiz.admin.service.AdminPromotionService;
 import com.kosign.vbiz.admin.service.AdminReviewService;
 import com.kosign.vbiz.admin.service.AdminSettingsService;
+import com.kosign.vbiz.admin.service.AdminContentService;
 import com.kosign.vbiz.admin.service.AdminStaffService;
 import com.kosign.vbiz.admin.service.AdminUserService;
 import com.kosign.vbiz.admin.service.StaffInviteService;
@@ -67,6 +68,8 @@ import com.kosign.vbiz.business.domain.BusinessType;
 import com.kosign.vbiz.business.domain.VerificationStatus;
 import com.kosign.vbiz.common.api.ApiResponse;
 import com.kosign.vbiz.common.api.BaseController;
+import com.kosign.vbiz.meta.payload.HomeBanners;
+import com.kosign.vbiz.meta.payload.LegalPage;
 import com.kosign.vbiz.meta.payload.PlatformSettingsResponse;
 import com.kosign.vbiz.promotion.payload.PromotionInput;
 import com.kosign.vbiz.promotion.domain.PromotionState;
@@ -98,6 +101,7 @@ public class AdminController extends BaseController {
     private final AdminPayoutService payouts;
     private final AdminAuditService audit;
     private final AdminSettingsService settings;
+    private final AdminContentService content;
     private final AdminCategoryService categories;
     private final AdminStaffService staff;
     private final StaffInviteService invites;
@@ -351,6 +355,28 @@ public class AdminController extends BaseController {
     @PutMapping("/settings")
     public ResponseEntity<ApiResponse<PlatformSettingsResponse>> updateSettings(@Valid @RequestBody SettingsInput in) {
         return ok(settings.update(in));
+    }
+
+    // ── Site content (docs/api/site-content.md) ──
+
+    @GetMapping("/content/home-banners")
+    public ResponseEntity<ApiResponse<HomeBanners>> homeBanners() {
+        return ok(content.homeBanners());
+    }
+
+    @PutMapping("/content/home-banners")
+    public ResponseEntity<ApiResponse<HomeBanners>> saveHomeBanners(@RequestBody HomeBanners in) {
+        return ok(content.saveHomeBanners(in));
+    }
+
+    @GetMapping("/content/legal/{page}")
+    public ResponseEntity<ApiResponse<LegalPage>> legal(@PathVariable String page) {
+        return ok(content.legal(page));
+    }
+
+    @PutMapping("/content/legal/{page}")
+    public ResponseEntity<ApiResponse<LegalPage>> saveLegal(@PathVariable String page, @RequestBody LegalPage in) {
+        return ok(content.saveLegal(page, in));
     }
 
     @GetMapping("/category-requests")

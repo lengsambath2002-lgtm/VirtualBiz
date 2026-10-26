@@ -51,11 +51,26 @@ export type PhoneVerifyResult =
   | { status: 'SIGNED_IN'; session: AuthSession }
   | { status: 'NEW'; phoneToken: string };
 
+/** What a notification is about (docs/ops/email.md § Choices). The inbox always gets all of them. */
+export type NotifyTopic = 'ORDERS' | 'BOOKINGS' | 'SHOP_ACTIVITY' | 'STOCK' | 'REVIEWS' | 'ACCOUNT';
+
+export interface NotifyChannels {
+  email: boolean;
+  push: boolean;
+}
+
 export interface Prefs {
   deals: boolean;
   promos: boolean;
-  /** Emails about orders, bookings and shops (every inbox notification). */
-  emails: boolean;
+  /** Per topic: whether it also comes by email and by push. Sent back, only the topics given change. */
+  topics: Record<NotifyTopic, NotifyChannels>;
+}
+
+/** Two-step sign-in on this account (`GET /api/me/two-step`); staff manage it in the console. */
+export interface TwoStepStatus {
+  enabled: boolean;
+  recoveryCodesLeft: number;
+  managedInConsole: boolean;
 }
 
 /** `GET /api/me`. */

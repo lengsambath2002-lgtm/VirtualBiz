@@ -66,6 +66,13 @@ export function metaNumber(e: unknown, key: string, fallback: number): number {
   return Number.isFinite(v) ? v : fallback;
 }
 
+/** A text value from an error's details (`meta.ticket`), or null. */
+export function metaString(e: unknown, key: string): string | null {
+  if (!(e instanceof ApiError)) return null;
+  const v = e.meta(key);
+  return typeof v === 'string' && v ? v : null;
+}
+
 // ---- access token ---------------------------------------------------------------------
 
 /** The access token lives in memory only (never localStorage); a reload refreshes it. */

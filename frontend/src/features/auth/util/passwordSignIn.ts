@@ -5,7 +5,12 @@
 // or if Firebase can't be reached, VirtualBiz checks the password itself.
 import type { AuthSession } from '@/lib/api';
 import { isApiError } from '@/lib/api';
-import { firebaseCode, firebaseEnabled, NOT_A_FIREBASE_LOGIN, passwordIdToken } from '@/lib/firebase';
+import {
+  firebaseCode,
+  firebaseEnabled,
+  NOT_A_FIREBASE_LOGIN,
+  passwordIdToken,
+} from '@/lib/firebase';
 
 import { firebaseMigrate, firebaseSignIn, login } from '../api';
 
@@ -14,6 +19,8 @@ export async function passwordSignIn(email: string, password: string): Promise<A
   try {
     return await firebaseSignIn(await passwordIdToken(email, password));
   } catch (e) {
+    // Signed in, but two-step sign-in is on: the caller asks for the code.
+    if (isApiError(e, 'TWO_STEP_REQUIRED')) throw e;
     const code = firebaseCode(e);
     const move = (code && NOT_A_FIREBASE_LOGIN.has(code)) || isApiError(e, 'EMAIL_NOT_VERIFIED');
     if (!move) return login(email, password);
@@ -21,7 +28,8 @@ export async function passwordSignIn(email: string, password: string): Promise<A
   await firebaseMigrate(email, password); // throws INVALID_CREDENTIALS / ACCOUNT_LOCKED like `login`
   try {
     return await firebaseSignIn(await passwordIdToken(email, password));
-  } catch {
+  } catch (e) {
+    if (isApiError(e, 'TWO_STEP_REQUIRED')) throw e;
     return login(email, password);
   }
 }

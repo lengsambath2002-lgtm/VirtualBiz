@@ -18,6 +18,9 @@ import { useMyBookings } from '@/features/shop-service-booking/queries';
 import type { Item } from '@/features/shop-shared/types';
 import { searchHref } from '@/features/shop-search/util/searchParams';
 
+import { useHomeBanners, type HomeBanners } from '../api';
+import { HomeHero } from './HomeHero';
+
 /** Flash-deal countdown to midnight, ticking every second. */
 function Countdown() {
   const [now, setNow] = useState(() => Date.now());
@@ -43,8 +46,13 @@ function Countdown() {
 
 const claimed = (it: Item) => Math.min(95, Math.round((it.sold / (it.sold + it.stock * 20)) * 100));
 
-export function HomePage() {
+/**
+ * The marketplace homepage. `banners` come from the server render (null when the API was out of
+ * reach: the built-in banners show instead).
+ */
+export function HomePage({ banners }: { banners: HomeBanners | null }) {
   const t = useTranslations('shop.home');
+  const hero = useHomeBanners(banners).data;
   const f = useFmt();
   const { items, shops, categories, item, districts } = useShopData();
   const { signedIn } = useSession();
@@ -78,28 +86,32 @@ export function HomePage() {
 
   return (
     <>
-      <section className={s.hero}>
-        <div className={s.banner}>
-          <span className={s.eyebrow}>{t('eyebrow')}</span>
-          <h1>{t('title')}</h1>
-          <p>{t.rich('body', { code: (c) => <b style={{ color: '#F5B800' }}>{c}</b> })}</p>
-          <Link className={cn(s.btn, s.btnAccent)} href="/deals">
-            {t('cta')}
-          </Link>
-        </div>
-        <div className={s.sideB}>
-          <Link className={cn(s.miniB, s.t3)} href={searchHref({ type: 'service' })}>
-            <span className={s.miniEyebrow}>{t('bookEyebrow')}</span>
-            <strong>{t('bookTitle')}</strong>
-            <span className={s.small}>{t('bookNote')}</span>
-          </Link>
-          <Link className={cn(s.miniB, s.t6)} href="/help">
-            <span className={s.miniEyebrow}>{t('bizEyebrow')}</span>
-            <strong>{t('bizTitle')}</strong>
-            <span className={s.small}>{t('bizNote')}</span>
-          </Link>
-        </div>
-      </section>
+      {hero ? (
+        <HomeHero banners={hero} />
+      ) : (
+        <section className={s.hero}>
+          <div className={s.banner}>
+            <span className={s.eyebrow}>{t('eyebrow')}</span>
+            <h1>{t('title')}</h1>
+            <p>{t.rich('body', { code: (c) => <b style={{ color: '#F5B800' }}>{c}</b> })}</p>
+            <Link className={cn(s.btn, s.btnAccent)} href="/deals">
+              {t('cta')}
+            </Link>
+          </div>
+          <div className={s.sideB}>
+            <Link className={cn(s.miniB, s.t3)} href={searchHref({ type: 'service' })}>
+              <span className={s.miniEyebrow}>{t('bookEyebrow')}</span>
+              <strong>{t('bookTitle')}</strong>
+              <span className={s.small}>{t('bookNote')}</span>
+            </Link>
+            <Link className={cn(s.miniB, s.t6)} href="/help">
+              <span className={s.miniEyebrow}>{t('bizEyebrow')}</span>
+              <strong>{t('bizTitle')}</strong>
+              <span className={s.small}>{t('bizNote')}</span>
+            </Link>
+          </div>
+        </section>
+      )}
 
       <section className={s.sec}>
         <CategoryRow>

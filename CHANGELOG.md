@@ -6,6 +6,7 @@ All notable changes are recorded here. Format: [Keep a Changelog](https://keepac
 
 ### Security
 
+- The sign-in page no longer shows the code it emailed ("Email from VirtualBiz · Your code is … · Fill in") on a developer's machine either: codes are only read from the email, as everywhere else.
 - Sign-in codes and invite links are no longer handed out on the public demo: they were in the API reply (and on screen), so anyone could sign in to or reset any account there. Outside a developer's machine and the tests they now go by email only, and the API refuses to start if they're exposed (docs/ops/security.md). Phone sign-in is hidden, and refused by the API, while no SMS provider is connected. Logs no longer carry codes or full email addresses.
 
 ### Fixed
@@ -25,6 +26,11 @@ All notable changes are recorded here. Format: [Keep a Changelog](https://keepac
 
 ### Added
 
+- Two-step sign-in for every account, not only console staff: turn it on in Your account → Settings with an authenticator app (QR code or key, then 10 recovery codes to save). Every sign-in (password, email code, Google, phone, password reset) then asks for a code from the app, or a recovery code; five wrong codes mean signing in again. Turning it on or off is confirmed by email (docs/api/two-step.md).
+- Notification choices per topic: orders, bookings and, for shop owners, new orders and bookings, low stock, reviews, and ID check and payouts, each by email and by push (it was one switch for all emails). The inbox still gets everything.
+- Terms of service and Privacy policy pages (`/terms`, `/privacy`) in English and Khmer, with a starting text. The footer links and the sign-up form's links went nowhere before; the sign-up form opens them in a new tab, so a half-typed sign-up is kept.
+- The console can edit the marketplace homepage's banners (Settings → Homepage: each banner's text in English and Khmer, where it leads, shown or hidden, with a live preview) and the Terms and Privacy text (Settings → Terms & privacy). Super-admins change them; every change is in the audit log (docs/api/site-content.md).
+- Appearance in Your account → Settings: light, dark, or follow the device, remembered on that device and applied before the page draws.
 - Shop and salon settings are in sections (Shop profile, Location and hours, Orders and stock or Booking rules, Delivery, Payments and payouts, Receipts and tax, Export data) with links to Team, Promotions or Marketing, Notifications and Your account. On a phone, settings is a list and each section opens on its own with a way back, instead of one 7,000-pixel page; on a computer the sections sit in a menu beside the open one. Each section has its own link (`/seller/settings?section=payments`), which the "fix your ID check" banner now uses.
 - A VirtualBiz logo and app icon: a shop awning over a "V" on the yellow tile, replacing the plain "B" everywhere it showed (marketplace, landing page, sign-in, invites, admin console). The browser tab, iPhone home screen, installed web app (new manifest) and push notifications use it too (docs/ui/brand.md).
 - Log in and sign up: with Firebase, "Continue with Google" opens Google's account chooser straight away (no extra "Choose an account" step). The card, its buttons and fields have clear borders, hover and focus states, in light and dark.

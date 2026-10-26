@@ -59,6 +59,13 @@ export const firebaseSignIn = (idToken: string, name?: string) =>
 export const firebaseMigrate = (email: string, password: string) =>
   post<void>('/firebase/migrate', { email, password });
 
+/**
+ * Finishes a sign-in that answered TWO_STEP_REQUIRED (`meta.ticket`) with a code from the
+ * authenticator app, or a recovery code. Errors: MFA_CODE_INVALID (`meta.attemptsLeft`),
+ * MFA_LOCKED and INVALID_TOKEN (start the sign-in again).
+ */
+export const twoStepSignIn = (ticket: string, code: { code?: string; recoveryCode?: string }) =>
+  post<AuthSession>('/two-step', { ticket, ...code });
+
 /** Which ways in the server can deliver: `phone` is false while no SMS provider is connected. */
-export const signInMethods = () =>
-  apiFetch<{ phone: boolean }>('/auth/methods', { auth: false });
+export const signInMethods = () => apiFetch<{ phone: boolean }>('/auth/methods', { auth: false });

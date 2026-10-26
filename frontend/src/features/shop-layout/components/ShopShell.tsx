@@ -67,8 +67,8 @@ function ShopFooter() {
           <h4>{t('business')}</h4>
           <Link href="/help">{t('sell')}</Link>
           <Link href="/help">{t('takeBookings')}</Link>
-          <Link href="/help">{t('terms')}</Link>
-          <Link href="/help">{t('privacy')}</Link>
+          <Link href="/terms">{t('terms')}</Link>
+          <Link href="/privacy">{t('privacy')}</Link>
         </div>
       </div>
       <div className={cn(s.wrap, s.ftB)}>

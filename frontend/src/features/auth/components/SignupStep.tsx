@@ -13,7 +13,7 @@ import { useFlowStore } from '../store';
 import { containsEmailName, emailOk, passwordOk } from '../util/rules';
 import { GoogleStart } from './GoogleChooser';
 import { SiIcon } from './icons';
-import { Alert, AltLine, Btn, EmailField, Field, OrDivider, RulesList, StepLink } from './parts';
+import { Alert, AltLine, Btn, EmailField, Field, LegalLink, OrDivider, RulesList } from './parts';
 import s from './signIn.module.css';
 
 /**
@@ -156,8 +156,8 @@ export function SignupStep({ initialEmail }: { initialEmail: string }) {
       </form>
       <p className={s.small}>
         {t.rich('legal', {
-          terms: (c) => <StepLink step="terms">{c}</StepLink>,
-          privacy: (c) => <StepLink step="privacy">{c}</StepLink>,
+          terms: (c) => <LegalLink page="terms">{c}</LegalLink>,
+          privacy: (c) => <LegalLink page="privacy">{c}</LegalLink>,
         })}
       </p>
       <AltLine>

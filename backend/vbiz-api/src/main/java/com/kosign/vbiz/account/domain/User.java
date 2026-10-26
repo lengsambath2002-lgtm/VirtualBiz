@@ -1,8 +1,16 @@
 package com.kosign.vbiz.account.domain;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import com.kosign.vbiz.auth.domain.SignInMethod;
 import com.kosign.vbiz.common.persistence.BaseEntity;
@@ -55,9 +63,13 @@ public class User extends BaseEntity {
     @Column(name = "pref_promos", nullable = false)
     private boolean prefPromos = false;
 
-    /** Emails about orders, bookings and shops (every inbox notification). */
-    @Column(name = "pref_emails", nullable = false)
-    private boolean prefEmails = true;
+    /**
+     * The notification topics turned off, per channel: {@code {"email": ["STOCK"], "push": []}}.
+     * Anything not listed is on, so a new topic starts on.
+     */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "notify_off", nullable = false)
+    private Map<String, List<String>> notifyOff = new LinkedHashMap<>();
 
     /** The Firebase Authentication account this one signs in with (docs/ops/firebase.md). */
     @Column(name = "firebase_uid", length = 128)
@@ -128,5 +140,26 @@ public class User extends BaseEntity {
 
     public boolean hasMfa() {
         return mfaEnabledAt != null;
+    }
+
+    /** Whether this person wants {@code topic} by {@code channel} (the inbox always gets it). */
+    public boolean wants(NotifyTopic.Channel channel, NotifyTopic topic) {
+        List<String> off = notifyOff == null ? null : notifyOff.get(key(channel));
+        return off == null || !off.contains(topic.name());
+    }
+
+    public void setWants(NotifyTopic.Channel channel, NotifyTopic topic, boolean on) {
+        Map<String, List<String>> next = new LinkedHashMap<>(notifyOff == null ? Map.of() : notifyOff);
+        List<String> off = new ArrayList<>(next.getOrDefault(key(channel), List.of()));
+        off.remove(topic.name());
+        if (!on) {
+            off.add(topic.name());
+        }
+        next.put(key(channel), off);
+        notifyOff = next; // a new map, so the JSON column is seen as changed
+    }
+
+    private static String key(NotifyTopic.Channel channel) {
+        return channel.name().toLowerCase(Locale.ROOT);
     }
 }

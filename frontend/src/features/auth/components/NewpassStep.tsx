@@ -25,7 +25,7 @@ function reusedPassword(e: ApiError) {
 export function NewpassStep() {
   const t = useTranslations('auth.newpass');
   const tc = useTranslations('common');
-  const { signIn } = useFlowActions();
+  const { signIn, askTwoStep } = useFlowActions();
   const email = useFlowStore((st) => st.email);
   const [pw, setPw] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -46,6 +46,7 @@ export function NewpassStep() {
       signIn(session, 'reset');
     } catch (e) {
       setBusy(false);
+      if (askTwoStep(e, 'reset')) return;
       setError(
         !isApiError(e) || isApiError(e, 'INVALID_TOKEN')
           ? t('errExpired')

@@ -12,5 +12,7 @@ public enum AuditTarget {
     CATEGORY,
     STAFF_INVITE,
     /** A CSV export of a console list ({@code targetId} = the list). */
-    EXPORT
+    EXPORT,
+    /** Homepage banners or a legal page ({@code targetId} = the content key). */
+    CONTENT
 }

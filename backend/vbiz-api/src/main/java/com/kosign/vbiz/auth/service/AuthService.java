@@ -47,6 +47,7 @@ public class AuthService {
     private final UserService users;
     private final OtpService otp;
     private final SessionService sessions;
+    private final TwoStepService twoStep;
     private final TicketService tickets;
     private final LoginAttemptService loginAttempts;
     private final PasswordPolicy passwordPolicy;
@@ -337,7 +338,29 @@ public class AuthService {
 
     // ── Helpers ───────────────────────────────────────────────────────────────────────
 
+    /**
+     * Finishes a sign-in that answered TWO_STEP_REQUIRED: the ticket and a code from the app (or a
+     * recovery code). Errors: MFA_CODE_INVALID ({@code meta.attemptsLeft}), MFA_LOCKED, INVALID_TOKEN.
+     */
+    @Transactional(noRollbackFor = BusinessException.class)
+    public AuthResult twoStep(String ticket, String code, String recoveryCode, ClientInfo client) {
+        Map.Entry<User, SignInMethod> passed = twoStep.pass(ticket, code, recoveryCode);
+        User user = passed.getKey();
+        if (passed.getValue() == SignInMethod.PASSWORD) {
+            loginAttempts.reset(user);
+        }
+        return startSession(user, passed.getValue(), client);
+    }
+
     private AuthResult signIn(User user, SignInMethod method, ClientInfo client) {
+        requireNotSuspended(user);
+        if (twoStep.required(user)) {
+            throw twoStep.challenge(user, method);
+        }
+        return startSession(user, method, client);
+    }
+
+    private AuthResult startSession(User user, SignInMethod method, ClientInfo client) {
         requireNotSuspended(user);
         user.addSignInMethod(method);
         User saved = users.save(user);

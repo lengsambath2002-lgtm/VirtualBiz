@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.kosign.vbiz.account.domain.NotifyTopic;
 import com.kosign.vbiz.account.domain.User;
 import com.kosign.vbiz.firebase.FirebaseGateway;
 import com.kosign.vbiz.mail.MailAsyncConfig;
@@ -46,7 +47,8 @@ public class NotificationPush {
         if (w == null) {
             return;
         }
-        List<User> people = recipients.of(n);
+        NotifyTopic topic = NotificationTopics.of(n);
+        List<User> people = recipients.of(n).stream().filter(u -> u.wants(NotifyTopic.Channel.PUSH, topic)).toList();
         if (people.isEmpty()) {
             return;
         }

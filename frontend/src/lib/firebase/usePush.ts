@@ -48,7 +48,10 @@ export function usePush() {
       try {
         const now = await pushToken();
         if (now !== 'denied' && now !== had) {
-          await apiFetch('/me/push-tokens', { method: 'POST', body: { token: now, platform: 'web' } });
+          await apiFetch('/me/push-tokens', {
+            method: 'POST',
+            body: { token: now, platform: 'web' },
+          });
           write(now);
         }
       } catch {

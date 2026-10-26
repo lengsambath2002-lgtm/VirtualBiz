@@ -29,7 +29,7 @@ export function LoginStep({ initialEmail }: { initialEmail: string }) {
   const te = useTranslations('auth.email');
   const tu = useTranslations('auth.ui');
   const tc = useTranslations('common');
-  const { go, startCode, signIn } = useFlowActions();
+  const { go, startCode, signIn, askTwoStep } = useFlowActions();
   const pageHref = usePageHref();
   const lockUntil = useFlowStore((st) => st.lockUntil);
   const [email, setEmail] = useState(initialEmail);
@@ -145,6 +145,10 @@ export function LoginStep({ initialEmail }: { initialEmail: string }) {
       signIn(session, 'password');
     } catch (err) {
       setBusy(false);
+      if (askTwoStep(err, 'password')) {
+        useFlowStore.getState().patch({ email: v });
+        return;
+      }
       if (isApiError(err, 'ACCOUNT_LOCKED')) {
         const secs = metaNumber(err, 'retryAfter', LOCK_MS / 1000);
         useFlowStore.getState().patch({ lockUntil: Date.now() + secs * 1000 });

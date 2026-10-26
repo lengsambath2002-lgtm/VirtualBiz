@@ -15,7 +15,9 @@ export async function pushSupported(): Promise<boolean> {
 
 async function worker(): Promise<ServiceWorkerRegistration> {
   const q = new URLSearchParams(FIREBASE_CONFIG).toString();
-  return navigator.serviceWorker.register(`${SW_PATH}?${q}`, { scope: '/firebase-cloud-messaging-push-scope' });
+  return navigator.serviceWorker.register(`${SW_PATH}?${q}`, {
+    scope: '/firebase-cloud-messaging-push-scope',
+  });
 }
 
 /**
@@ -23,10 +25,16 @@ async function worker(): Promise<ServiceWorkerRegistration> {
  * `'denied'` when the person (or the browser) said no.
  */
 export async function pushToken(): Promise<string | 'denied'> {
-  const permission = Notification.permission === 'default' ? await Notification.requestPermission() : Notification.permission;
+  const permission =
+    Notification.permission === 'default'
+      ? await Notification.requestPermission()
+      : Notification.permission;
   if (permission !== 'granted') return 'denied';
   const [app, m, sw] = await Promise.all([firebaseApp(), import('firebase/messaging'), worker()]);
-  return m.getToken(m.getMessaging(app), { vapidKey: FIREBASE_VAPID_KEY, serviceWorkerRegistration: sw });
+  return m.getToken(m.getMessaging(app), {
+    vapidKey: FIREBASE_VAPID_KEY,
+    serviceWorkerRegistration: sw,
+  });
 }
 
 /** Forgets this browser's token with Firebase (push turned off). */

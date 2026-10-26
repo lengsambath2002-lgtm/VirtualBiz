@@ -8,6 +8,7 @@ import type { ReactNode } from 'react';
 import { Providers } from '@/app/providers';
 import { serverGet } from '@/lib/api/server';
 import { setKhrRate } from '@/lib/money';
+import { THEME_SCRIPT } from '@/lib/theme/script';
 import { isLocale, SUPPORTED_LOCALES } from '@/lib/i18n/config';
 
 import '../globals.css';
@@ -65,6 +66,10 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
       className={`${inter.variable} ${khmer.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        {/* The theme chosen in Settings, applied before the first paint. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
+      </head>
       <body suppressHydrationWarning>
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Providers khrPerUsd={settings?.khrPerUsd ?? null}>{children}</Providers>

@@ -1,0 +1,89 @@
+/* Terms and Privacy (LegalPage.tsx): a readable column of text inside the shop frame. */
+.page {
+  max-width: 760px;
+  margin: 8px auto 48px;
+  padding: 32px 36px;
+  border-radius: var(--r-lg);
+  background: var(--g-fill-strong);
+  border: 1px solid var(--line);
+  min-width: 0;
+}
+.head h1 {
+  margin: 0;
+  font-size: clamp(26px, 4vw, 34px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.head p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+.note {
+  margin: 18px 0 0;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  font-size: 13.5px;
+}
+.text {
+  margin-top: 20px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--ink);
+  overflow-wrap: anywhere;
+}
+.text h2 {
+  margin: 28px 0 8px;
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+.text li::marker {
+  color: var(--muted);
+}
+.text p {
+  margin: 0 0 12px;
+}
+.text ul {
+  margin: 0 0 12px;
+  padding-left: 22px;
+  list-style: disc;
+  display: grid;
+  gap: 6px;
+}
+.skel {
+  margin-top: 24px;
+  display: grid;
+  gap: 12px;
+}
+.skel span {
+  height: 14px;
+  border-radius: 7px;
+  background: var(--sunk);
+}
+.foot {
+  margin-top: 32px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  font-size: 14px;
+}
+.foot a {
+  color: var(--accent-ink);
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .page {
+    margin: 0 0 32px;
+    padding: 22px 18px;
+    border-radius: var(--r-md);
+  }
+  .text {
+    font-size: 15.5px;
+  }
+}

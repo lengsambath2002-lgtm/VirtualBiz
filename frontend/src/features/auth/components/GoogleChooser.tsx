@@ -41,10 +41,16 @@ function useGoogleError() {
  * account chooser straight away (Firebase is loaded with the page, so the window opens from the
  * click and isn't blocked); otherwise it opens the chooser sheet below (`?step=google`).
  */
-export function GoogleStart({ label, onError }: { label: string; onError: (m: string | null) => void }) {
+export function GoogleStart({
+  label,
+  onError,
+}: {
+  label: string;
+  onError: (m: string | null) => void;
+}) {
   const locale = useLocale();
   const t = useTranslations('auth.google');
-  const { go, signIn } = useFlowActions();
+  const { go, signIn, askTwoStep } = useFlowActions();
   const message = useGoogleError();
   const [busy, setBusy] = useState(false);
   const direct = firebaseEnabled();
@@ -61,9 +67,12 @@ export function GoogleStart({ label, onError }: { label: string; onError: (m: st
       signIn(await firebaseSignIn(await googleIdToken(locale)), 'google');
     } catch (e) {
       setBusy(false);
+      if (askTwoStep(e, 'google')) return;
       const code = firebaseCode(e);
       if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') return;
-      onError(code === 'auth/popup-blocked' ? t('errPopup') : code ? t('errUnavailable') : message(e));
+      onError(
+        code === 'auth/popup-blocked' ? t('errPopup') : code ? t('errUnavailable') : message(e),
+      );
     }
   };
 
@@ -95,7 +104,15 @@ export function GoogleChooser({ mode }: { mode: 'list' | 'new' }) {
         <h2>{mode === 'list' || real ? t('title') : t('newTitle')}</h2>
         <p>{t('sub')}</p>
       </div>
-      {viaFirebase ? <FirebaseGoogle /> : real ? <RealGoogle /> : mode === 'list' ? <AccountList /> : <NewAccount />}
+      {viaFirebase ? (
+        <FirebaseGoogle />
+      ) : real ? (
+        <RealGoogle />
+      ) : mode === 'list' ? (
+        <AccountList />
+      ) : (
+        <NewAccount />
+      )}
     </Sheet>
   );
 }
@@ -104,7 +121,7 @@ export function GoogleChooser({ mode }: { mode: 'list' | 'new' }) {
 function FirebaseGoogle() {
   const locale = useLocale();
   const t = useTranslations('auth.google');
-  const { signIn } = useFlowActions();
+  const { signIn, askTwoStep } = useFlowActions();
   const message = useGoogleError();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -117,9 +134,12 @@ function FirebaseGoogle() {
       signIn(await firebaseSignIn(await googleIdToken(locale)), 'google');
     } catch (e) {
       setBusy(false);
+      if (askTwoStep(e, 'google')) return;
       const code = firebaseCode(e);
       if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') return;
-      setError(code === 'auth/popup-blocked' ? t('errPopup') : code ? t('errUnavailable') : message(e));
+      setError(
+        code === 'auth/popup-blocked' ? t('errPopup') : code ? t('errUnavailable') : message(e),
+      );
     }
   };
 
@@ -137,7 +157,7 @@ function FirebaseGoogle() {
 function RealGoogle() {
   const locale = useLocale();
   const t = useTranslations('auth.google');
-  const { signIn } = useFlowActions();
+  const { signIn, askTwoStep } = useFlowActions();
   const message = useGoogleError();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -160,6 +180,7 @@ function RealGoogle() {
               signIn(await googleSignIn(idToken), 'google');
             } catch (e) {
               setBusy(false);
+              if (askTwoStep(e, 'google')) return;
               setError(message(e));
             }
           }}
@@ -171,7 +192,7 @@ function RealGoogle() {
 
 function AccountList() {
   const t = useTranslations('auth.google');
-  const { go, signIn } = useFlowActions();
+  const { go, signIn, askTwoStep } = useFlowActions();
   const message = useGoogleError();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -184,6 +205,7 @@ function AccountList() {
       signIn(await googleDevSignIn(u.email, u.name), 'google');
     } catch (e) {
       setBusy(null);
+      if (askTwoStep(e, 'google')) return;
       setError(message(e));
     }
   };
@@ -226,7 +248,7 @@ function AccountList() {
 
 function NewAccount() {
   const t = useTranslations('auth.google');
-  const { go, signIn } = useFlowActions();
+  const { go, signIn, askTwoStep } = useFlowActions();
   const message = useGoogleError();
   const [failed, setFailed] = useState<string | null>(null);
   const [name, setName] = useState('');
@@ -252,6 +274,7 @@ function NewAccount() {
       signIn(await googleDevSignIn(v, n), 'google');
     } catch (err) {
       setBusy(false);
+      if (askTwoStep(err, 'google')) return;
       setFailed(message(err));
     }
   };

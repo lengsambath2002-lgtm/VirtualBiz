@@ -16,7 +16,7 @@ import s from './signIn.module.css';
 export function PhonenameStep() {
   const t = useTranslations('auth.phonename');
   const tc = useTranslations('common');
-  const { signIn } = useFlowActions();
+  const { signIn, askTwoStep } = useFlowActions();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [errName, setErrName] = useState<string | null>(null);
@@ -41,6 +41,7 @@ export function PhonenameStep() {
       signIn(await registerPhone({ phoneToken, name: n, ...(em ? { email: em } : {}) }), 'phone');
     } catch (err) {
       setBusy(false);
+      if (askTwoStep(err, 'phone')) return;
       if (isApiError(err, 'CONFLICT')) setErrEmail(t('errEmailTaken'));
       else if (!isApiError(err) || isApiError(err, 'INVALID_TOKEN')) setFailed(t('errExpired'));
       else setFailed(tc(fallbackErrorKey(err)));

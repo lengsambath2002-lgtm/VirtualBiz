@@ -6,3 +6,4 @@ export * from './LanguageSwitcher';
 export * from './Logo';
 export * from './Price';
 export * from './Portal';
+export * from './QrCode';

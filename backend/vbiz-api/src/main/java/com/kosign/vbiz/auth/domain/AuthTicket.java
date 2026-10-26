@@ -41,4 +41,8 @@ public class AuthTicket extends BaseEntity {
 
     @Column(name = "consumed_at")
     private Instant consumedAt;
+
+    /** Wrong codes entered against a TWO_STEP ticket; the fifth uses it up. */
+    @Column(name = "failures", nullable = false)
+    private short failures;
 }

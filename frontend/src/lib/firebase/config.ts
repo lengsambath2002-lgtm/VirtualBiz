@@ -20,4 +20,5 @@ export const firebaseEnabled = () => !!(FIREBASE_CONFIG.apiKey && FIREBASE_CONFI
 
 /** Push notifications also need a sender id, an app id and the Web Push key. */
 export const pushConfigured = () =>
-  firebaseEnabled() && !!(FIREBASE_CONFIG.messagingSenderId && FIREBASE_CONFIG.appId && FIREBASE_VAPID_KEY);
+  firebaseEnabled() &&
+  !!(FIREBASE_CONFIG.messagingSenderId && FIREBASE_CONFIG.appId && FIREBASE_VAPID_KEY);

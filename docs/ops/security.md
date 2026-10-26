@@ -8,8 +8,8 @@ inbox or phone, and nowhere else.
 
 | | Developer machine and tests (`local`, `dev`, `test`) | Anywhere else (`demo`, production) |
 |---|---|---|
-| Sign-up / sign-in / reset code | emailed, **and** in the API reply (`devCode`) and the "Fill in" toast, so testers don't need an inbox | **emailed only**. Never in a reply, on screen or in a log |
-| Phone code | in the reply and the toast (no SMS provider) | phone sign-in is **off**: `GET /api/auth/methods` says `phone: false`, the pages hide "Continue with phone number", and `POST /api/auth/otp` for PHONE answers `NOT_CONFIGURED` instead of pretending a text was sent |
+| Sign-up / sign-in / reset code | emailed (Mailpit, or a real inbox with Gmail set up), **and** in the API reply (`devCode`) for the automated tests. Never on screen | **emailed only**. Never in a reply, on screen or in a log |
+| Phone code | in the reply (no SMS provider), for the tests | phone sign-in is **off**: `GET /api/auth/methods` says `phone: false`, the pages hide "Continue with phone number", and `POST /api/auth/otp` for PHONE answers `NOT_CONFIGURED` instead of pretending a text was sent |
 | Team / console invite link | emailed, and shown to the inviter (`devLink`) | **emailed only** |
 | Fake Google chooser | on | off |
 
@@ -17,6 +17,15 @@ The switches are `vbiz.otp.expose-dev-code`, `vbiz.staff.expose-dev-links` (team
 it), and `vbiz.auth.google-dev-enabled`. All are off by default. **The API refuses to start** if any
 of them is on outside `local`, `dev` or `test` (`config/DevExposureGuard`), so a copied config can't
 open every account on a public server.
+
+The app never shows a code, in any environment: it says where the code was sent ("Open Gmail",
+"Open Outlook") and the person types it, as they would with a real email. The end-to-end tests
+read `devCode` from the API reply instead (`watchCodes` in `tests/e2e/_helpers/app.ts`).
+
+## Two-step sign-in
+
+Any account can add a code from an authenticator app to every sign-in (docs/api/two-step.md);
+staff have it in the console, and `vbiz.staff.mfa-required` can make it compulsory for them.
 
 ## Stored and logged
 

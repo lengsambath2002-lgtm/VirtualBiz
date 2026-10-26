@@ -45,6 +45,7 @@ public enum StatusCode {
     MFA_REQUIRED(HttpStatus.FORBIDDEN, ErrorType.AUTH, "Enter the code from your authenticator app"),
     MFA_CODE_INVALID(HttpStatus.UNPROCESSABLE_ENTITY, ErrorType.AUTH, "The two-step code is incorrect"),
     MFA_LOCKED(HttpStatus.TOO_MANY_REQUESTS, ErrorType.AUTH, "Too many wrong codes; this session was signed out"),
+    TWO_STEP_REQUIRED(HttpStatus.FORBIDDEN, ErrorType.AUTH, "Enter the code from your authenticator app to finish signing in"),
     LAST_SUPER_ADMIN(HttpStatus.CONFLICT, ErrorType.BUSINESS, "VirtualBiz must keep at least one active super-admin"),
     FORBIDDEN_TENANT(HttpStatus.FORBIDDEN, ErrorType.AUTH, "Not a member of this business"),
     BUSINESS_CONTEXT_REQUIRED(HttpStatus.BAD_REQUEST, ErrorType.AUTH, "This request must be made on behalf of a business"),

@@ -2,10 +2,9 @@
 
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import qrcode from 'qrcode-generator';
-import { useEffect, useMemo, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
 
-import { LogoGlyph } from '@/components/ui';
+import { LogoGlyph, QrCode } from '@/components/ui';
 import { cx, Ic, s } from '@/features/seller-shared';
 import { isApiError } from '@/lib/api';
 import { useSession } from '@/lib/auth';
@@ -21,25 +20,6 @@ import {
   type StaffSecurity,
 } from '../api';
 import g from './security.module.css';
-
-/** An authenticator QR code for an `otpauth://` URI (SVG, crisp at any size). */
-export function QrCode({ text, label }: { text: string; label: string }) {
-  const qr = useMemo(() => {
-    const q = qrcode(0, 'M');
-    q.addData(text, 'Byte');
-    q.make();
-    const n = q.getModuleCount();
-    let d = '';
-    for (let r = 0; r < n; r++)
-      for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
-    return { n, d };
-  }, [text]);
-  return (
-    <svg viewBox={`0 0 ${qr.n} ${qr.n}`} role="img" aria-label={label} shapeRendering="crispEdges">
-      <path d={qr.d} fill="#000" />
-    </svg>
-  );
-}
 
 /** New recovery codes: shown once, with copy and download. */
 export function RecoveryCodes({ codes }: { codes: string[] }) {

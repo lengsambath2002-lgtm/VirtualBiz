@@ -1,12 +1,16 @@
 package com.kosign.vbiz.account.mapper;
 
 import java.math.BigDecimal;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 
 import com.kosign.vbiz.account.domain.Address;
+import com.kosign.vbiz.account.domain.NotifyTopic;
 import com.kosign.vbiz.account.domain.User;
 import com.kosign.vbiz.account.payload.AddressResponse;
 import com.kosign.vbiz.account.payload.MeResponse;
+import com.kosign.vbiz.account.payload.NotifyChannels;
 import com.kosign.vbiz.account.payload.PrefsDto;
 import com.kosign.vbiz.account.payload.UserResponse;
 import com.kosign.vbiz.auth.domain.SignInMethod;
@@ -28,7 +32,11 @@ public final class AccountMapper {
     }
 
     public static PrefsDto toPrefs(User u) {
-        return new PrefsDto(u.isPrefDeals(), u.isPrefPromos(), u.isPrefEmails());
+        Map<NotifyTopic, NotifyChannels> notify = new EnumMap<>(NotifyTopic.class);
+        for (NotifyTopic t : NotifyTopic.values()) {
+            notify.put(t, new NotifyChannels(u.wants(NotifyTopic.Channel.EMAIL, t), u.wants(NotifyTopic.Channel.PUSH, t)));
+        }
+        return new PrefsDto(u.isPrefDeals(), u.isPrefPromos(), notify);
     }
 
     public static AddressResponse toAddress(Address a) {

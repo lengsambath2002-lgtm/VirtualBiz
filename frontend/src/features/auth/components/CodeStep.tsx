@@ -2,7 +2,6 @@
 
 import { useTranslations } from 'next-intl';
 import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { createPortal } from 'react-dom';
 
 import { fallbackErrorKey, isApiError, metaNumber } from '@/lib/api';
 import { formatPhone } from '@/lib/utils/phone';
@@ -15,7 +14,7 @@ import { useFlowStore } from '../store';
 import type { CodePurpose, OtpState, Step } from '../types';
 import { CODE_LENGTH } from '../util/rules';
 import { GoogleIcon, SiIcon } from './icons';
-import { BackLink, Btn, ErrorLine, useShellElement } from './parts';
+import { BackLink, Btn, ErrorLine } from './parts';
 import s from './signIn.module.css';
 
 const TITLE = {
@@ -39,7 +38,7 @@ const EMPTY = Array.from({ length: CODE_LENGTH }, () => '');
 export function CodeStep({ otp }: { otp: OtpState }) {
   const t = useTranslations('auth.code');
   const tc = useTranslations('common');
-  const { go, startCode, signIn } = useFlowActions();
+  const { go, startCode, signIn, askTwoStep } = useFlowActions();
   const isEmail = otp.purpose !== 'phone';
   const label = otp.purpose === 'reset' ? t('continue') : t('verify');
 
@@ -95,17 +94,24 @@ export function CodeStep({ otp }: { otp: OtpState }) {
         signIn(await loginWithCode(o.to, code), 'emailCode');
       } else if (o.purpose === 'reset') {
         const { resetToken } = await verifyReset(o.to, code);
-        f.patch({ codeToast: false, verified: 'reset', resetToken });
+        f.patch({ verified: 'reset', resetToken });
         go('new-password');
       } else {
         const res = await verifyPhone(o.to, code);
         if (res.status === 'SIGNED_IN') signIn(res.session, 'phone');
         else {
-          f.patch({ codeToast: false, verified: 'phone', phoneToken: res.phoneToken });
+          f.patch({ verified: 'phone', phoneToken: res.phoneToken });
           go('phone-name');
         }
       }
     } catch (err) {
+      if (
+        askTwoStep(
+          err,
+          o.purpose === 'verify' ? 'signup' : o.purpose === 'login' ? 'emailCode' : 'phone',
+        )
+      )
+        return;
       if (isApiError(err, 'OTP_EXPIRED')) return fail(t('errExpired'));
       if (isApiError(err, 'OTP_ATTEMPTS_EXCEEDED')) return fail(t('errTooMany'));
       if (isApiError(err, 'OTP_INVALID')) {
@@ -114,7 +120,7 @@ export function CodeStep({ otp }: { otp: OtpState }) {
       }
       return fail(tc(fallbackErrorKey(err)));
     }
-  }, [t, tc, go, signIn]);
+  }, [t, tc, go, signIn, askTwoStep]);
 
   const commit = (next: string[], focus: number) => {
     digitsRef.current = next;
@@ -137,8 +143,6 @@ export function CodeStep({ otp }: { otp: OtpState }) {
   };
 
   const resendLeft = Math.ceil((otp.resendAt - now) / 1000);
-  const shell = useShellElement();
-  const showToast = useFlowStore((st) => st.codeToast);
   const complete = digits.join('').length === CODE_LENGTH;
 
   const box = (i: number) => (
@@ -255,41 +259,6 @@ export function CodeStep({ otp }: { otp: OtpState }) {
             : ''}
         </span>
       </p>
-      {showToast &&
-        otp.devCode &&
-        shell &&
-        createPortal(
-          <CodeToast
-            code={otp.devCode}
-            via={isEmail ? t('toastEmail') : t('toastSms')}
-            onFill={() => {
-              if (!otp.devCode) return;
-              digitsRef.current = EMPTY;
-              fill(0, otp.devCode);
-            }}
-          />,
-          shell,
-        )}
     </>
-  );
-}
-
-/**
- * Dev code delivery: local / dev API profiles have no email/SMS gateway and return the code as
- * `devCode`, shown in this toast (as in the prototype) with "Fill in" to type it for you.
- * Production never sends `devCode`, so the toast never shows there.
- */
-function CodeToast({ code, via, onFill }: { code: string; via: string; onFill: () => void }) {
-  const t = useTranslations('auth.code');
-  return (
-    <div className={s.codeToast} role="status">
-      <div>
-        <small>{via}</small>
-        {t.rich('toastCode', { code, b: (c) => <b>{c}</b> })}
-      </div>
-      <button type="button" onClick={onFill}>
-        {t('fillIn')}
-      </button>
-    </div>
   );
 }

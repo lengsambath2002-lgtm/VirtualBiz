@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.kosign.vbiz.auth.domain.AuthTicket;
@@ -39,6 +40,29 @@ public class TicketService {
         t.setExpiresAt(clock.instant().plus(TTL));
         tickets.save(t);
         return token;
+    }
+
+    /**
+     * {@link #issue} in its own transaction, so the ticket outlives a caller that then fails (a
+     * sign-in that answers TWO_STEP_REQUIRED rolls back).
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public String issueSeparately(TicketKind kind, UUID userId, String target) {
+        return issue(kind, userId, target);
+    }
+
+    /**
+     * The live ticket, locked for the caller's transaction and not used up (the caller decides).
+     * {@code INVALID_TOKEN} when unknown, of another kind, used or expired. Not transactional itself,
+     * so that error doesn't mark a caller's {@code noRollbackFor} transaction for rollback.
+     */
+    public AuthTicket open(TicketKind kind, String token, String field) {
+        AuthTicket t = token == null || token.isBlank() ? null
+                : tickets.findByTokenHashForUpdate(SecureTokens.sha256Hex(token)).orElse(null);
+        if (t == null || t.getKind() != kind || t.getConsumedAt() != null || !t.getExpiresAt().isAfter(clock.instant())) {
+            throw BusinessException.withDetail(StatusCode.INVALID_TOKEN, field, "Token is invalid or expired");
+        }
+        return t;
     }
 
     /**

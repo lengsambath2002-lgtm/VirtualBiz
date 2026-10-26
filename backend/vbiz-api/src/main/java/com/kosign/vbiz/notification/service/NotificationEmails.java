@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.kosign.vbiz.account.domain.NotifyTopic;
 import com.kosign.vbiz.account.domain.User;
 import com.kosign.vbiz.business.domain.Business;
 import com.kosign.vbiz.business.repository.BusinessRepository;
@@ -24,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 /**
  * Every inbox notification also goes out by email (docs/ops/email.md): a customer's to them, a
  * shop's to its owner and managers. Sent once the change is saved, in the background; anyone who
- * turned emails off in My settings is skipped.
+ * turned emails off for its topic ({@link NotificationTopics}) in Your account → Settings is skipped.
  */
 @Component
 @RequiredArgsConstructor
@@ -55,24 +56,26 @@ public class NotificationEmails {
         }
         e.heading(w.heading()).line(w.line()).buttons(w.button(), link, null, null)
                 .divider().heading(w.headingKh()).line(w.lineKh()).buttons(w.buttonKh(), link, null, null)
-                .small("You get this because of your VirtualBiz account. Turn these emails off in My settings.");
+                .small("You get this because of your VirtualBiz account. Choose which emails you get in Your account → Settings.");
         for (String to : recipients(n)) {
             mail.send(to, w.subject(), e);
         }
     }
 
     private Set<String> recipients(Notification n) {
+        NotifyTopic topic = NotificationTopics.of(n);
         Set<String> out = new LinkedHashSet<>();
         for (User u : people.of(n)) {
-            if (wantsEmail(u)) {
+            if (wantsEmail(u, topic)) {
                 out.add(u.getEmail());
             }
         }
         return out;
     }
 
-    private static boolean wantsEmail(User u) {
-        return u.getEmail() != null && !u.getEmail().isBlank() && u.isPrefEmails() && !u.isSuspended();
+    private static boolean wantsEmail(User u, NotifyTopic topic) {
+        return u.getEmail() != null && !u.getEmail().isBlank() && u.wants(NotifyTopic.Channel.EMAIL, topic)
+                && !u.isSuspended();
     }
 
     private String absolute(String url) {

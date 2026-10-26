@@ -67,7 +67,9 @@ test.describe('Shop settings', () => {
 
   test('on a phone, settings is a list and each section opens on its own @phone', async ({
     page,
-  }) => {
+  }, testInfo) => {
+    // Wider screens show the menu and a section side by side (covered by the tests above).
+    test.skip(testInfo.project.name !== 'phone', 'phone layout');
     const errors = trackErrors(page);
     await signIn(page, '/seller/settings');
     const menu = page.getByRole('navigation', { name: 'Settings sections' });

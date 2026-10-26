@@ -16,7 +16,8 @@ import { CodeStep } from './CodeStep';
 import { GoogleChooser } from './GoogleChooser';
 import { LoginStep } from './LoginStep';
 import { NewpassStep } from './NewpassStep';
-import { BackLink, ShellContext, StepLink } from './parts';
+import { BackLink, LegalLink, ShellContext, StepLink } from './parts';
+import { TwoStepStep } from './TwoStepStep';
 import { PhonenameStep } from './PhonenameStep';
 import { PhoneStep } from './PhoneStep';
 import { Showcase } from './Showcase';
@@ -56,6 +57,8 @@ function resolveStep(page: AuthPage, step: Step, flow: Flow): Step {
       return flow.email && flow.verified === 'reset' && flow.resetToken ? step : first;
     case 'phone-name':
       return flow.phone && flow.verified === 'phone' && flow.phoneToken ? step : 'phone';
+    case 'two-step':
+      return flow.twoStep ? step : first;
     default:
       return step;
   }
@@ -174,9 +177,10 @@ function Flow({ page }: { page: AuthPage }) {
     case 'phone-name':
       body = <PhonenameStep />;
       break;
+    case 'two-step':
+      body = <TwoStepStep />;
+      break;
     case 'help':
-    case 'terms':
-    case 'privacy':
       body = (
         <>
           <BackLink to={first} />
@@ -223,8 +227,8 @@ function Flow({ page }: { page: AuthPage }) {
             <span>{t('footer.copyright')}</span>
             <nav>
               <StepLink step="help">{t('footer.help')}</StepLink>
-              <StepLink step="terms">{t('footer.terms')}</StepLink>
-              <StepLink step="privacy">{t('footer.privacy')}</StepLink>
+              <LegalLink page="terms">{t('footer.terms')}</LegalLink>
+              <LegalLink page="privacy">{t('footer.privacy')}</LegalLink>
             </nav>
           </div>
         </div>

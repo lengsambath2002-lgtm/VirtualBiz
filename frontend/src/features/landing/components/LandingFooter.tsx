@@ -40,8 +40,8 @@ export function LandingFooter({ khrPerUsd }: { khrPerUsd: number }) {
             <h4>{t('footer.company')}</h4>
             <a href="#top">{t('footer.about')}</a>
             <a href="#faq">{t('footer.contact')}</a>
-            <a href="#top">{t('footer.terms')}</a>
-            <a href="#top">{t('footer.privacy')}</a>
+            <Link href="/terms">{t('footer.terms')}</Link>
+            <Link href="/privacy">{t('footer.privacy')}</Link>
           </div>
         </div>
         <div className={s.ftB}>

@@ -9,6 +9,10 @@ import { signInMethods } from '../api';
  * server says it can send texts, so nobody waits for a code that never comes.
  */
 export function useSignInMethods() {
-  const q = useQuery({ queryKey: ['auth', 'methods'], queryFn: signInMethods, staleTime: 5 * 60_000 });
+  const q = useQuery({
+    queryKey: ['auth', 'methods'],
+    queryFn: signInMethods,
+    staleTime: 5 * 60_000,
+  });
   return { phone: q.data?.phone === true };
 }

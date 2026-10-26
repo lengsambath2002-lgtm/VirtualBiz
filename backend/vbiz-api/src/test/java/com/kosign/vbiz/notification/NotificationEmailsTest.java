@@ -70,10 +70,14 @@ class NotificationEmailsTest extends IntegrationTest {
                 Map.of("name", "Mail Me", "stars", "4"), "/seller/reviews");
         verify(mail, timeout(5000)).send(eq(NITA), contains("4★ review from Mail Me"), any(Email.class));
 
-        // Turned off in My settings: no more emails (the inbox still has them).
-        jdbc.update("update users set pref_emails = false where id = ?", id);
+        // Order emails turned off in Settings: no more of those (the inbox still has them), but
+        // bookings, another topic, still come.
+        jdbc.update("update users set notify_off = '{\"email\": [\"ORDERS\"]}'::jsonb where id = ?", id);
         notifications.toUser(id, NotificationKind.ORDER_ACCEPTED, Map.of("number", "VB-78", "shop", "Nita"), "/orders/VB-78");
         verify(mail, after(1500).never()).send(eq(email), contains("VB-78"), any(Email.class));
+        notifications.toUser(id, NotificationKind.BOOKING_CONFIRMED,
+                Map.of("service", "Haircut", "shop", "Glow", "when", "Mon 10:00"), "/bookings");
+        verify(mail, timeout(5000)).send(eq(email), contains("Haircut"), any(Email.class));
         assertThat(Arrays.asList(email, NITA)).isNotEmpty();
     }
 }

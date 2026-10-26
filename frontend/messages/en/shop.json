@@ -12,7 +12,9 @@
     "order": "Order",
     "booking": "Booking",
     "account": "My account",
-    "help": "Help centre"
+    "help": "Help centre",
+    "terms": "Terms of service",
+    "privacy": "Privacy policy"
   },
   "common": {
     "outOf5": "{n} out of 5",
@@ -692,8 +694,6 @@
     "email": "Email",
     "verified": "Verified",
     "notifyAbout": "Notify me about",
-    "prefOrders": "Order and booking updates",
-    "alwaysOn": "(always on)",
     "prefDeals": "Deals from shops I follow",
     "prefPromos": "VirtualBiz promotions",
     "logout": "Log out",
@@ -791,11 +791,73 @@
     "setPassword": "Set a password",
     "setPasswordHint": "You sign in with an email code or Google. Add a password to sign in with your email and password too; codes keep working.",
     "pwSetDone": "Password set. You can sign in with it now.",
-    "prefEmails": "Email me about orders, bookings and my shops",
-    "prefEmailsHint": "Also sent to {email}: every update in your inbox, and your shops’ new orders, bookings, reviews and payouts.",
     "prefPush": "Push notifications on this device",
     "prefPushHint": "Orders, bookings and messages pop up here even when VirtualBiz is closed.",
-    "prefPushDenied": "Notifications are blocked for VirtualBiz in this browser. Allow them in the browser’s site settings to turn this on."
+    "prefPushDenied": "Notifications are blocked for VirtualBiz in this browser. Allow them in the browser’s site settings to turn this on.",
+    "notify": {
+      "email": "Email",
+      "push": "Push",
+      "mine": "Your orders and bookings",
+      "shops": "Your shops",
+      "topic": {
+        "ORDERS": "Orders",
+        "BOOKINGS": "Bookings",
+        "SHOP_ACTIVITY": "New orders and bookings",
+        "STOCK": "Low stock",
+        "REVIEWS": "Reviews",
+        "ACCOUNT": "ID check and payouts"
+      },
+      "topicHint": {
+        "ORDERS": "Accepted, on the way, delivered, cancelled",
+        "BOOKINGS": "Confirmed, changed, cancelled, reminders",
+        "SHOP_ACTIVITY": "Someone orders or books, or cancels",
+        "STOCK": "A product is running out",
+        "REVIEWS": "A customer leaves a review",
+        "ACCOUNT": "From VirtualBiz: verification, payouts, categories"
+      },
+      "switchLabel": "{channel} for {topic}",
+      "inboxNote": "Everything also shows in your notifications in the app.",
+      "noEmail": "Add an email address to your profile to get emails. Everything also shows in your notifications in the app."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "hint": "Light or dark, on this device.",
+      "system": "Device",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "twoStep": {
+      "title": "Two-step sign-in",
+      "hint": "After your password (or a code, or Google), signing in also asks for a code from an authenticator app such as Google Authenticator or Microsoft Authenticator.",
+      "status": "Status",
+      "on": "On",
+      "off": "Off",
+      "left": "{n, plural, one {# recovery code left} other {# recovery codes left}}",
+      "turnOn": "Turn on",
+      "turnOff": "Turn off",
+      "newCodes": "New recovery codes",
+      "cancel": "Cancel",
+      "step1": "Open your authenticator app and scan this QR code (or type the key).",
+      "step2": "Enter the 6-digit code the app shows.",
+      "qrLabel": "QR code to add VirtualBiz to your authenticator app",
+      "manual": "Can’t scan? Enter this key:",
+      "codeLabel": "6-digit code from the app",
+      "recoveryLabel": "Recovery code",
+      "useRecovery": "Use a recovery code instead",
+      "useApp": "Use a code from the app instead",
+      "errCode": "Enter the 6 digits from the app.",
+      "errWrong": "That code isn’t right. Try the newest one from the app.",
+      "codesTitle": "Save your recovery codes",
+      "codesLead": "If you lose your phone, each of these lets you sign in once. Keep them somewhere safe: they won’t be shown again.",
+      "copy": "Copy",
+      "copied": "Codes copied",
+      "download": "Download",
+      "codesSaved": "I’ve saved these codes",
+      "done": "Done",
+      "onToast": "Two-step sign-in is on",
+      "offToast": "Two-step sign-in is off",
+      "staff": "You’re VirtualBiz staff: two-step sign-in is set up in the console."
+    }
   },
   "address": {
     "title": "Add address",
@@ -875,5 +937,13 @@
     "clientAsked": "You asked to cancel.",
     "stylistUnavailable": "The stylist isn't available.",
     "shopClosed": "The shop is closed."
+  },
+  "legal": {
+    "terms": "Terms of service",
+    "privacy": "Privacy policy",
+    "updated": "Last updated {date}",
+    "englishOnly": "This page isn’t in Khmer yet, so it’s shown in English.",
+    "loading": "Loading",
+    "questions": "Questions? Visit the Help centre"
   }
 }

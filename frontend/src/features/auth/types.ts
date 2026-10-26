@@ -18,8 +18,8 @@ export const STEPS = [
   'phone-code',
   'phone-name',
   'help',
-  'terms',
-  'privacy',
+  // after any sign-in, for an account with two-step sign-in on
+  'two-step',
 ] as const;
 export type Step = (typeof STEPS)[number];
 
@@ -39,8 +39,7 @@ export const PAGE_STEPS: Record<AuthPage, readonly Step[]> = {
     'phone-code',
     'phone-name',
     'help',
-    'terms',
-    'privacy',
+    'two-step',
   ],
   'sign-up': [
     'signup',
@@ -51,8 +50,7 @@ export const PAGE_STEPS: Record<AuthPage, readonly Step[]> = {
     'phone-code',
     'phone-name',
     'help',
-    'terms',
-    'privacy',
+    'two-step',
   ],
 };
 
@@ -75,8 +73,6 @@ export interface OtpState {
   purpose: CodePurpose;
   /** Email address, or normalized phone ("012345678") for `phone`. */
   to: string;
-  /** The code itself, only in local / dev profiles (`devCode`), shown by the code toast. */
-  devCode: string | null;
   /** Epoch ms after which the code is rejected (10 minutes). */
   exp: number;
   /** Epoch ms when "resend code" unlocks (30 s). */

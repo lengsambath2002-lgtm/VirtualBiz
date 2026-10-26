@@ -4,6 +4,7 @@ import {
   createAccount,
   DEMO,
   fillDemoCode,
+  watchCodes,
   fillLogin,
   signIn,
   trackErrors,
@@ -77,6 +78,7 @@ test.describe('Log in (/sign-in)', () => {
   });
 
   test('forgot password: code, new password, signed in', async ({ page, request }) => {
+    watchCodes(page);
     // A fresh account, so the demo user's password stays Demo@1234 for the other tests.
     const acct = await createAccount(request);
     await page.goto('/en/sign-in?next=%2Fcart');
@@ -97,6 +99,7 @@ test.describe('Log in (/sign-in)', () => {
   });
 
   test('email me a login code instead', async ({ page }) => {
+    watchCodes(page);
     await page.goto('/en/sign-in');
     await page.getByLabel('Email').fill(DEMO.email);
     await page.getByRole('button', { name: 'Email me a login code instead' }).click();
@@ -124,6 +127,7 @@ test.describe('Log in (/sign-in)', () => {
 
 test.describe('Create your account (/sign-up)', () => {
   test('sign up by email, verify the code, land home', async ({ page }) => {
+    watchCodes(page);
     const errors = trackErrors(page);
     const email = uniqueEmail('new');
     await page.goto('/en/sign-up');
@@ -175,6 +179,7 @@ test.describe('Create your account (/sign-up)', () => {
   });
 
   test('phone: new number, code, name, signed in (next honoured)', async ({ page }) => {
+    watchCodes(page);
     const phone = `011${String(Date.now()).slice(-6)}`;
     await page.goto('/en/sign-up?next=%2Fcart');
     await page.getByRole('button', { name: 'Sign up with phone number' }).click();
@@ -192,6 +197,7 @@ test.describe('Create your account (/sign-up)', () => {
   });
 
   test('phone: a known number on sign-up just signs in', async ({ page }) => {
+    watchCodes(page);
     await page.goto('/en/sign-up');
     await page.getByRole('button', { name: 'Sign up with phone number' }).click();
     await page.getByLabel('Mobile number').fill('012 345 678');
@@ -246,6 +252,7 @@ test.describe('Cross links', () => {
   });
 
   test('create-business sends signed-out visitors to sign-up and back', async ({ page }) => {
+    watchCodes(page);
     await page.goto('/en/create-business');
     await expect(page).toHaveURL(/\/en\/sign-up\?next=(%2F|\/)create-business$/);
     await page.getByLabel('Full name').fill('Sok Dara');

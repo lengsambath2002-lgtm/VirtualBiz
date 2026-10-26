@@ -18,10 +18,12 @@ import type { BusinessType } from '@/lib/domain';
 
 import c from './settings.module.css';
 import { CategorySuggestions } from './CategorySuggestions';
+import { HomepageTab, LegalTab } from './ContentTabs';
 import { StaffTab } from './StaffTab';
 import { Portal } from '@/components/ui/Portal';
 
 const KEYS = ['tab'] as const;
+const TABS = ['platform', 'categories', 'homepage', 'legal', 'staff'] as const;
 const DELAYS = [0, 1, 2, 3, 5, 7, 10, 14];
 /** Icons the marketplace can draw for a category. */
 const ICONS = [
@@ -53,17 +55,18 @@ const tintClass = (n: number) => c[`t${n}` as 't1'];
 
 const useIsSuper = () => useSession().user?.platformRole === 'SUPER_ADMIN';
 
-/** `/admin/settings`: the platform's numbers and the marketplace's categories. */
+/** `/admin/settings`: the platform's numbers, categories, homepage, legal pages and staff. */
 export function SettingsPage() {
   const t = useTranslations('admin.settings');
   const { values, set } = useListParams(KEYS);
-  const tab =
-    values.tab === 'categories' || values.tab === 'staff' ? values.tab : ('platform' as const);
+  const tab = (TABS as readonly string[]).includes(values.tab)
+    ? (values.tab as (typeof TABS)[number])
+    : ('platform' as const);
   return (
     <>
       <PageHead title={t('title')} sub={t('sub')} />
       <div className={cx(s.tabs, c.tabs)} role="tablist">
-        {(['platform', 'categories', 'staff'] as const).map((k) => (
+        {TABS.map((k) => (
           <button
             key={k}
             type="button"
@@ -80,6 +83,10 @@ export function SettingsPage() {
         <PlatformTab />
       ) : tab === 'categories' ? (
         <CategoriesTab />
+      ) : tab === 'homepage' ? (
+        <HomepageTab />
+      ) : tab === 'legal' ? (
+        <LegalTab />
       ) : (
         <StaffTab />
       )}

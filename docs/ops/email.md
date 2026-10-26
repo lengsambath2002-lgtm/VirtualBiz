@@ -21,8 +21,23 @@ Every notification that reaches an inbox also goes out by email (`NotificationCr
 | Customer | order placed (new), accepted, ready to pick up, on the way, delivered / picked up, returned, cancelled; booking requested, confirmed, declined, moved, reminder, cancelled |
 | Shop owner and managers (not staff) | new order, order cancelled, booking request, booking cancelled, new review, ID check passed / failed, shop paused / back, payout sent, category suggestion approved / declined |
 
-Anyone can turn them off in **My settings → Email me about orders, bookings and my shops**
-(`users.pref_emails`); the inbox keeps everything.
+### Choices
+
+In **Your account → Settings → Notifications**, each person chooses per topic whether it comes by
+email and by push (`users.notify_off`, the topics turned off per channel; `PUT /api/me/prefs`
+`topics`). The inbox in the app always gets everything.
+
+| Topic | Notifications |
+| --- | --- |
+| `ORDERS` | a customer's orders |
+| `BOOKINGS` | a customer's bookings |
+| `SHOP_ACTIVITY` | a shop's new orders and bookings, and their cancellations |
+| `STOCK` | low stock |
+| `REVIEWS` | new reviews |
+| `ACCOUNT` | from VirtualBiz: ID check, suspension, payouts, category suggestions |
+
+Shop topics show to people with a shop. Sign-in codes, invites and security alerts are not
+notifications and always go.
 
 ## Settings
 

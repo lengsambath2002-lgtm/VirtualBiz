@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -13,14 +14,17 @@ import com.kosign.vbiz.common.api.ApiResponse;
 import com.kosign.vbiz.common.api.BaseController;
 import com.kosign.vbiz.meta.payload.CategoryResponse;
 import com.kosign.vbiz.meta.payload.DistrictResponse;
+import com.kosign.vbiz.meta.payload.HomeBanners;
+import com.kosign.vbiz.meta.payload.LegalPage;
 import com.kosign.vbiz.meta.payload.PlatformSettingsResponse;
 import com.kosign.vbiz.meta.service.PlatformSettingsService;
 import com.kosign.vbiz.meta.service.ReferenceDataService;
+import com.kosign.vbiz.meta.service.SiteContentService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
-/** Reference data (public): districts, platform categories and platform settings. */
+/** Reference data (public): districts, platform categories, platform settings and site content. */
 @Tag(name = "Meta")
 @RestController
 @RequestMapping("/api/meta")
@@ -29,6 +33,7 @@ public class MetaController extends BaseController {
 
     private final ReferenceDataService reference;
     private final PlatformSettingsService settings;
+    private final SiteContentService content;
 
     @GetMapping("/districts")
     public ResponseEntity<ApiResponse<List<DistrictResponse>>> districts() {
@@ -46,5 +51,17 @@ public class MetaController extends BaseController {
     @GetMapping("/settings")
     public ResponseEntity<ApiResponse<PlatformSettingsResponse>> settings() {
         return ok(settings.current());
+    }
+
+    /** The marketplace homepage's banners (docs/api/site-content.md). */
+    @GetMapping("/home-banners")
+    public ResponseEntity<ApiResponse<HomeBanners>> homeBanners() {
+        return ok(content.homeBanners());
+    }
+
+    /** {@code terms} or {@code privacy}. */
+    @GetMapping("/legal/{page}")
+    public ResponseEntity<ApiResponse<LegalPage>> legal(@PathVariable String page) {
+        return ok(content.legal(page));
     }
 }

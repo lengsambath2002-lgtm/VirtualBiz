@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 
-import type { OtpState, Step } from './types';
+import type { MethodKey, OtpState, Step } from './types';
 
 /** Sign-up waiting for its email code (kept to resend the code; the account is made on verify). */
 export interface PendingSignup {
@@ -18,8 +18,11 @@ interface FlowState {
   phone: string;
   pending: PendingSignup | null;
   otp: OtpState | null;
-  /** The dev code toast is showing. */
-  codeToast: boolean;
+  /**
+   * A sign-in stopped for two-step sign-in: the ticket for `/auth/two-step` and how the person
+   * signed in (for the session once the code is right).
+   */
+  twoStep: { ticket: string; method: MethodKey } | null;
   /** Epoch ms until which the password form is locked (ACCOUNT_LOCKED). */
   lockUntil: number;
   /** A code was just verified for a password reset / an unknown phone (unlocks new-password / phone-name). */
@@ -40,7 +43,7 @@ export const useFlowStore = create<FlowState>()((set) => ({
   phone: '',
   pending: null,
   otp: null,
-  codeToast: false,
+  twoStep: null,
   lockUntil: 0,
   verified: null,
   resetToken: null,

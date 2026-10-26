@@ -1,11 +1,8 @@
 package com.kosign.vbiz.admin.service;
 
-import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -15,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.kosign.vbiz.account.domain.User;
 import com.kosign.vbiz.account.repository.UserRepository;
 import com.kosign.vbiz.admin.domain.AuditTarget;
-import com.kosign.vbiz.admin.domain.MfaRecoveryCode;
 import com.kosign.vbiz.admin.domain.MfaSession;
 import com.kosign.vbiz.admin.payload.MfaCodeInput;
 import com.kosign.vbiz.admin.payload.MfaSetupResponse;
@@ -24,11 +20,11 @@ import com.kosign.vbiz.admin.payload.RecoveryCodesResponse;
 import com.kosign.vbiz.admin.repository.MfaRecoveryCodeRepository;
 import com.kosign.vbiz.admin.repository.MfaSessionRepository;
 import com.kosign.vbiz.auth.repository.UserSessionRepository;
+import com.kosign.vbiz.auth.service.TwoStepCodes;
 import com.kosign.vbiz.common.api.StatusCode;
 import com.kosign.vbiz.common.error.BusinessException;
 import com.kosign.vbiz.common.security.CurrentUser;
 import com.kosign.vbiz.common.security.SecretBox;
-import com.kosign.vbiz.common.security.SecureTokens;
 import com.kosign.vbiz.common.security.Totp;
 
 import lombok.RequiredArgsConstructor;
@@ -45,11 +41,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MfaService {
 
-    public static final int RECOVERY_CODES = 10;
+    public static final int RECOVERY_CODES = TwoStepCodes.RECOVERY_CODES;
     public static final int MAX_FAILURES = 5;
     private static final String ISSUER = "VirtualBiz";
-    private static final String CODE_CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    private static final SecureRandom RANDOM = new SecureRandom();
 
     private final UserRepository users;
     private final MfaRecoveryCodeRepository recovery;
@@ -59,6 +53,7 @@ public class MfaService {
     private final StaffProperties props;
     private final SecretBox box;
     private final AuditLog audit;
+    private final TwoStepCodes codes;
     private final Clock clock;
 
     @Transactional(readOnly = true)
@@ -202,37 +197,16 @@ public class MfaService {
     }
 
     private boolean useRecoveryCode(User u, String raw) {
-        String hash = SecureTokens.sha256Hex(normalise(raw));
-        for (MfaRecoveryCode c : recovery.findByUserIdAndUsedAtIsNull(u.getId())) {
-            if (SecureTokens.equalsConstantTime(c.getCodeHash(), hash)) {
-                c.setUsedAt(clock.instant());
-                recovery.saveAndFlush(c);
-                audit.record(self(u), AuditLog.MFA_RECOVERY_USED, AuditTarget.USER, u.getId(), u.getName(), null,
-                        Map.of("left", recovery.countByUserIdAndUsedAtIsNull(u.getId())));
-                return true;
-            }
+        if (!codes.useRecoveryCode(u, raw)) {
+            return false;
         }
-        return false;
+        audit.record(self(u), AuditLog.MFA_RECOVERY_USED, AuditTarget.USER, u.getId(), u.getName(), null,
+                Map.of("left", codes.recoveryLeft(u.getId())));
+        return true;
     }
 
     private List<String> newRecoveryCodes(UUID userId) {
-        recovery.deleteAllForUser(userId);
-        List<String> plain = new ArrayList<>();
-        List<MfaRecoveryCode> rows = new ArrayList<>();
-        for (int i = 0; i < RECOVERY_CODES; i++) {
-            StringBuilder b = new StringBuilder();
-            for (int k = 0; k < 10; k++) {
-                b.append(CODE_CHARS.charAt(RANDOM.nextInt(CODE_CHARS.length())));
-            }
-            String code = b.substring(0, 5) + "-" + b.substring(5);
-            plain.add(code);
-            MfaRecoveryCode c = new MfaRecoveryCode();
-            c.setUserId(userId);
-            c.setCodeHash(SecureTokens.sha256Hex(normalise(code)));
-            rows.add(c);
-        }
-        recovery.saveAll(rows);
-        return plain;
+        return codes.newRecoveryCodes(userId);
     }
 
     private void markVerified(UUID userId) {
@@ -269,10 +243,6 @@ public class MfaService {
 
     private static AdminAccess.Admin self(User u) {
         return new AdminAccess.Admin(u.getId(), u.getName(), u.getPlatformRole());
-    }
-
-    private static String normalise(String code) {
-        return code == null ? "" : code.replaceAll("[\\s-]", "").toUpperCase(Locale.ROOT);
     }
 
     private static String trim(String code) {

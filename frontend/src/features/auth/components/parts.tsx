@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import {
   createContext,
   useContext,
@@ -21,7 +21,7 @@ import { emailTypo, PASSWORD_RULES } from '../util/rules';
 import { SiIcon } from './icons';
 import s from './signIn.module.css';
 
-/** The page shell element: fixed overlays (code toast, modal) portal here, outside the blurred card. */
+/** The page shell element: fixed overlays (modals) portal here, outside the blurred card. */
 export const ShellContext = createContext<HTMLElement | null>(null);
 export const useShellElement = () => useContext(ShellContext);
 
@@ -226,6 +226,18 @@ export function StepLink({ step, children }: { step: Step; children: ReactNode }
         go(step);
       }}
     >
+      {children}
+    </a>
+  );
+}
+
+/**
+ * Terms or Privacy, in a new tab: the page being filled in (a half-typed sign-up) stays as it is.
+ */
+export function LegalLink({ page, children }: { page: 'terms' | 'privacy'; children: ReactNode }) {
+  const locale = useLocale();
+  return (
+    <a href={`/${locale}/${page}`} target="_blank" rel="noopener">
       {children}
     </a>
   );

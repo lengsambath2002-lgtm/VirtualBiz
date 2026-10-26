@@ -8,6 +8,9 @@ import {
   type QueryKey,
 } from '@tanstack/react-query';
 
+import type { LegalDoc, LegalPageKey } from '@/features/legal';
+import type { HomeBanners } from '@/features/shop-home';
+
 import { isNotFound } from '@/components/feedback';
 import { api } from '@/lib/api';
 import { useSession } from '@/lib/auth';
@@ -118,6 +121,12 @@ export const usePayouts = (p: Params) =>
 export const useAudit = (p: Params) =>
   useAdminQuery<Page<AuditEntry>>(['audit', p], `/audit${qs(p)}`);
 
+/** Site content (docs/api/site-content.md): the homepage banners and the legal pages. */
+export const useAdminHomeBanners = () =>
+  useAdminQuery<HomeBanners>(['content', 'home-banners'], '/content/home-banners');
+export const useAdminLegal = (page: LegalPageKey) =>
+  useAdminQuery<LegalDoc>(['content', 'legal', page], `/content/legal/${page}`);
+
 /** An admin action: refreshes every console query when it succeeds. */
 export function useAdminAction<V, R = unknown>(fn: (v: V) => Promise<R>) {
   const qc = useQueryClient();
@@ -135,6 +144,9 @@ export interface BulkResult {
 export type BulkList = 'businesses' | 'users' | 'reviews';
 
 export const adminApi = {
+  saveHomeBanners: (b: HomeBanners) => api.put<HomeBanners>('/admin/content/home-banners', b),
+  saveLegal: (page: LegalPageKey, doc: { en: string; kh: string }) =>
+    api.put<LegalDoc>(`/admin/content/legal/${page}`, doc),
   approveCategoryRequest: (
     id: string,
     body: { categoryId?: string; name?: string; nameKh?: string; moveShop: boolean },

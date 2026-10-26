@@ -8,7 +8,13 @@ import { ErrorView } from '@/components/feedback';
 import { passwordOk } from '@/features/auth';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { BusinessLogo, useMyBusinesses, WORKSPACE_HREF } from '@/features/account-switcher';
-import { fallbackErrorKey, isApiError, type ApiError } from '@/lib/api';
+import {
+  fallbackErrorKey,
+  isApiError,
+  type ApiError,
+  type NotifyTopic,
+  type Prefs,
+} from '@/lib/api';
 import { useSession } from '@/lib/auth';
 import { Link } from '@/lib/i18n/navigation';
 import { formatPhone, isValidPhone, normalizePhone } from '@/lib/utils/phone';
@@ -49,6 +55,7 @@ import {
 } from '../queries';
 import type { AccountTab } from '../types';
 import a from './account.module.css';
+import { AppearancePanel, NotifyChoices, TwoStepPanel } from './SettingsSections';
 import { ACCOUNT_ICONS } from './AccountMenu';
 
 const NAV_GROUPS: { key: 'shopping' | 'settings'; tabs: AccountTab[] }[] = [
@@ -900,7 +907,9 @@ function PushRow() {
         checked={state === 'on'}
         disabled={busy || state === 'denied'}
         onChange={(e) =>
-          (e.target.checked ? turnOn() : turnOff()).catch((err: unknown) => toast(tc(fallbackErrorKey(err))))
+          (e.target.checked ? turnOn() : turnOff()).catch((err: unknown) =>
+            toast(tc(fallbackErrorKey(err))),
+          )
         }
       />
     </label>
@@ -916,17 +925,23 @@ function Settings() {
   const savePrefs = useSetPrefs();
   const prefs = me.data?.prefs;
   const [logout, setLogout] = useState(false);
+  const shops = useMyBusinesses();
   if (!user) return null;
   const hasPassword = user.signInMethods.includes('PASSWORD');
-  const setPref = (k: 'deals' | 'promos' | 'emails', v: boolean) => {
+  const save = (next: Prefs) =>
+    savePrefs.mutate(next, {
+      onSuccess: () => toast(tt('settingsSaved')),
+      onError: (e) => toast(tc(fallbackErrorKey(e))),
+    });
+  const setPref = (k: 'deals' | 'promos', v: boolean) => {
+    if (prefs) save({ ...prefs, [k]: v });
+  };
+  const setTopic = (topic: NotifyTopic, channel: 'email' | 'push', on: boolean) => {
     if (!prefs) return;
-    savePrefs.mutate(
-      { ...prefs, [k]: v },
-      {
-        onSuccess: () => toast(tt('settingsSaved')),
-        onError: (e) => toast(tc(fallbackErrorKey(e))),
-      },
-    );
+    save({
+      ...prefs,
+      topics: { ...prefs.topics, [topic]: { ...prefs.topics[topic], [channel]: on } },
+    });
   };
   return (
     <div className={a.sections}>
@@ -934,27 +949,13 @@ function Settings() {
         <div className={a.panelH}>
           <h2>{t('notifications')}</h2>
         </div>
+        <NotifyChoices
+          prefs={prefs}
+          hasEmail={!!user.email}
+          hasShops={(shops.data?.length ?? 0) > 0}
+          onChange={setTopic}
+        />
         <div>
-          <label className={a.toggle}>
-            <span>
-              {t('prefOrders')}
-              <small>{t('alwaysOn')}</small>
-            </span>
-            <input className={a.switch} type="checkbox" checked disabled readOnly />
-          </label>
-          <label className={a.toggle}>
-            <span>
-              {t('prefEmails')}
-              <small>{t('prefEmailsHint', { email: user.email ?? '' })}</small>
-            </span>
-            <input
-              className={a.switch}
-              type="checkbox"
-              checked={prefs?.emails ?? true}
-              disabled={!prefs || !user.email}
-              onChange={(e) => setPref('emails', e.target.checked)}
-            />
-          </label>
           <PushRow />
           <label className={a.toggle}>
             <span>{t('prefDeals')}</span>
@@ -997,6 +998,10 @@ function Settings() {
           )}
         </div>
       </section>
+
+      <TwoStepPanel />
+
+      <AppearancePanel />
 
       <section className={cn(a.card, a.panel, a.dangerRow)}>
         <div>

@@ -258,5 +258,16 @@
     "close": "Close menu",
     "tabs": "{name}: main pages",
     "explore": "Explore"
+  },
+  "scanner": {
+    "label": "Camera",
+    "starting": "Starting the camera…",
+    "tip": "Hold the barcode inside the frame",
+    "deniedTitle": "The camera is blocked",
+    "deniedBody": "Allow the camera for VirtualBiz in your browser’s site settings, then try again. You can still type the code or use a scanner.",
+    "unavailableTitle": "No camera found",
+    "unavailableBody": "Use a USB or Bluetooth scanner, or type the code.",
+    "errorTitle": "The camera couldn’t start",
+    "errorBody": "Another app may be using it. Close it and try again, or type the code."
   }
 }

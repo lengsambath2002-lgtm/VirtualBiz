@@ -3,7 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { useEffect, useRef, useState } from 'react';
 
-import { useHardwareScanner } from '@/features/barcode-scanner';
+import { CameraScanner, useHardwareScanner } from '@/features/barcode-scanner';
 import {
   cx,
   Ic,
@@ -50,6 +50,8 @@ export function PosPage() {
   const [cat, setCat] = useState<string>('all');
   const [input, setInput] = useState('');
   const [q, setQ] = useState('');
+  // The phone's camera as the scanner (each code read adds the item, like a USB scanner).
+  const [camera, setCamera] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const cartRef = useRef<HTMLElement>(null);
 
@@ -188,7 +190,24 @@ export function PosPage() {
               }}
             />
             <span className={cx(s.tiny, s.muted, s.hideS)}>{t('scannerReady')}</span>
+            <button
+              type="button"
+              className={s.camBtn}
+              aria-label={camera ? t('cameraOff') : t('cameraOn')}
+              aria-pressed={camera}
+              onClick={() => setCamera((v) => !v)}
+            >
+              <Ic name="camera" size={18} />
+            </button>
           </div>
+          {camera && (
+            <CameraScanner
+              paused={!!overlay}
+              onDetect={(code) => {
+                if (!act.scan(code)) useUi.getState().showToast(t('noBarcode', { code }));
+              }}
+            />
+          )}
           <div
             className={cx(s.chips, s.noScrollbar)}
             style={{ flexWrap: 'nowrap', overflowX: 'auto' }}

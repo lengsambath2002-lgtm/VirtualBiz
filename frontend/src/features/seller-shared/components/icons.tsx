@@ -67,6 +67,12 @@ const IC = {
   check: <path d="M5 12.5l4.5 4.5L19 7.5" />,
   left: <path d="M15 18l-6-6 6-6" />,
   right: <path d="M9 18l6-6-6-6" />,
+  camera: (
+    <>
+      <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+      <circle cx="12" cy="13" r="3.5" />
+    </>
+  ),
   scan: <path d="M3 7V4h3M21 7V4h-3M3 17v3h3M21 17v3h-3M7 8v8M10 8v8M13 8v8M16 8v8" />,
   truck: (
     <>

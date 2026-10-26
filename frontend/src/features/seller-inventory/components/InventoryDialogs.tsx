@@ -20,6 +20,7 @@ import {
 } from '@/features/seller-shared';
 import type { StockReason } from '@/lib/domain';
 import { Link } from '@/lib/i18n/navigation';
+import { CameraScanner } from '@/features/barcode-scanner';
 import a from './adjust.module.css';
 
 const REASON: Record<AdjustReason, StockReason> = {
@@ -233,9 +234,16 @@ export function AdjustDialog({ variantId, preset }: { variantId: string; preset?
 
 export function ReceiveDialog() {
   const t = useTranslations('seller.inventory.receiveDlg');
+  const ts = useTranslations('seller.inventory.scan');
   const db = useDb();
   const [code, setCode] = useState('');
   const [shown, setShown] = useState('');
+  const [camera, setCamera] = useState(false);
+  const receive = (c: string) => {
+    const [, v] = findCode(db.products, c);
+    if (v) useUi.getState().open({ kind: 'adjust', variantId: v.id, preset: 'recv' });
+    else setShown(c);
+  };
   return (
     <Modal>
       <h2>{t('title')}</h2>
@@ -251,12 +259,27 @@ export function ReceiveDialog() {
           onKeyDown={(e) => {
             if (e.key !== 'Enter') return;
             e.preventDefault();
-            const [, v] = findCode(db.products, code);
-            if (v) useUi.getState().open({ kind: 'adjust', variantId: v.id, preset: 'recv' });
-            else setShown(code);
+            receive(code);
           }}
         />
+        <button
+          type="button"
+          className={s.camBtn}
+          aria-label={camera ? ts('cameraOff') : ts('cameraOn')}
+          aria-pressed={camera}
+          onClick={() => setCamera((v) => !v)}
+        >
+          <Ic name="camera" size={18} />
+        </button>
       </div>
+      {camera && (
+        <CameraScanner
+          onDetect={(c) => {
+            setCode(c);
+            receive(c);
+          }}
+        />
+      )}
       <div>{shown && <ScanResult code={shown} />}</div>
       <div className={s.field}>
         <label htmlFor="rcv-p">{t('orChoose')}</label>
@@ -283,17 +306,53 @@ export function ReceiveDialog() {
   );
 }
 
-/** Top-bar Scan: USB/Bluetooth scanner or typed code → product card. */
+/**
+ * Top-bar Scan: the camera opens at once (phone or laptop); a USB/Bluetooth scanner or a typed
+ * code works too. A hit shows the product card; "Scan another" turns the camera back on.
+ */
 export function ScanDialog() {
   const t = useTranslations('seller.inventory.scan');
   const db = useDb();
   const [code, setCode] = useState('');
   const [shown, setShown] = useState('');
+  const [camera, setCamera] = useState(true);
   const sample = db.products.find((p) => p.slug === 'nita-cable')?.variants[0]?.barcode;
   return (
     <Modal>
       <h2>{t('title')}</h2>
       <p className={cx(s.muted, s.small)}>{t('hint')}</p>
+      {camera && (
+        <CameraScanner
+          paused={!!shown}
+          onDetect={(c) => {
+            setCode(c);
+            setShown(c);
+          }}
+        />
+      )}
+      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        {shown && camera && (
+          <button
+            type="button"
+            className={cx(s.btn, s.btnPrimary, s.btnSm)}
+            onClick={() => {
+              setShown('');
+              setCode('');
+            }}
+          >
+            <Ic name="camera" size={16} />
+            {t('again')}
+          </button>
+        )}
+        <button
+          type="button"
+          className={cx(s.btn, s.btnGhost, s.btnSm)}
+          onClick={() => setCamera((v) => !v)}
+        >
+          <Ic name="camera" size={16} />
+          {camera ? t('cameraOff') : t('cameraOn')}
+        </button>
+      </div>
       <div className={s.scanbox}>
         <Ic name="scan" size={22} />
         <input

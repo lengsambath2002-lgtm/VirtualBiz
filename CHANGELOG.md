@@ -26,6 +26,7 @@ All notable changes are recorded here. Format: [Keep a Changelog](https://keepac
 
 ### Added
 
+- Scan with the phone's camera: the Scan button opens the camera at once and shows the product it reads ("Scan another" for the next); the register and Receive stock have a camera button too, and on the register each code read goes into the sale. A barcode held in view counts once; show it again to add another. Uses the browser's own barcode reader where there is one (Chrome on Android) and ZXing elsewhere (iPhone). USB / Bluetooth scanners and typing still work.
 - Homepage banners can have a background photo: Settings → Homepage → Background photo (upload, change, remove), shaded so the text stays readable, with the preview. On the public demo uploaded photos now live in the database (`vbiz.storage.type: db`), so they no longer vanish when Render restarts the server.
 - Two-step sign-in for every account, not only console staff: turn it on in Your account → Settings with an authenticator app (QR code or key, then 10 recovery codes to save). Every sign-in (password, email code, Google, phone, password reset) then asks for a code from the app, or a recovery code; five wrong codes mean signing in again. Turning it on or off is confirmed by email (docs/api/two-step.md).
 - Notification choices per topic: orders, bookings and, for shop owners, new orders and bookings, low stock, reviews, and ID check and payouts, each by email and by push (it was one switch for all emails). The inbox still gets everything.

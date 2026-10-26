@@ -1717,6 +1717,23 @@ button.kpi:hover {
   align-items: center;
   padding: 12px 14px;
 }
+.camBtn {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--g-fill-strong);
+  color: var(--ink);
+  cursor: pointer;
+}
+.camBtn[aria-pressed='true'] {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--bg, #fff);
+}
 .root .scanbox input {
   flex: 1;
   min-width: 0;

@@ -627,10 +627,13 @@
     },
     "scan": {
       "title": "Scan barcode",
-      "hint": "Point a USB or Bluetooth scanner here, or type the number. Phone-camera scanning comes in the mobile app.",
+      "hint": "Point the camera at the barcode, use a USB or Bluetooth scanner, or type the number.",
       "ph": "Barcode or SKU, then Enter",
       "label": "Barcode or SKU",
-      "try": "Try <btn>{code}</btn> (USB-C cable)"
+      "try": "Try <btn>{code}</btn> (USB-C cable)",
+      "again": "Scan another",
+      "cameraOn": "Use the camera",
+      "cameraOff": "Turn the camera off"
     },
     "notEnough": "Only {n} in stock, so that change wasn't saved. Stock was reloaded.",
     "syncFailed": "Couldn't save the stock change. Stock was reloaded.",
@@ -1026,7 +1029,9 @@
       "closedShort": "Shift closed · short {amount}",
       "closedOver": "Shift closed · over {amount}",
       "closedBalanced": "Shift closed · balanced"
-    }
+    },
+    "cameraOn": "Scan with the camera",
+    "cameraOff": "Turn the camera off"
   },
   "manual": {
     "title": "New manual order",

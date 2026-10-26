@@ -1,0 +1,80 @@
+/* Camera barcode scanner (CameraScanner.tsx): the live picture with an aiming frame. */
+.cam {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: 58vh;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #0b0e16;
+}
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.frame {
+  position: absolute;
+  inset: 22% 12%;
+  border-radius: 14px;
+  box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.35);
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  transition: border-color 0.15s;
+}
+/* The scanning line. */
+.frame i {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  top: 50%;
+  height: 2px;
+  background: #f5b800;
+  box-shadow: 0 0 10px #f5b800;
+  animation: sweep 1.8s ease-in-out infinite alternate;
+}
+.hit {
+  border-color: #2fbf71;
+}
+.tip {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  max-width: calc(100% - 24px);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  font-size: 13px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.off {
+  display: grid;
+  gap: 4px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--sunk);
+  font-size: 13.5px;
+}
+.off span {
+  color: var(--muted);
+}
+
+@keyframes sweep {
+  from {
+    top: 15%;
+  }
+  to {
+    top: 85%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .frame i {
+    animation: none;
+  }
+}

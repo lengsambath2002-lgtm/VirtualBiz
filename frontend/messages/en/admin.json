@@ -964,6 +964,12 @@
     "confirmLegal": "Publish the new {page}?",
     "confirmLegalBody": "The page shows the new text and today's date right away. Tell people about important changes.",
     "savedLegal": "{page} updated",
-    "leaveUnsaved": "Leave without saving your changes?"
+    "leaveUnsaved": "Leave without saving your changes?",
+    "photo": "Background photo",
+    "addPhoto": "Add photo",
+    "changePhoto": "Change photo",
+    "removePhoto": "Remove",
+    "uploading": "Uploading…",
+    "photoHint": "Optional. A wide photo (at least 1600 × 600, JPEG, PNG or WebP, up to 8 MB). It is shaded so the text stays readable; keep the subject on the right."
   }
 }

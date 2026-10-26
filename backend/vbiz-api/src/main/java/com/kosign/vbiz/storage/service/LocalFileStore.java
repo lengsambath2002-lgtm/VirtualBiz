@@ -5,10 +5,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
-/** Files under {@code vbiz.storage.dir} (one API instance, or a shared volume). */
+/** Files under {@code vbiz.storage.dir} (one API instance, or a shared volume). The default. */
 @Component
+@ConditionalOnProperty(name = "vbiz.storage.type", havingValue = "local", matchIfMissing = true)
 public class LocalFileStore implements FileStore {
 
     private final Path root;

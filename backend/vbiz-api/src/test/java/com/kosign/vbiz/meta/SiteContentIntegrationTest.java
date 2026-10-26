@@ -2,12 +2,14 @@ package com.kosign.vbiz.meta;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.mock.web.MockMultipartFile;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -83,4 +85,39 @@ class SiteContentIntegrationTest extends IntegrationTest {
         assertThat(body(mvc.perform(get("/api/meta/legal/terms")).andReturn()).path("data").path("en").asText())
                 .startsWith("## New terms");
     }
+
+    @Test
+    void a_banner_gets_a_background_photo_its_admin_uploaded() throws Exception {
+        Session boss = staff("SUPER_ADMIN");
+        Session other = staff("SUPER_ADMIN");
+        String mine = upload(boss);
+        String theirs = upload(other);
+        ObjectNode b = (ObjectNode) body(mvc.perform(get("/api/meta/home-banners")).andReturn()).path("data").deepCopy();
+
+        ((ObjectNode) b.path("main")).put("imageUrl", theirs);
+        JsonNode refused = send(boss, "/api/admin/content/home-banners", b);
+        assertThat(code(refused)).isEqualTo("VALIDATION_FAILED");
+        assertThat(refused.path("error").path("details").get(0).path("field").asText()).isEqualTo("main.imageUrl");
+
+        ((ObjectNode) b.path("main")).put("imageUrl", mine);
+        assertThat(code(send(boss, "/api/admin/content/home-banners", b))).isEqualTo("SUCCESS");
+        assertThat(body(mvc.perform(get("/api/meta/home-banners")).andReturn()).path("data").path("main")
+                .path("imageUrl").asText()).isEqualTo(mine);
+        // Another super-admin can save the banners and keep that photo.
+        JsonNode again = (JsonNode) body(mvc.perform(get("/api/meta/home-banners")).andReturn()).path("data");
+        assertThat(code(send(other, "/api/admin/content/home-banners", again))).isEqualTo("SUCCESS");
+        // And remove it.
+        ((ObjectNode) again.path("main")).putNull("imageUrl");
+        assertThat(code(send(other, "/api/admin/content/home-banners", again))).isEqualTo("SUCCESS");
+    }
+
+    private String upload(Session s) throws Exception {
+        return body(mvc.perform(multipart("/api/files")
+                .file(new MockMultipartFile("file", "banner.png", "image/png", PNG))
+                .param("purpose", "SITE_BANNER").header("Authorization", s.bearer())).andReturn())
+                .path("data").path("url").asText();
+    }
+
+    private static final byte[] PNG = java.util.Base64.getDecoder().decode(
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==");
 }

@@ -192,3 +192,29 @@
     min-height: 220px;
   }
 }
+.photoLabel {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.photo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.photoThumb {
+  width: 176px;
+  aspect-ratio: 8 / 3;
+  border-radius: 12px;
+  border: 1px dashed var(--line-h, var(--line));
+  background: var(--sunk) center / cover no-repeat;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  flex: none;
+}
+.photoBtns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 import { Link } from '@/lib/i18n/navigation';
 import { cn } from '@/lib/utils/cn';
@@ -26,26 +26,42 @@ function withCodes(text: string): ReactNode[] {
 function Go({
   href,
   className,
+  style,
   children,
 }: {
   href: string;
   className: string;
+  style?: CSSProperties;
   children: ReactNode;
 }) {
   return href.startsWith('https://') ? (
-    <a className={className} href={href} target="_blank" rel="noopener">
+    <a className={className} style={style} href={href} target="_blank" rel="noopener">
       {children}
     </a>
   ) : (
-    <Link className={className} href={href}>
+    <Link className={className} style={style} href={href}>
       {children}
     </Link>
   );
 }
 
+/** A banner's photo under a shade that keeps its text readable. */
+const photo = (url: string | null | undefined): CSSProperties | undefined =>
+  url
+    ? {
+        backgroundImage: `linear-gradient(100deg, rgba(14, 18, 30, 0.82), rgba(14, 18, 30, 0.35)), url("${url}")`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }
+    : undefined;
+
 function Side({ b, tone, locale }: { b: HomeBanner; tone?: string; locale: string }) {
   return (
-    <Go className={cn(s.miniB, tone)} href={b.href}>
+    <Go
+      className={cn(s.miniB, b.imageUrl ? s.onPhoto : tone)}
+      href={b.href}
+      style={photo(b.imageUrl)}
+    >
       {pick(b.eyebrow, locale) && <span className={s.miniEyebrow}>{pick(b.eyebrow, locale)}</span>}
       <strong>{pick(b.title, locale)}</strong>
       {pick(b.body, locale) && <span className={s.small}>{withCodes(pick(b.body, locale))}</span>}
@@ -70,7 +86,7 @@ export function HomeHero({ banners, lang }: { banners: HomeBanners; lang?: 'en' 
   return (
     <section className={cn(s.hero, (!main.visible || !sides.length) && s.heroOne)}>
       {main.visible && (
-        <div className={s.banner}>
+        <div className={cn(s.banner, main.imageUrl && s.bannerPhoto)} style={photo(main.imageUrl)}>
           {pick(main.eyebrow, locale) && (
             <span className={s.eyebrow}>{pick(main.eyebrow, locale)}</span>
           )}

@@ -14,7 +14,7 @@ import { Loading, PanelError } from '@/features/admin-shared/components/ui';
 import { useAct } from '@/features/admin-shared/hooks/useAct';
 import { useAdminFmt } from '@/features/admin-shared/util/format';
 import { legalKey, LegalText, type LegalPageKey } from '@/features/legal';
-import { cx, Ic, s, Switch } from '@/features/seller-shared';
+import { cx, Ic, s, Switch, useUi } from '@/features/seller-shared';
 import {
   homeBannersKey,
   HomeHero,
@@ -24,6 +24,7 @@ import {
 } from '@/features/shop-home';
 import { ApiError } from '@/lib/api';
 import { useSession } from '@/lib/auth';
+import { useImageUpload } from '@/lib/hooks/useImageUpload';
 
 import c from './settings.module.css';
 import k from './content.module.css';
@@ -116,6 +117,60 @@ function TwoLang({
       })}
       {hint && <span className={s.hint}>{hint}</span>}
     </fieldset>
+  );
+}
+
+/** A banner's background photo: upload (SITE_BANNER), change or remove; saved with the banners. */
+function BannerPhoto({
+  id,
+  url,
+  error,
+  onChange,
+}: {
+  id: string;
+  url: string | null | undefined;
+  error?: string;
+  onChange: (url: string | null) => void;
+}) {
+  const t = useTranslations('admin.content');
+  const toast = useUi((u) => u.showToast);
+  const { pick, busy } = useImageUpload('SITE_BANNER', (u) => onChange(u), toast);
+  return (
+    <div className={cx(s.field, error && s.bad)}>
+      <span className={k.photoLabel} id={`${id}-photo`}>
+        {t('photo')}
+      </span>
+      <div className={k.photo} aria-labelledby={`${id}-photo`} role="group">
+        <div
+          className={k.photoThumb}
+          style={url ? { backgroundImage: `url("${url}")` } : undefined}
+          data-testid={`${id}-photo`}
+        >
+          {!url && <Ic name="upload" size={20} />}
+        </div>
+        <div className={k.photoBtns}>
+          <button
+            type="button"
+            className={cx(s.btn, s.btnGhost, s.btnSm)}
+            disabled={busy}
+            onClick={() => void pick()}
+          >
+            {busy ? t('uploading') : url ? t('changePhoto') : t('addPhoto')}
+          </button>
+          {url && (
+            <button
+              type="button"
+              className={cx(s.btn, s.btnGhost, s.btnSm)}
+              style={{ color: 'var(--danger, #d33)' }}
+              onClick={() => onChange(null)}
+            >
+              {t('removePhoto')}
+            </button>
+          )}
+        </div>
+      </div>
+      <span className={s.hint}>{error || t('photoHint')}</span>
+    </div>
   );
 }
 
@@ -225,6 +280,12 @@ export function HomepageTab() {
               onChange={(v) => setSlot(slot, { cta: v })}
             />
           )}
+          <BannerPhoto
+            id={slot}
+            url={b.imageUrl}
+            error={errors[`${slot}.imageUrl`]}
+            onChange={(url) => setSlot(slot, { imageUrl: url })}
+          />
           <div className={cx(s.field, errors[`${slot}.href`] && s.bad)}>
             <label htmlFor={`${slot}-href`}>{t('href')}</label>
             <input

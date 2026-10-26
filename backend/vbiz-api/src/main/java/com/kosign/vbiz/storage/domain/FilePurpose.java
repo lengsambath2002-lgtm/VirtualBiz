@@ -6,5 +6,7 @@ public enum FilePurpose {
     USER_COVER,
     BUSINESS_LOGO,
     BUSINESS_COVER,
-    PRODUCT_PHOTO
+    PRODUCT_PHOTO,
+    /** A homepage banner's background (super-admin, docs/api/site-content.md). */
+    SITE_BANNER
 }

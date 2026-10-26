@@ -1,7 +1,10 @@
+import path from 'node:path';
+
 import { expect, test } from '@playwright/test';
 
 import { type Account, createAccount, signIn, trackErrors } from './_helpers/app';
 
+const IMAGE = path.join(__dirname, '_helpers/id-card.png');
 const ADMIN: Account = { email: 'admin@virtualbiz.com', password: 'Demo@1234' };
 
 test.describe('Legal pages, notifications, appearance and the homepage', () => {
@@ -91,6 +94,34 @@ test.describe('Legal pages, notifications, appearance and the homepage', () => {
       .getByRole('group', { name: 'Title' })
       .getByLabel('English')
       .fill(was);
+    await page.getByRole('button', { name: 'Save changes' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Save changes' }).click();
+    await expect(page.getByText('Homepage updated')).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+
+  test('a super-admin gives the main banner a background photo', async ({ page }) => {
+    const errors = trackErrors(page);
+    await signIn(page, '/admin/settings?tab=homepage', ADMIN);
+    const main = page.getByRole('region', { name: 'Main banner' });
+    const chooser = page.waitForEvent('filechooser');
+    await main.getByRole('button', { name: 'Add photo' }).click();
+    await (await chooser).setFiles(IMAGE);
+    await expect(main.getByTestId('main-photo')).toHaveCSS('background-image', /\/api\/files\//);
+    await page.getByRole('button', { name: 'Save changes' }).click();
+    await page.getByRole('dialog').getByRole('button', { name: 'Save changes' }).click();
+    await expect(page.getByText('Homepage updated')).toBeVisible();
+
+    await page.goto('/en/home');
+    const banner = page.getByRole('heading', { level: 1 }).locator('..');
+    await expect(banner).toHaveCSS('background-image', /\/api\/files\//);
+
+    // Put it back.
+    await page.goto('/en/admin/settings?tab=homepage');
+    await page
+      .getByRole('region', { name: 'Main banner' })
+      .getByRole('button', { name: 'Remove' })
+      .click();
     await page.getByRole('button', { name: 'Save changes' }).click();
     await page.getByRole('dialog').getByRole('button', { name: 'Save changes' }).click();
     await expect(page.getByText('Homepage updated')).toBeVisible();

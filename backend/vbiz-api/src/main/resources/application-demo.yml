@@ -46,6 +46,9 @@ vbiz:
       enabled: true
   orders:
     dev-endpoints: false
+  storage:
+    # Render's free plan wipes the disk on every restart: keep uploaded photos in the database.
+    type: ${VBIZ_STORAGE_TYPE:db}
 
 log:
   dir: ${LOG_DIR:/app/logs}

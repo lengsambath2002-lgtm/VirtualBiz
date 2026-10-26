@@ -8,7 +8,8 @@ export type FilePurpose =
   | 'USER_COVER'
   | 'BUSINESS_LOGO'
   | 'BUSINESS_COVER'
-  | 'PRODUCT_PHOTO';
+  | 'PRODUCT_PHOTO'
+  | 'SITE_BANNER';
 
 export interface UploadedFile {
   id: string;

@@ -2525,3 +2525,17 @@
 .sideRow {
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
+/* A banner with a background photo (shaded so the text stays readable). */
+.bannerPhoto::before {
+  display: none;
+}
+.bannerPhoto p {
+  color: #e3e7f0;
+}
+.onPhoto {
+  color: #fff;
+  border-color: transparent;
+}
+.onPhoto .small {
+  color: rgba(255, 255, 255, 0.85);
+}

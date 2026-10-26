@@ -45,7 +45,8 @@ changes, others see.
 - The Render service **sleeps after 15 idle minutes**; the next visit waits ~1 minute while it
   starts (the app shows its loading state, then works).
 - Render's free database **expires after 30 days**; create a new one (the demo data loads again).
-- Uploaded photos live on the service's disk and **disappear on restart** (no persistent disk on
-  the free plan); the demo's own photos are unaffected.
+- Uploaded photos (logos, product photos, homepage banners) are kept in the database
+  (`vbiz.storage.type: db` in the `demo` profile), because the free plan's disk is wiped on every
+  restart. They count against the free database's 1 GB.
 - Live updates (new orders, bookings) go over a long-lived connection that Vercel may close after
   a while; pages also refresh on their own.

@@ -16,6 +16,8 @@ export interface HomeBanner {
   body: Localized;
   cta: Localized;
   href: string;
+  /** Background photo (`/api/files/…`), or none. */
+  imageUrl?: string | null;
 }
 
 export interface HomeBanners {

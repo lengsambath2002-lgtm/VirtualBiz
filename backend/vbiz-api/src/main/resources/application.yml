@@ -107,7 +107,9 @@ vbiz:
     past-days: 60
     future-days: 90
   storage:
-    # Where uploaded images are kept (local disk; an S3 / MinIO backend can replace it).
+    # Where uploaded images are kept: local (disk under dir) or db (the database, for a host whose
+    # disk is wiped on restart). An S3 / MinIO backend can replace either.
+    type: ${VBIZ_STORAGE_TYPE:local}
     dir: ${VBIZ_STORAGE_DIR:./data/uploads}
     max-bytes: 8388608
   security:

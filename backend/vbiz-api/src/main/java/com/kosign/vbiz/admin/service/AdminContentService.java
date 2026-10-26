@@ -38,7 +38,7 @@ public class AdminContentService {
     @Transactional
     public HomeBanners saveHomeBanners(HomeBanners in) {
         AdminAccess.Admin admin = access.requireSuper();
-        HomeBanners[] r = content.saveHomeBanners(in, admin.name());
+        HomeBanners[] r = content.saveHomeBanners(in, admin.name(), admin.id());
         Map<String, Object> changed = new LinkedHashMap<>();
         for (var slot : List.of(
                 Map.entry("main", new HomeBanner[] { r[0].main(), r[1].main() }),

@@ -19,6 +19,7 @@ import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushFcmOptions;
 import com.kosign.vbiz.common.api.StatusCode;
 import com.kosign.vbiz.common.error.BusinessException;
+import com.kosign.vbiz.common.logging.LogMask;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -68,7 +69,7 @@ public class FirebaseAdminGateway implements FirebaseGateway {
             return auth.createUser(new UserRecord.CreateRequest().setEmail(email).setPassword(password)
                     .setEmailVerified(true).setDisplayName(name)).getUid();
         } catch (FirebaseAuthException e) {
-            log.warn("[FIREBASE] Could not create the account for {}: {}", email, e.getMessage());
+            log.warn("[FIREBASE] Could not create the account for {}: {}", LogMask.contact(email), e.getMessage());
             throw new BusinessException(StatusCode.NOT_CONFIGURED);
         }
     }

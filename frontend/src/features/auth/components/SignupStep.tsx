@@ -8,6 +8,7 @@ import { Link } from '@/lib/i18n/navigation';
 import { cn } from '@/lib/utils/cn';
 
 import { useFlowActions, usePageHref } from '../hooks/useFlowActions';
+import { useSignInMethods } from '../hooks/useSignInMethods';
 import { useFlowStore } from '../store';
 import { containsEmailName, emailOk, passwordOk } from '../util/rules';
 import { GoogleStart } from './GoogleChooser';
@@ -21,6 +22,7 @@ import s from './signIn.module.css';
  */
 export function SignupStep({ initialEmail }: { initialEmail: string }) {
   const t = useTranslations('auth.signup');
+  const methods = useSignInMethods();
   const te = useTranslations('auth.email');
   const tc = useTranslations('common');
   const { go, startCode } = useFlowActions();
@@ -96,10 +98,12 @@ export function SignupStep({ initialEmail }: { initialEmail: string }) {
       </div>
       <div className={s.stack}>
         <GoogleStart label={t('google')} onError={setFailed} />
-        <Btn variant="ghost" onClick={() => go('phone')}>
-          <SiIcon name="phone" />
-          {t('phone')}
-        </Btn>
+        {methods.phone && (
+          <Btn variant="ghost" onClick={() => go('phone')}>
+            <SiIcon name="phone" />
+            {t('phone')}
+          </Btn>
+        )}
       </div>
       <OrDivider />
       {failed && <Alert kind="bad">{failed}</Alert>}

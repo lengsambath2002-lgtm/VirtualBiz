@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 
 import com.kosign.vbiz.auth.domain.OtpPurpose;
 
+import com.kosign.vbiz.common.logging.LogMask;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -27,20 +29,10 @@ public class LoggingOtpSender implements OtpSender {
     public void send(OtpPurpose purpose, String target, String code) {
         String channel = purpose == OtpPurpose.PHONE ? "SMS" : "email";
         if (props.exposeDevCode()) {
-            log.info("[OTP] {} {} code to {}: {}", purpose, channel, mask(target), code);
+            log.info("[OTP] {} {} code to {}: {}", purpose, channel, LogMask.contact(target), code);
         } else {
-            log.warn("[OTP] No {} gateway configured; {} code to {} was not delivered", channel, purpose, mask(target));
+            log.warn("[OTP] No {} gateway configured; {} code to {} was not delivered", channel, purpose,
+                    LogMask.contact(target));
         }
-    }
-
-    private static String mask(String target) {
-        if (target == null || target.length() < 4) {
-            return "***";
-        }
-        int at = target.indexOf('@');
-        if (at > 1) {
-            return target.charAt(0) + "***" + target.substring(at);
-        }
-        return "***" + target.substring(target.length() - 3);
     }
 }

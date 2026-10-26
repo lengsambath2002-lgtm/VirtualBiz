@@ -11,12 +11,13 @@ database on **Render** (`render.yaml`), running the API's `demo` profile.
 | Shop owner | `nita@virtualbiz.com` / `Demo@1234` (Nita Gadget Store: orders, POS, products, team …) |
 | Salon owner | `hello@glowbeauty.com.kh` / `Demo@1234` (Glow Beauty: calendar, bookings, sales …) |
 | Super-admin console | `admin@virtualbiz.com` / `Demo@1234` (`/admin`) |
-| New accounts | sign up normally: the email code is shown on screen (no inbox in the demo) |
-| Team invites | the invite link is shown to the inviter to pass on (no email) |
+| New accounts | sign up normally: the code arrives **by email** (needs `VBIZ_MAIL_*` on the API, docs/ops/email.md) |
+| Team invites | sent by email; the link is never shown on screen |
+| Phone sign-in | hidden: no SMS provider is connected |
 
 The `demo` profile (`application-demo.yml`) loads the demo data (`db/seed-local`) into an empty
-database on first start, turns on the payment simulator and on-screen codes, and keeps real
-secrets and secure cookies. The fake Google chooser and the test endpoints stay off. **Demo data
+database on first start, turns on the payment simulator, and keeps real secrets and secure
+cookies. Being a public URL, it handles codes and invite links like production (docs/ops/security.md). The fake Google chooser and the test endpoints stay off. **Demo data
 only: never point it at a real database.** Everyone shares the demo accounts, so anything a tester
 changes, others see.
 

@@ -10,6 +10,9 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import jakarta.mail.internet.InternetAddress;
+
+import com.kosign.vbiz.common.logging.LogMask;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,7 +46,8 @@ public class EmailSender {
 
     private void deliver(String to, String subject, Email email) {
         if (!props.allows(to)) {
-            log.info("[MAIL] \"{}\" to {} skipped: not in vbiz.mail.only-to", subject, to);
+            log.info("[MAIL] \"{}\" to {} skipped: not in vbiz.mail.only-to", LogMask.text(subject),
+                    LogMask.contact(to));
             return;
         }
         try {
@@ -54,9 +58,9 @@ public class EmailSender {
             m.setSubject(subject);
             m.setText(email.text(), email.html());
             smtp.send(message);
-            log.info("[MAIL] \"{}\" sent to {}", subject, to);
+            log.info("[MAIL] \"{}\" sent to {}", LogMask.text(subject), LogMask.contact(to));
         } catch (Exception e) {
-            log.warn("[MAIL] \"{}\" to {} not sent: {}", subject, to, e.getMessage());
+            log.warn("[MAIL] \"{}\" to {} not sent: {}", LogMask.text(subject), LogMask.contact(to), e.getMessage());
         }
     }
 }

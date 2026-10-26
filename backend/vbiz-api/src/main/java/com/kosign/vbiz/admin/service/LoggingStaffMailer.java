@@ -3,6 +3,8 @@ package com.kosign.vbiz.admin.service;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import com.kosign.vbiz.common.logging.LogMask;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -17,7 +19,7 @@ public class LoggingStaffMailer implements StaffMailer {
 
     @Override
     public void sendInvite(String email, String name, String invitedBy, String role, String link) {
-        log.info("[STAFF] Invite for {} ({}) as {} from {} (email provider not configured)", email, name, role,
-                invitedBy);
+        log.info("[STAFF] Invite for {} ({}) as {} from {} (email provider not configured)",
+                LogMask.contact(email), name, role, invitedBy);
     }
 }

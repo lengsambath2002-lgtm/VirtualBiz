@@ -58,3 +58,7 @@ export const firebaseSignIn = (idToken: string, name?: string) =>
 /** Checks the password VirtualBiz keeps and gives the account's Firebase login the same one. Errors as `login`. */
 export const firebaseMigrate = (email: string, password: string) =>
   post<void>('/firebase/migrate', { email, password });
+
+/** Which ways in the server can deliver: `phone` is false while no SMS provider is connected. */
+export const signInMethods = () =>
+  apiFetch<{ phone: boolean }>('/auth/methods', { auth: false });

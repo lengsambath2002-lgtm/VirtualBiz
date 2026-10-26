@@ -1,6 +1,8 @@
-# A public demo (docs/ops/demo.md): the demo shops, salons and accounts (db/seed-local), the KHQR
-# payment simulator and sign-in codes shown on screen, so anyone can try every part of VirtualBiz
-# without real email, SMS or bank accounts. Real secrets and secure cookies, unlike `local`.
+# A public demo (docs/ops/demo.md): the demo shops, salons and accounts (db/seed-local) and the
+# KHQR payment simulator, so anyone can try VirtualBiz without real bank accounts. Real secrets and
+# secure cookies, unlike `local`. It is a public URL, so it treats codes and links like production:
+# sign-up, email-code and reset codes and team invites go out by email only (VBIZ_MAIL_*), never in
+# an API reply or on screen (the API refuses to start otherwise, config/DevExposureGuard).
 # Demo data only: never point it at a real database.
 spring:
   datasource:
@@ -22,15 +24,15 @@ vbiz:
     data-key: ${VBIZ_DATA_KEY}
   staff:
     app-url: ${VBIZ_APP_URL}
-    # No inbox to send invites to: the inviter sees the link and passes it on.
-    expose-dev-links: true
+    # Invite links let their holder join a shop or the console: emailed only.
+    expose-dev-links: false
   auth:
     cookie-secure: true
     # The fake Google chooser signs in as any address: off on a public URL.
     google-dev-enabled: false
   otp:
-    # Sign-up and email sign-in codes are shown on screen (no email provider in the demo).
-    expose-dev-code: true
+    # A code shown in the reply would let anyone sign in to (or reset) any account.
+    expose-dev-code: false
   payment:
     simulator:
       enabled: true

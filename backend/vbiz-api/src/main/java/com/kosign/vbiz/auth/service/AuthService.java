@@ -90,9 +90,24 @@ public class AuthService {
     // ── Codes ─────────────────────────────────────────────────────────────────────────
 
     @Transactional
+    /**
+     * No SMS provider is connected yet, so a phone code only reaches testers, who are shown it
+     * ({@code vbiz.otp.expose-dev-code}, local / dev / test). Everywhere else phone sign-in is off
+     * rather than "sending" a text that never arrives.
+     */
+    public boolean phoneAvailable() {
+        return otpProps.exposeDevCode();
+    }
+
     public OtpSentResponse sendOtp(OtpPurpose purpose, String to) {
         return switch (purpose) {
-            case PHONE -> sent(otp.issue(OtpPurpose.PHONE, PhoneNumbers.normalizeOrThrow(to), null));
+            case PHONE -> {
+                if (!phoneAvailable()) {
+                    throw BusinessException.withDetail(StatusCode.NOT_CONFIGURED, "to",
+                            "Phone sign-in isn't available yet");
+                }
+                yield sent(otp.issue(OtpPurpose.PHONE, PhoneNumbers.normalizeOrThrow(to), null));
+            }
             case LOGIN, RESET -> {
                 String email = Emails.normalizeOrThrow(to, "to");
                 if (users.findByEmail(email).isEmpty()) {

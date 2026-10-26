@@ -2,6 +2,7 @@ package com.kosign.vbiz.auth.controller;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +25,7 @@ import com.kosign.vbiz.auth.payload.PhoneVerifyResponse;
 import com.kosign.vbiz.auth.payload.PhoneVerifyResult;
 import com.kosign.vbiz.auth.payload.ResetPasswordRequest;
 import com.kosign.vbiz.auth.payload.ResetTokenResponse;
+import com.kosign.vbiz.auth.payload.SignInMethodsResponse;
 import com.kosign.vbiz.auth.payload.SignupRequest;
 import com.kosign.vbiz.auth.service.AuthService;
 import com.kosign.vbiz.auth.service.ClientInfo;
@@ -48,6 +50,12 @@ public class AuthController extends BaseController {
 
     private final AuthService auth;
     private final RefreshCookies cookies;
+
+    /** Which ways in this server can deliver (phone needs an SMS provider). */
+    @GetMapping("/methods")
+    public ResponseEntity<ApiResponse<SignInMethodsResponse>> methods() {
+        return ok(new SignInMethodsResponse(auth.phoneAvailable()));
+    }
 
     @PostMapping("/lookup")
     public ResponseEntity<ApiResponse<LookupResponse>> lookup(@Valid @RequestBody LookupRequest req) {

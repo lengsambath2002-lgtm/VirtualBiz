@@ -44,11 +44,13 @@ export function PhoneStep() {
       if (isApiError(e2, 'OTP_RESEND_TOO_SOON') && otp?.purpose === 'phone' && otp.to === d)
         return go('phone-code');
       setError(
-        isApiError(e2, 'INVALID_PHONE')
-          ? t('errInvalid')
-          : isApiError(e2, 'OTP_RESEND_TOO_SOON')
-            ? t('errWait', { seconds: metaNumber(e2, 'retryAfter', 30) })
-            : tc(fallbackErrorKey(e2)),
+        isApiError(e2, 'NOT_CONFIGURED')
+          ? t('errUnavailable')
+          : isApiError(e2, 'INVALID_PHONE')
+            ? t('errInvalid')
+            : isApiError(e2, 'OTP_RESEND_TOO_SOON')
+              ? t('errWait', { seconds: metaNumber(e2, 'retryAfter', 30) })
+              : tc(fallbackErrorKey(e2)),
       );
       return input.current?.focus();
     }

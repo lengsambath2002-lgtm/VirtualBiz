@@ -3,6 +3,8 @@ package com.kosign.vbiz.business.service;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+import com.kosign.vbiz.common.logging.LogMask;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -17,7 +19,7 @@ public class LoggingTeamMailer implements TeamMailer {
 
     @Override
     public void sendInvite(TeamInviteMail m) {
-        log.info("[TEAM] Invite for {} to {} as {} from {} (emails are off)", m.email(), m.businessName(), m.role(),
-                m.invitedBy());
+        log.info("[TEAM] Invite for {} to {} as {} from {} (emails are off)", LogMask.contact(m.email()),
+                m.businessName(), m.role(), m.invitedBy());
     }
 }

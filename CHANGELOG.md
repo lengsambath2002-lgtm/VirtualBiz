@@ -4,6 +4,10 @@ All notable changes are recorded here. Format: [Keep a Changelog](https://keepac
 
 ## [Unreleased]
 
+### Security
+
+- Sign-in codes and invite links are no longer handed out on the public demo: they were in the API reply (and on screen), so anyone could sign in to or reset any account there. Outside a developer's machine and the tests they now go by email only, and the API refuses to start if they're exposed (docs/ops/security.md). Phone sign-in is hidden, and refused by the API, while no SMS provider is connected. Logs no longer carry codes or full email addresses.
+
 ### Fixed
 
 - Some dialogs (invite someone, add / edit customer, console staff, categories and promo codes, opening hours) greyed out only the panel they were opened from, leaving the sidebar and header bright and clickable: a full-screen backdrop drawn inside a blurred panel is trapped in that panel. They now open at the top of the workspace (a shared `Portal`), so the backdrop covers the screen.

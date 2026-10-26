@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils/cn';
 
 import { passwordSignIn } from '../util/passwordSignIn';
 import { useFlowActions, usePageHref } from '../hooks/useFlowActions';
+import { useSignInMethods } from '../hooks/useSignInMethods';
 import { useFlowStore } from '../store';
 import { emailOk, LOCK_MS } from '../util/rules';
 import { GoogleStart } from './GoogleChooser';
@@ -24,6 +25,7 @@ type Sending = 'forgot' | 'code' | 'inline' | null;
  */
 export function LoginStep({ initialEmail }: { initialEmail: string }) {
   const t = useTranslations('auth.login');
+  const methods = useSignInMethods();
   const te = useTranslations('auth.email');
   const tu = useTranslations('auth.ui');
   const tc = useTranslations('common');
@@ -234,10 +236,12 @@ export function LoginStep({ initialEmail }: { initialEmail: string }) {
       </div>
       <div className={s.stack}>
         <GoogleStart label={t('google')} onError={setFailed} />
-        <Btn variant="ghost" onClick={() => go('phone')}>
-          <SiIcon name="phone" />
-          {t('phone')}
-        </Btn>
+        {methods.phone && (
+          <Btn variant="ghost" onClick={() => go('phone')}>
+            <SiIcon name="phone" />
+            {t('phone')}
+          </Btn>
+        )}
       </div>
       <OrDivider />
       {alert}

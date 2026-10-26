@@ -15,6 +15,7 @@ import com.kosign.vbiz.admin.domain.AuditTarget;
 import com.kosign.vbiz.auth.domain.SignInMethod;
 import com.kosign.vbiz.auth.service.PasswordPolicy;
 import com.kosign.vbiz.common.helper.Emails;
+import com.kosign.vbiz.common.logging.LogMask;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +59,7 @@ public class StaffBootstrap implements ApplicationRunner {
         User u = users.findByEmail(email).orElseGet(() -> User.create(
                 b.name() == null || b.name().isBlank() ? "VirtualBiz Admin" : b.name().trim(), email, null));
         if (u.isSuspended()) {
-            log.error("[STAFF] Bootstrap account {} is suspended; not promoting it", email);
+            log.error("[STAFF] Bootstrap account {} is suspended; not promoting it", LogMask.contact(email));
             return;
         }
         u.setPasswordHash(passwordEncoder.encode(b.password()));

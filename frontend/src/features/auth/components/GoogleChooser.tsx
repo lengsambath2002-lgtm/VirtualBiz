@@ -1,12 +1,12 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import { useRef, useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 
 import { fallbackErrorKey, isApiError } from '@/lib/api';
 import { cn } from '@/lib/utils/cn';
 
-import { firebaseCode, firebaseEnabled, googleIdToken } from '@/lib/firebase';
+import { firebaseCode, firebaseEnabled, googleIdToken, preloadFirebaseAuth } from '@/lib/firebase';
 
 import { firebaseSignIn, googleDevSignIn, googleSignIn } from '../api';
 import { useAuthPage, useFlowActions } from '../hooks/useFlowActions';
@@ -34,6 +34,45 @@ function useGoogleError() {
     isApiError(e, 'NOT_CONFIGURED', 'INVALID_TOKEN', 'NOT_FOUND')
       ? t('errUnavailable')
       : tc(fallbackErrorKey(e));
+}
+
+/**
+ * "Continue with Google" on the log-in and sign-up cards. With Firebase it opens Google's own
+ * account chooser straight away (Firebase is loaded with the page, so the window opens from the
+ * click and isn't blocked); otherwise it opens the chooser sheet below (`?step=google`).
+ */
+export function GoogleStart({ label, onError }: { label: string; onError: (m: string | null) => void }) {
+  const locale = useLocale();
+  const t = useTranslations('auth.google');
+  const { go, signIn } = useFlowActions();
+  const message = useGoogleError();
+  const [busy, setBusy] = useState(false);
+  const direct = firebaseEnabled();
+  useEffect(() => {
+    if (direct) preloadFirebaseAuth();
+  }, [direct]);
+
+  const start = async () => {
+    if (!direct) return go('google');
+    if (busy) return;
+    setBusy(true);
+    onError(null);
+    try {
+      signIn(await firebaseSignIn(await googleIdToken(locale)), 'google');
+    } catch (e) {
+      setBusy(false);
+      const code = firebaseCode(e);
+      if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') return;
+      onError(code === 'auth/popup-blocked' ? t('errPopup') : code ? t('errUnavailable') : message(e));
+    }
+  };
+
+  return (
+    <Btn type="button" variant="ghost" onClick={start} busy={busy} busyLabel={t('signingIn')}>
+      <GoogleIcon />
+      {label}
+    </Btn>
+  );
 }
 
 /**

@@ -10,7 +10,8 @@ import { cn } from '@/lib/utils/cn';
 import { useFlowActions, usePageHref } from '../hooks/useFlowActions';
 import { useFlowStore } from '../store';
 import { containsEmailName, emailOk, passwordOk } from '../util/rules';
-import { GoogleIcon, SiIcon } from './icons';
+import { GoogleStart } from './GoogleChooser';
+import { SiIcon } from './icons';
 import { Alert, AltLine, Btn, EmailField, Field, OrDivider, RulesList, StepLink } from './parts';
 import s from './signIn.module.css';
 
@@ -94,10 +95,7 @@ export function SignupStep({ initialEmail }: { initialEmail: string }) {
         <p className={s.sub}>{t('sub')}</p>
       </div>
       <div className={s.stack}>
-        <Btn variant="ghost" onClick={() => go('google')}>
-          <GoogleIcon />
-          {t('google')}
-        </Btn>
+        <GoogleStart label={t('google')} onError={setFailed} />
         <Btn variant="ghost" onClick={() => go('phone')}>
           <SiIcon name="phone" />
           {t('phone')}

@@ -112,16 +112,19 @@
 }
 .card {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   display: grid;
   gap: 22px;
-  background: var(--g-fill);
+  background: color-mix(in srgb, var(--surface, #fff) 92%, transparent);
   -webkit-backdrop-filter: var(--g-blur);
   backdrop-filter: var(--g-blur);
-  border: 1px solid var(--g-brd);
-  box-shadow: var(--g-hi), var(--g-shadow);
+  border: 1px solid var(--line);
+  box-shadow:
+    var(--g-hi),
+    0 1px 2px rgba(20, 26, 43, 0.04),
+    0 24px 48px -12px rgba(20, 26, 43, 0.14);
   border-radius: 28px;
-  padding: 32px;
+  padding: 36px;
 }
 @media (max-width: 640px) {
   .card {
@@ -195,8 +198,8 @@
 .input {
   width: 100%;
   height: 48px;
-  border: 1px solid var(--line);
-  background: var(--g-fill-strong);
+  border: 1px solid var(--line-h);
+  background: var(--surface, #fff);
   border-radius: var(--r-sm);
   padding: 0 14px;
   color: var(--ink);
@@ -208,8 +211,12 @@
   color: var(--muted);
   opacity: 0.75;
 }
+.input:hover:not(:focus) {
+  border-color: color-mix(in srgb, var(--ink) 30%, var(--line-h));
+}
 .input:focus {
   outline: none;
+  border-color: var(--focus);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 20%, transparent);
 }
 .ctlPw .input {
@@ -297,17 +304,14 @@
     0 4px 14px rgba(20, 26, 43, 0.18);
 }
 .btnGhost {
-  background: var(--g-fill);
-  -webkit-backdrop-filter: var(--g-blur);
-  backdrop-filter: var(--g-blur);
-  border: 1px solid var(--g-brd);
-  box-shadow:
-    var(--g-hi),
-    0 1px 3px rgba(0, 0, 0, 0.05);
+  background: var(--surface, #fff);
+  border: 1px solid var(--line-h);
+  box-shadow: 0 1px 2px rgba(20, 26, 43, 0.06);
   color: var(--ink);
 }
 .btnGhost:hover:not(:disabled) {
-  background: var(--g-fill-strong);
+  border-color: color-mix(in srgb, var(--ink) 35%, var(--line-h));
+  box-shadow: 0 4px 12px rgba(20, 26, 43, 0.08);
 }
 .btnDanger {
   background: var(--danger);

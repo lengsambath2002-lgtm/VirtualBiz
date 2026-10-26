@@ -23,3 +23,8 @@ export function firebaseAuth(): Promise<Auth> {
   });
   return auth;
 }
+
+/** Starts loading Firebase Auth ahead of a click, so Google's window opens straight from the click. */
+export function preloadFirebaseAuth(): void {
+  void firebaseAuth().catch(() => undefined);
+}

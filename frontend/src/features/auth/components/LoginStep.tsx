@@ -11,7 +11,8 @@ import { passwordSignIn } from '../util/passwordSignIn';
 import { useFlowActions, usePageHref } from '../hooks/useFlowActions';
 import { useFlowStore } from '../store';
 import { emailOk, LOCK_MS } from '../util/rules';
-import { GoogleIcon, SiIcon } from './icons';
+import { GoogleStart } from './GoogleChooser';
+import { SiIcon } from './icons';
 import { Alert, AltLine, Btn, EmailField, Field, OrDivider, Spinner } from './parts';
 import s from './signIn.module.css';
 
@@ -232,10 +233,7 @@ export function LoginStep({ initialEmail }: { initialEmail: string }) {
         <p className={s.sub}>{t('sub')}</p>
       </div>
       <div className={s.stack}>
-        <Btn variant="ghost" onClick={() => go('google')}>
-          <GoogleIcon />
-          {t('google')}
-        </Btn>
+        <GoogleStart label={t('google')} onError={setFailed} />
         <Btn variant="ghost" onClick={() => go('phone')}>
           <SiIcon name="phone" />
           {t('phone')}

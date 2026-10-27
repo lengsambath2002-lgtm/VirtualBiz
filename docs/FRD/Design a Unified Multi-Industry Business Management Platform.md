@@ -4,7 +4,7 @@
 |---|---|
 | Requested by | Product owner |
 | Screen ID(s) | New: unified workspace (launcher, organisation switcher), platform console, module screens per FRD. Existing: WeGroupware apps, VirtualBiz surfaces |
-| Status | **Agreed (core)** — owner chose option A on 2026-10-27: WeGroupware is the platform core ("WePlatform"), VirtualBiz is one app in it ([ADR-0002](../adr/0002-virtualbiz-is-an-app-in-weplatform.md)). Phase 1 is specified in WeGroupware FRD `2026-10-27-v01-weplatform-sso-and-app-registry` |
+| Status | **Superseded by the owner's master prompt and decision B (2026-10-27)**: a new platform repository for the shell + Projects & Tasks; WeGroupware stays the source of truth for sign-in, organisations and approvals; VirtualBiz is the Retail & Commerce module. See `docs/platform/01-discovery.md` and `docs/platform/02-integration-contract.md`. Kept for its owner answers (§ Owner's answers) |
 
 ## Background
 

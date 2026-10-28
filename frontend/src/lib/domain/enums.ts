@@ -10,7 +10,13 @@ export type MemberRole = (typeof MEMBER_ROLES)[number];
 export const VERIFICATION_STATUSES = ['PENDING', 'VERIFIED', 'REJECTED'] as const;
 export type VerificationStatus = (typeof VERIFICATION_STATUSES)[number];
 
-export const SIGN_IN_METHODS = ['PASSWORD', 'GOOGLE', 'EMAIL_CODE', 'PHONE_SMS'] as const;
+export const SIGN_IN_METHODS = [
+  'PASSWORD',
+  'GOOGLE',
+  'EMAIL_CODE',
+  'PHONE_SMS',
+  'PLATFORM',
+] as const;
 export type SignInMethod = (typeof SIGN_IN_METHODS)[number];
 
 export const OTP_PURPOSES = ['VERIFY', 'LOGIN', 'RESET', 'PHONE'] as const;

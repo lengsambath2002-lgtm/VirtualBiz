@@ -48,6 +48,8 @@ public enum StatusCode {
     TWO_STEP_REQUIRED(HttpStatus.FORBIDDEN, ErrorType.AUTH, "Enter the code from your authenticator app to finish signing in"),
     LAST_SUPER_ADMIN(HttpStatus.CONFLICT, ErrorType.BUSINESS, "VirtualBiz must keep at least one active super-admin"),
     FORBIDDEN_TENANT(HttpStatus.FORBIDDEN, ErrorType.AUTH, "Not a member of this business"),
+    LINK_REQUIRED(HttpStatus.CONFLICT, ErrorType.AUTH, "An account with this email exists: sign in to it to link the Business Platform"),
+    PLATFORM_UNAVAILABLE(HttpStatus.BAD_GATEWAY, ErrorType.SYSTEM, "The Business Platform could not be reached"),
     BUSINESS_CONTEXT_REQUIRED(HttpStatus.BAD_REQUEST, ErrorType.AUTH, "This request must be made on behalf of a business"),
 
     // ── Not found ──────────────────────────────────────────────────────────────────────

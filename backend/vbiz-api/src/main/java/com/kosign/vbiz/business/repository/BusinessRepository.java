@@ -18,4 +18,11 @@ public interface BusinessRepository extends JpaRepository<Business, UUID> {
               and b.verification <> com.kosign.vbiz.business.domain.VerificationStatus.REJECTED
             order by b.name asc, b.id asc""")
     java.util.List<Business> findVisible();
+
+    /** Shops linked to any of these Business Platform organisations. */
+    java.util.List<Business> findByPlatformOrgIdIn(java.util.Collection<UUID> orgIds);
+
+    @org.springframework.data.jpa.repository.Lock(jakarta.persistence.LockModeType.PESSIMISTIC_WRITE)
+    @org.springframework.data.jpa.repository.Query("select b from Business b where b.id = :id")
+    java.util.Optional<Business> findByIdForUpdate(@org.springframework.data.repository.query.Param("id") UUID id);
 }

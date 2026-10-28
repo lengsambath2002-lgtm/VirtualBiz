@@ -67,5 +67,9 @@ export const firebaseMigrate = (email: string, password: string) =>
 export const twoStepSignIn = (ticket: string, code: { code?: string; recoveryCode?: string }) =>
   post<AuthSession>('/two-step', { ticket, ...code });
 
-/** Which ways in the server can deliver: `phone` is false while no SMS provider is connected. */
-export const signInMethods = () => apiFetch<{ phone: boolean }>('/auth/methods', { auth: false });
+/**
+ * Which ways in the server can deliver: `phone` is false while no SMS provider is connected,
+ * `platform` while Business Platform sign-in isn't set up.
+ */
+export const signInMethods = () =>
+  apiFetch<{ phone: boolean; platform?: boolean }>('/auth/methods', { auth: false });

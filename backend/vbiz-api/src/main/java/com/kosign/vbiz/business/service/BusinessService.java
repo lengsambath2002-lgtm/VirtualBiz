@@ -222,6 +222,10 @@ public class BusinessService {
                     m.getRole() == MemberRole.OWNER ? "The owner stays active" : "You can't remove yourself");
         }
         applyMember(m, in);
+        if (m.isPlatformManaged() && (m.getRole() != roleBefore || m.isActive() != activeBefore)) {
+            // The shop changed this person's access by hand: from now on it no longer follows the platform.
+            m.setPlatformManaged(false);
+        }
         BusinessMember saved = members.saveAndFlush(m);
         if (saved.getRole() != roleBefore) {
             activity.record(businessId, userId, me.getName(), ShopActivityLog.TEAM_ROLE_CHANGED, "MEMBER",

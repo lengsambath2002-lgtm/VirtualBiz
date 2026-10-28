@@ -1,0 +1,97 @@
+{
+  "meta": {
+    "callback": "Signing in",
+    "open": "Open shop",
+    "connect": "Connect a shop"
+  },
+  "button": {
+    "going": "Opening the Business Platform…"
+  },
+  "errors": {
+    "startFailed": "We couldn't reach the Business Platform. Try again in a moment.",
+    "notConfigured": "Sign-in with the Business Platform isn't available here."
+  },
+  "redirect": {
+    "title": "Taking you to the Business Platform",
+    "body": "Sign in there, and you'll come straight back."
+  },
+  "callback": {
+    "working": "Signing you in…",
+    "deniedTitle": "Sign-in cancelled",
+    "deniedBody": "You didn't allow VirtualBiz to sign you in with the Business Platform. Nothing was changed.",
+    "loginTitle": "Sign in to the Business Platform first",
+    "loginBody": "You're not signed in to the Business Platform, or haven't allowed VirtualBiz yet. Start again to sign in there.",
+    "expiredTitle": "This sign-in has expired",
+    "expiredBody": "Sign-in links work once, for a few minutes, in the browser that started them. Start again.",
+    "suspendedTitle": "This account is suspended",
+    "suspendedBody": "Contact VirtualBiz through the Help page.",
+    "unavailableTitle": "Business Platform sign-in isn't available",
+    "unavailableBody": "It isn't set up on this server. Sign in another way.",
+    "missingTitle": "Nothing to finish here",
+    "missingBody": "This page finishes a sign-in with the Business Platform. Start one from the sign-in page.",
+    "again": "Start again",
+    "signIn": "Go to sign-in",
+    "home": "Go home"
+  },
+  "link": {
+    "title": "You already have a VirtualBiz account",
+    "lead": "An account with {email} already exists. To use the Business Platform with it, sign in to it once the usual way and confirm.",
+    "why": "We never join accounts on email alone, so nobody else can take over yours.",
+    "platformAccount": "Business Platform account: {name}",
+    "signIn": "Sign in to VirtualBiz",
+    "confirmTitle": "Link your accounts?",
+    "confirmLead": "From now on, “Continue with Business Platform” signs you in to {account}.",
+    "confirm": "Link accounts",
+    "linking": "Linking…",
+    "otherAccount": "Use another account",
+    "wrongAccount": "You're signed in to a different account. Sign in to the account with the platform's email.",
+    "conflict": "This Business Platform account, or this VirtualBiz account, is already linked to another one.",
+    "failed": "We couldn't link the accounts. Try again."
+  },
+  "open": {
+    "missingTitle": "Shop not found",
+    "missingBody": "This link doesn't name a shop. Open it again from the Business Platform.",
+    "noAccessTitle": "You don't have access to this shop",
+    "noAccessBody": "Ask the shop's owner, or an admin of its organisation on the Business Platform, to add you.",
+    "home": "Go home"
+  },
+  "connect": {
+    "title": "Connect a shop to the Business Platform",
+    "lead": "Choose one of your shops and the organisation to link it to. The organisation's members get access to the shop: owners and admins as managers, members as staff.",
+    "shop": "Your shop",
+    "org": "Organisation",
+    "linkedTo": "Linked to {org}",
+    "roleOwner": "Owner",
+    "roleAdmin": "Admin",
+    "connect": "Connect shop",
+    "connecting": "Connecting…",
+    "noShopsTitle": "You don't own a shop yet",
+    "noShopsBody": "Only a shop's owner can connect it. Create your shop first.",
+    "createShop": "Create a shop",
+    "noOrgsTitle": "No organisation to connect to",
+    "noOrgsBody": "You need to be an owner or admin of an organisation on the Business Platform.",
+    "doneTitle": "Shop connected",
+    "doneBody": "{shop} is now linked to {org}. Its members can open the shop from the Business Platform.",
+    "openShop": "Open shop",
+    "expiredBody": "Connecting a shop needs a fresh Business Platform sign-in. Start again.",
+    "forbidden": "You can't connect this shop to that organisation.",
+    "failed": "We couldn't connect the shop. Try again."
+  },
+  "panel": {
+    "title": "Business Platform",
+    "sub": "Link this shop to an organisation on the Business Platform. Its members then reach the shop from there, with access that follows their role.",
+    "notLinked": "Not linked to an organisation.",
+    "linked": "Linked to {org}",
+    "since": "since {date}",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "disconnecting": "Disconnecting…",
+    "confirm": "Disconnect from {org}? People who got access through the organisation lose it now.",
+    "confirmYes": "Yes, disconnect",
+    "cancel": "Cancel",
+    "ownerOnly": "Only the shop's owner can connect or disconnect it.",
+    "disconnected": "Disconnected from the Business Platform.",
+    "failed": "That didn't work. Try again.",
+    "loadFailed": "We couldn't load the link."
+  }
+}

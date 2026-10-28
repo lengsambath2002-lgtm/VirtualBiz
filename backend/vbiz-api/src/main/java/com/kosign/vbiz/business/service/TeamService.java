@@ -244,6 +244,7 @@ public class TeamService {
         m.setUserId(uid);
         m.setRole(i.getRole());
         m.setActive(true);
+        m.setPlatformManaged(false); // joined by invite: the shop manages this access now
         members.saveAndFlush(m);
         i.setAcceptedAt(clock.instant());
         i.setAcceptedUserId(uid);

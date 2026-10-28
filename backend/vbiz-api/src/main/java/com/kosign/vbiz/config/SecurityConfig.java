@@ -58,7 +58,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         // SSE responses complete on async dispatches; the stream itself checked its ticket.
                         .dispatcherTypeMatchers(DispatcherType.ASYNC, DispatcherType.ERROR).permitAll()
-                        .requestMatchers("/api/auth/logout-all").authenticated()
+                        .requestMatchers("/api/auth/logout-all", "/api/auth/platform/link").authenticated()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/api/health", "/api/meta/**", "/api/staff-invites/**", "/api/join/**", "/api/receipts/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/marketplace/**").permitAll()

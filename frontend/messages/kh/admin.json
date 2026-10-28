@@ -105,7 +105,8 @@
     "PASSWORD": "ពាក្យសម្ងាត់",
     "GOOGLE": "Google",
     "EMAIL_CODE": "កូដអ៊ីមែល",
-    "PHONE_SMS": "ទូរស័ព្ទ (SMS)"
+    "PHONE_SMS": "ទូរស័ព្ទ (SMS)",
+    "PLATFORM": "Business Platform"
   },
   "errors": {
     "SUPER_ADMIN_ONLY": "មានតែអ្នកគ្រប់គ្រងកំពូលទេដែលអាចធ្វើបាន។",

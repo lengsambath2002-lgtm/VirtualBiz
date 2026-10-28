@@ -105,7 +105,8 @@
     "PASSWORD": "Password",
     "GOOGLE": "Google",
     "EMAIL_CODE": "Email code",
-    "PHONE_SMS": "Phone (SMS)"
+    "PHONE_SMS": "Phone (SMS)",
+    "PLATFORM": "Business Platform"
   },
   "errors": {
     "SUPER_ADMIN_ONLY": "Only a super-admin can do this.",

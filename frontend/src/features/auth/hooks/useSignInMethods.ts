@@ -6,7 +6,8 @@ import { signInMethods } from '../api';
 
 /**
  * Ways in the server can actually deliver (`GET /api/auth/methods`). Phone stays hidden until the
- * server says it can send texts, so nobody waits for a code that never comes.
+ * server says it can send texts, so nobody waits for a code that never comes; Business Platform
+ * sign-in only when the server is set up for it.
  */
 export function useSignInMethods() {
   const q = useQuery({
@@ -14,5 +15,5 @@ export function useSignInMethods() {
     queryFn: signInMethods,
     staleTime: 5 * 60_000,
   });
-  return { phone: q.data?.phone === true };
+  return { phone: q.data?.phone === true, platform: q.data?.platform === true };
 }

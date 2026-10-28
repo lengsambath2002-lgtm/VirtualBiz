@@ -16,6 +16,7 @@ import {
   ExportPanel,
   HoursPanel,
   LocationPanel,
+  PlatformPanel,
   PolicyPanel,
   ReturnWindow,
   type SaveBusiness,
@@ -151,6 +152,7 @@ export function SettingsPage() {
           {business && (
             <CategoryPanel business={business} save={saveBusiness} canEdit={role !== 'STAFF'} />
           )}
+          <PlatformPanel businessId={shop.id} />
         </>
       ),
     },

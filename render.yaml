@@ -45,6 +45,14 @@ services:
       # The Vercel address of the web app (invite links point there). Set after the first deploy.
       - key: VBIZ_APP_URL
         sync: false
+      # Sign-in with the Business Platform (docs/adr/0003-sso-with-the-business-platform.md). Leave
+      # unset to keep it off; the client secret is only ever set here, never in git.
+      - key: VBIZ_PLATFORM_URL
+        sync: false
+      - key: VBIZ_PLATFORM_CLIENT_ID
+        sync: false
+      - key: VBIZ_PLATFORM_CLIENT_SECRET
+        sync: false
 
 databases:
   - name: virtualbiz-db

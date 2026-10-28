@@ -1,6 +1,7 @@
 # ADR-0002: VirtualBiz is a module of the Business Platform
 
-- Status: Accepted (owner, 2026-10-27) — **amended the same day by decision B** (below)
+- Status: Accepted (owner, 2026-10-27) — **amended the same day by decision B** (below); the
+  WeGroupware identity-provider parts are superseded by [ADR-0003](./0003-sso-with-the-business-platform.md) (2026-10-28)
 - Date: 2026-10-27
 - Related: [FRD — Unified Multi-Industry Business Management Platform](../FRD/Design%20a%20Unified%20Multi-Industry%20Business%20Management%20Platform.md), WeGroupware FRD `2026-10-27-v01-platform-sso-and-app-registry` and its ADR-0010
 

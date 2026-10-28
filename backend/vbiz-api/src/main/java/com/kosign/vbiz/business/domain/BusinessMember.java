@@ -50,4 +50,11 @@ public class BusinessMember extends BaseEntity {
 
     @Column(name = "active", nullable = false)
     private boolean active = true;
+
+    /**
+     * Access that follows the person's Business Platform organisation role (set and updated on
+     * every platform sign-in). Never set on the owner row or on staff added by hand.
+     */
+    @Column(name = "platform_managed", nullable = false)
+    private boolean platformManaged;
 }

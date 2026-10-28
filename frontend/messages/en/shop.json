@@ -754,7 +754,8 @@
       "PASSWORD": "Email & password",
       "GOOGLE": "Google",
       "EMAIL_CODE": "Email code",
-      "PHONE_SMS": "Phone (SMS)"
+      "PHONE_SMS": "Phone (SMS)",
+      "PLATFORM": "Business Platform"
     },
     "password": "Password",
     "changePassword": "Change password",

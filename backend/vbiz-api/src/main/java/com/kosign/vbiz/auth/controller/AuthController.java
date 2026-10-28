@@ -35,6 +35,7 @@ import com.kosign.vbiz.common.api.BaseController;
 import com.kosign.vbiz.common.api.EmptyJsonResponse;
 import com.kosign.vbiz.common.error.BusinessException;
 import com.kosign.vbiz.common.security.CurrentUser;
+import com.kosign.vbiz.platform.service.PlatformProperties;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,11 +52,12 @@ public class AuthController extends BaseController {
 
     private final AuthService auth;
     private final RefreshCookies cookies;
+    private final PlatformProperties platform;
 
     /** Which ways in this server can deliver (phone needs an SMS provider). */
     @GetMapping("/methods")
     public ResponseEntity<ApiResponse<SignInMethodsResponse>> methods() {
-        return ok(new SignInMethodsResponse(auth.phoneAvailable()));
+        return ok(new SignInMethodsResponse(auth.phoneAvailable(), platform.configured()));
     }
 
     @PostMapping("/lookup")

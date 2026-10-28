@@ -754,7 +754,8 @@
       "PASSWORD": "អ៊ីមែល និងពាក្យសម្ងាត់",
       "GOOGLE": "Google",
       "EMAIL_CODE": "លេខកូដតាមអ៊ីមែល",
-      "PHONE_SMS": "ទូរសព្ទ (SMS)"
+      "PHONE_SMS": "ទូរសព្ទ (SMS)",
+      "PLATFORM": "Business Platform"
     },
     "password": "ពាក្យសម្ងាត់",
     "changePassword": "ប្តូរពាក្យសម្ងាត់",

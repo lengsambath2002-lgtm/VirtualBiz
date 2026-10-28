@@ -57,7 +57,9 @@
     "CATEGORY_REQUESTED": "Suggested a category",
     "CATEGORY_DECIDED": "Category suggestion decided",
     "TEAM_INVITE_DECLINED": "Declined an invite",
-    "TEAM_JOINED": "Joined the team"
+    "TEAM_JOINED": "Joined the team",
+    "PLATFORM_CONNECTED": "Connected to the Business Platform",
+    "PLATFORM_DISCONNECTED": "Disconnected from the Business Platform"
   },
   "detail": {
     "rows": "rows",

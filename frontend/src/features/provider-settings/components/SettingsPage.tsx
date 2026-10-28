@@ -9,6 +9,7 @@ import { PayoutsPanel, VerificationPanel } from '@/features/business-status';
 import {
   CategoryPanel,
   ExportPanel,
+  PlatformPanel,
   HoursPanel,
   LocationPanel,
   PolicyPanel,
@@ -69,6 +70,7 @@ export function SettingsPage() {
         <BusinessPhotos />
         <BusinessForm />
         <CategoryPanel business={api} save={saveRaw} canEdit={can} />
+        <PlatformPanel businessId={data.business.id} />
       </>,
     ),
     sec(

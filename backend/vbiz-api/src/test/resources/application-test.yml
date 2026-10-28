@@ -28,6 +28,13 @@ vbiz:
     expose-dev-code: true
   google:
     client-id: ""
+  # Business Platform sign-in: on in tests, against a mocked PlatformClient (no network).
+  platform:
+    url: https://platform.test
+    client-id: virtualbiz-test
+    client-secret: test-only-platform-secret
+    app-url: http://localhost:3000
+    jwks-refetch-interval: PT0S
   payment:
     simulator:
       enabled: true

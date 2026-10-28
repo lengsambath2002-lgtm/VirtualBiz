@@ -40,6 +40,7 @@ const SESSION_METHOD: Record<MethodKey, SignInMethod> = {
   emailCode: 'EMAIL_CODE',
   phone: 'PHONE_SMS',
   google: 'GOOGLE',
+  platform: 'PLATFORM',
 };
 
 /** Which auth page the steps are rendered on (`/sign-in` or `/sign-up`). */

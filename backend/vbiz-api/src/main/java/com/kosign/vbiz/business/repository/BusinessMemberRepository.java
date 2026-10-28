@@ -32,4 +32,12 @@ public interface BusinessMemberRepository extends JpaRepository<BusinessMember, 
     List<BusinessMember> findByBusiness(@Param("businessId") UUID businessId);
 
     List<BusinessMember> findByBusinessIdInAndActiveTrue(java.util.Collection<UUID> businessIds);
+
+    /** The person's row in a shop, active or not (at most one: uq_business_member_user). */
+    Optional<BusinessMember> findByBusinessIdAndUserId(UUID businessId, UUID userId);
+
+    /** Access the person holds because of a Business Platform organisation. */
+    List<BusinessMember> findByUserIdAndPlatformManagedTrueAndActiveTrue(UUID userId);
+
+    List<BusinessMember> findByBusinessIdAndPlatformManagedTrueAndActiveTrue(UUID businessId);
 }

@@ -13,6 +13,7 @@ import { useSignInMethods } from '../hooks/useSignInMethods';
 import { useFlowStore } from '../store';
 import { emailOk, LOCK_MS } from '../util/rules';
 import { GoogleStart } from './GoogleChooser';
+import { PlatformStart } from './PlatformStart';
 import { SiIcon } from './icons';
 import { Alert, AltLine, Btn, EmailField, Field, OrDivider, Spinner } from './parts';
 import s from './signIn.module.css';
@@ -240,6 +241,7 @@ export function LoginStep({ initialEmail }: { initialEmail: string }) {
       </div>
       <div className={s.stack}>
         <GoogleStart label={t('google')} onError={setFailed} />
+        {methods.platform && <PlatformStart label={t('platform')} onError={setFailed} />}
         {methods.phone && (
           <Btn variant="ghost" onClick={() => go('phone')}>
             <SiIcon name="phone" />

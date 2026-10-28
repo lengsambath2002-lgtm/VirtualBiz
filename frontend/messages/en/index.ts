@@ -19,6 +19,7 @@ import apptList from './apptList.json';
 import stockHistory from './stockHistory.json';
 import inbox from './inbox.json';
 import activity from './activity.json';
+import platform from './platform.json';
 
 const messages = {
   meta,
@@ -41,5 +42,6 @@ const messages = {
   stockHistory,
   inbox,
   activity,
+  platform,
 };
 export default messages;

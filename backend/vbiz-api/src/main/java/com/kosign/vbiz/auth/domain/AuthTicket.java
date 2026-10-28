@@ -1,7 +1,11 @@
 package com.kosign.vbiz.auth.domain;
 
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
+
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import com.kosign.vbiz.common.persistence.BaseEntity;
 
@@ -45,4 +49,9 @@ public class AuthTicket extends BaseEntity {
     /** Wrong codes entered against a TWO_STEP ticket; the fifth uses it up. */
     @Column(name = "failures", nullable = false)
     private short failures;
+
+    /** Extra state for SSO tickets (never a plain secret: the PKCE verifier is sealed, the rest hashed). */
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "data", updatable = false)
+    private Map<String, Object> data;
 }

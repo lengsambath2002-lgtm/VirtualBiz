@@ -34,6 +34,7 @@ Every value is an environment variable (`backend/.env.example`):
 | `DATABASE_URL`, `DATABASE_USERNAME`, `DATABASE_PASSWORD` | yes | JDBC URL to PostgreSQL 15+ with `pg_trgm` available |
 | `VBIZ_JWT_SECRET` | yes | ≥ 32 bytes, e.g. `openssl rand -base64 48`; rotating it signs everyone out |
 | `VBIZ_GOOGLE_CLIENT_ID` | for Google sign-in | Without it Google sign-in answers `NOT_CONFIGURED` |
+| `VBIZ_PLATFORM_URL`, `VBIZ_PLATFORM_CLIENT_ID`, `VBIZ_PLATFORM_CLIENT_SECRET` | for Business Platform sign-in | The platform's web origin and VirtualBiz's client there ([ADR-0003](../adr/0003-sso-with-the-business-platform.md)). All three or the feature is off (`NOT_CONFIGURED`, button hidden). Register `{VBIZ_APP_URL}/platform/callback` as the redirect URI at the platform. The secret lives only in the host's env |
 | `VBIZ_KHQR_BAKONG_ID` | for KHQR | VirtualBiz's merchant Bakong account |
 | `VBIZ_STORAGE_DIR` | no | Where uploaded images are written (image default `/app/data/uploads`). Mount a persistent volume here: photos live only on this disk |
 | `VBIZ_VERSION`, `LOG_DIR`, `SERVER_PORT`, `DATABASE_POOL_SIZE` | no | defaults in `application.yml` |
@@ -76,6 +77,7 @@ These answer with a clear error, or stay off, until the accounts are set up:
 | Integration | Today | Needs |
 |---|---|---|
 | SMS (phone sign-in codes, booking reminders, receipts by SMS) | codes only show in `local` / `dev` (`devCode`) | an SMS gateway account |
+| Business Platform sign-in and shop links | `NOT_CONFIGURED`, button hidden | `VBIZ_PLATFORM_*` and VirtualBiz registered as a client on the platform |
 | Google sign-in | `NOT_CONFIGURED` | `VBIZ_GOOGLE_CLIENT_ID` (+ the web build arg) |
 | KHQR payments | the local simulator confirms transfers; elsewhere a KHQR stays pending until it expires | Bakong merchant credentials and the payment-confirmation callback |
 | Card payments | the local simulator | an acquirer account |

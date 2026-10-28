@@ -94,6 +94,10 @@ const SAME_OK = new Set([
   'shopSettings.policy.link.tiktok',
   'shopSettings.policy.linkPh.website',
   'common.appName',
+  // The Business Platform is a product name.
+  'admin.signIn.PLATFORM',
+  'platform.panel.title',
+  'shop.account.methods.PLATFORM',
   'common.payments.khqr',
   'common.payments.visa',
   'common.payments.mastercard',

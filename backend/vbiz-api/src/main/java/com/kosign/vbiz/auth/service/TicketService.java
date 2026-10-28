@@ -3,6 +3,7 @@ package com.kosign.vbiz.auth.service;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -31,11 +32,18 @@ public class TicketService {
     /** Returns the plain token. */
     @Transactional
     public String issue(TicketKind kind, UUID userId, String target) {
+        return issue(kind, userId, target, null);
+    }
+
+    /** {@link #issue} with extra state kept on the ticket (SSO tickets). Returns the plain token. */
+    @Transactional
+    public String issue(TicketKind kind, UUID userId, String target, Map<String, Object> data) {
         String token = SecureTokens.randomToken();
         AuthTicket t = new AuthTicket();
         t.setKind(kind);
         t.setUserId(userId);
         t.setTarget(target);
+        t.setData(data);
         t.setTokenHash(SecureTokens.sha256Hex(token));
         t.setExpiresAt(clock.instant().plus(TTL));
         tickets.save(t);
@@ -49,6 +57,21 @@ public class TicketService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public String issueSeparately(TicketKind kind, UUID userId, String target) {
         return issue(kind, userId, target);
+    }
+
+    /** {@link #issue(TicketKind, UUID, String, Map)} in its own transaction (outlives a failing caller). */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public String issueSeparately(TicketKind kind, UUID userId, String target, Map<String, Object> data) {
+        return issue(kind, userId, target, data);
+    }
+
+    /**
+     * {@link #consume} in its own transaction: the ticket stays used even when the caller then fails
+     * (an SSO {@code state} is good for one try only).
+     */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public AuthTicket consumeSeparately(TicketKind kind, String token, String field) {
+        return consume(kind, token, field);
     }
 
     /**

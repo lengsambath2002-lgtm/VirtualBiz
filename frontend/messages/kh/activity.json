@@ -57,7 +57,9 @@
     "CATEGORY_REQUESTED": "បានស្នើប្រភេទ",
     "CATEGORY_DECIDED": "បានសម្រេចសំណើប្រភេទ",
     "TEAM_INVITE_DECLINED": "បានបដិសេធការអញ្ជើញ",
-    "TEAM_JOINED": "បានចូលរួមក្រុម"
+    "TEAM_JOINED": "បានចូលរួមក្រុម",
+    "PLATFORM_CONNECTED": "បានភ្ជាប់ទៅ Business Platform",
+    "PLATFORM_DISCONNECTED": "បានផ្ដាច់ពី Business Platform"
   },
   "detail": {
     "rows": "ជួរ",

@@ -336,6 +336,15 @@ public class AuthService {
         return signIn(user, SignInMethod.PASSWORD, client);
     }
 
+    /**
+     * Signs in an account the Business Platform vouched for (its {@code sub} is linked to it): the
+     * normal path, so a suspended account is refused and two-step sign-in asks for its code.
+     */
+    @Transactional
+    public AuthResult signInFromPlatform(User user, ClientInfo client) {
+        return signIn(user, SignInMethod.PLATFORM, client);
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────────────
 
     /**

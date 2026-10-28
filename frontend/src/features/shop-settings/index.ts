@@ -8,6 +8,7 @@ export {
 } from './components/Panels';
 export { ExportPanel } from './components/ExportPanel';
 export { CategoryPanel } from './components/CategoryPanel';
+export { PlatformPanel } from './components/PlatformPanel';
 export {
   SettingsLayout,
   type SettingsIcon,

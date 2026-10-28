@@ -82,4 +82,11 @@ export interface OtpState {
 }
 
 /** How the user signed in; mapped to the session's `SignInMethod`. */
-export type MethodKey = 'password' | 'signup' | 'emailCode' | 'reset' | 'phone' | 'google';
+export type MethodKey =
+  | 'password'
+  | 'signup'
+  | 'emailCode'
+  | 'reset'
+  | 'phone'
+  | 'google'
+  | 'platform';

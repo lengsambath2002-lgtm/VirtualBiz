@@ -5,5 +5,7 @@ public enum SignInMethod {
     PASSWORD,
     GOOGLE,
     EMAIL_CODE,
-    PHONE_SMS
+    PHONE_SMS,
+    /** Single sign-on with the Business Platform (docs/adr/0003-sso-with-the-business-platform.md). */
+    PLATFORM
 }

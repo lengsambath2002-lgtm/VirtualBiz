@@ -150,6 +150,19 @@ vbiz:
     enabled: ${VBIZ_FIREBASE_ENABLED:false}
     credentials: ${VBIZ_FIREBASE_CREDENTIALS:}
     project-id: ${VBIZ_FIREBASE_PROJECT_ID:}
+  # docs/adr/0003-sso-with-the-business-platform.md: sign-in with the Business Platform and shop
+  # links. Off (button hidden, endpoints NOT_CONFIGURED) until all three are set. The redirect URI
+  # registered at the platform is {VBIZ_APP_URL}/platform/callback.
+  platform:
+    url: ${VBIZ_PLATFORM_URL:}
+    client-id: ${VBIZ_PLATFORM_CLIENT_ID:}
+    client-secret: ${VBIZ_PLATFORM_CLIENT_SECRET:}
+    app-url: ${vbiz.staff.app-url}
+    # How fresh the organisation roles from the last platform sign-in must be to connect a shop.
+    connect-ttl: PT10M
+    jwks-refetch-interval: PT30S
+    connect-timeout: PT5S
+    read-timeout: PT10S
   # docs/api/phase10-shop-team.md: shop owners invite their team.
   team:
     invite-ttl: P7D

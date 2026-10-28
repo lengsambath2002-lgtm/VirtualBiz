@@ -143,6 +143,21 @@ public class Business extends BaseEntity {
     @Column(name = "policy")
     private ShopPolicy policy;
 
+    /** The Business Platform organisation this shop is linked to (docs/adr/0003-sso-with-the-business-platform.md). */
+    @Column(name = "platform_org_id")
+    private UUID platformOrgId;
+
+    /** The organisation's name when it was linked (for display). */
+    @Column(name = "platform_org_name", length = 200)
+    private String platformOrgName;
+
+    @Column(name = "platform_linked_at")
+    private Instant platformLinkedAt;
+
+    /** The VirtualBiz account (the shop owner) that linked it. */
+    @Column(name = "platform_linked_by")
+    private UUID platformLinkedBy;
+
     public boolean isSuspended() {
         return suspendedAt != null;
     }

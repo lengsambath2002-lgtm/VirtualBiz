@@ -17,6 +17,7 @@ import {
   type SellerNotification,
 } from '@/features/seller-shared';
 import { WorkspaceSwitcher } from '@/features/account-switcher';
+import { useSession } from '@/lib/auth/session';
 import { useStatusNotifText } from '@/features/business-status';
 import { useReasonText } from '@/features/seller-orders/hooks/useReasonText';
 import { formatUsd } from '@/lib/money';
@@ -59,6 +60,8 @@ export function useNotifText() {
 
 export function TopBar() {
   const t = useTranslations('seller.top');
+  // The account button is the signed-in person (a staff member is not the owner).
+  const { user: me } = useSession();
   const db = useDb();
   const f = useFmt();
   const go = useGo();
@@ -208,9 +211,9 @@ export function TopBar() {
       <WorkspaceSwitcher
         businessId={shop.id}
         className={s.me}
-        label={t('account', { name: shop.ownerName })}
+        label={t('account', { name: me?.name ?? shop.ownerName })}
       >
-        {initials(shop.ownerName)}
+        {initials(me?.name ?? shop.ownerName)}
       </WorkspaceSwitcher>
     </header>
   );
